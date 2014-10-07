@@ -1,6 +1,12 @@
 package org.bugogre.crawler.httpclient
 
-case class Response(url: String, body: String)
-class HttpResponse(url: String) {
-  lazy val response = Response(url, WebFactory.getEntityToStr(url))
+
+trait Response {
+  val url: String
+  val body: String
+}
+
+class HttpResponse(u: String) {
+  val url = u
+  val body = WebFactory.getEntityToStr(u)
 }

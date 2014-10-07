@@ -8,8 +8,8 @@ object Crawler {
   def main(args: Array[String]) {
     val url = "http://www.baidu.com"
     val httpresponse = new HttpResponse(url)
-    println(httpresponse.response.url)
+    println(httpresponse.url)
     println("-----------------------")
-    println(httpresponse.response.body)
+    //println(httpresponse.body)
   }
 }
