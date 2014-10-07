@@ -1,7 +1,6 @@
-package ogre.bugogre.crawler.httpclient
+package org.bugogre.crawler.httpclient
 
-import org.apache.http._
-
-class HttpResponse {
-
+case class Response(url: String, body: String)
+class HttpResponse(url: String) {
+  lazy val response = Response(url, WebFactory.getEntityToStr(url))
 }
