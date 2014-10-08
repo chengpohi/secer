@@ -1,0 +1,24 @@
+package org.bugogre.crawler.fetcher
+import java.net.{Socket, ServerSocket}
+import org.bugogre.crawler.httpclient._
+import java.util.concurrent.{Executors, ExecutorService}
+import java.util.Date
+import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
+
+
+case class FetchItem(url: String)
+class FetcherJob extends Runnable {
+  val fetchItems = new LinkedBlockingQueue[String]()
+  fetchItems put "http://www.baidu.com"
+
+  def run() {
+    println(fetchItems.size)
+    println("Start Fetcher Job...")
+    while(true) {
+      val url = fetchItems.take
+      val web = WebFactory.getEntityToStr(url)
+      println(s"url: $url, html length:" + web.html.length)
+      return
+    }
+  }
+}

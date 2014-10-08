@@ -4,21 +4,26 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.util.EntityUtils
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+case class Web(url: String, html: String)
+
 object WebFactory {
+
+  val LOG = LoggerFactory.getLogger(getClass().getName);
+
   def getEntity(url: String): HttpEntity = {
-    var httpclient = new DefaultHttpClient()
-    var httpget = new HttpGet(url)
-    var response = httpclient.execute(httpget)
-    val entity = response.getEntity
-    entity
+    null
   }
 
-  def getEntityToStr(url: String): String = {
-    var httpclient = new DefaultHttpClient()
-    var httpget = new HttpGet(url)
-    var response = httpclient.execute(httpget)
-    val entity = response.getEntity
-    EntityUtils.toString(entity)
+  def getEntityToStr(url: String): Web = {
+    var response = (new DefaultHttpClient()).execute(new HttpGet(url))
+
+    Web(url, EntityUtils.toString(response.getEntity))
   }
 
+  def ==>(url: String): Web = {
+    getEntityToStr(url)
+  }
 }
