@@ -1,6 +1,7 @@
 package org.bugogre.crawler.fetcher
 
 import org.bugogre.crawler.httpclient._
+import org.bugogre.crawler.config._
 
 import java.util.concurrent.{Executors, ExecutorService}
 import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
@@ -17,10 +18,10 @@ class FetcherJob(fetchItems: BlockingQueue[String]) extends Runnable {
   val LOG = LoggerFactory.getLogger(getClass().getName);
 
   def run() {
-    implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(5))
+    implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(SecConfig.threads.getInt("fetcher")))
 
     println("Start Fetcher Job...")
-    println("Threads: 5")
+    println("Threads: " + SecConfig.threads.getInt("fetcher"))
 
     while(true) {
       val url = fetchItems take
