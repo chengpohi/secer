@@ -17,9 +17,21 @@ case class FetchItem(url: String)
 class FetcherJob extends Runnable {
   val fetchItems = new LinkedBlockingQueue[String]()
 
-  def &(str: String) = fetchItems put str
+  def &(str: String): FetcherJob = {
+    fetchItems put str
+    this
+  }
 
-  def START = this.run
+  def START = new Thread(this).start
+
+  def INPUT = {
+    println("Input Crawl Url: ")
+    &(readLine().asInstanceOf[String])
+  }
+
+  def STATUS = {
+    println("FetchItems Size:" + fetchItems.size())
+  }
 
   val LOG = LoggerFactory.getLogger(getClass().getName);
 
@@ -31,12 +43,15 @@ class FetcherJob extends Runnable {
 
     while(true) {
       val url = fetchItems take
+
       val web: Future[Web] = future {
         WebFactory ==> url
       }
 
       web onComplete {
-        case Success(w) => LOG.info("URL: " + w.url + " get fnished. html length: " + w.html.length)
+        case Success(w) => {
+          LOG.info("URL: " + w.url + " get fnished. html length: " + w.html.length)
+        }
         case Failure(t) => LOG.info("URL: " + url + " get failure. Error: " + t.getMessage)
       }
     }
