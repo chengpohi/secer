@@ -9,19 +9,12 @@ import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
 /**
  * author: chengpohi@gmail.com
  */
-object Crawler {
+object Crawler extends FetcherJob{
   def main(args: Array[String]) {
-    val pool: ExecutorService = Executors.newFixedThreadPool(1)
-    val fetchItems = new LinkedBlockingQueue[String]()
-    fetchItems put "http://www.baidu.com"
-    fetchItems put "http://www.baidu.com"
-    fetchItems put "http://www.baidu.com"
-    fetchItems put "http://www.baidu.com"
-    fetchItems put "http://www.baidu.com"
-    fetchItems put "http://www.baidu.com"
-    fetchItems put "http://www.baidu.com"
-
-    pool.execute(new FetcherJob(fetchItems))
-    pool.shutdown()
+    &("http://www.baidu.com")
+    &("http://www.baidu.com")
+    &("http://www.baidu.com")
+    &("http://www.baidu.com")
+    START
   }
 }

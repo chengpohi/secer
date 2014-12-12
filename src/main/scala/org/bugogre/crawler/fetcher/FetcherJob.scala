@@ -14,7 +14,13 @@ import org.slf4j.LoggerFactory;
 
 case class FetchItem(url: String)
 
-class FetcherJob(fetchItems: BlockingQueue[String]) extends Runnable {
+class FetcherJob extends Runnable {
+  val fetchItems = new LinkedBlockingQueue[String]()
+
+  def &(str: String) = fetchItems put str
+
+  def START = this.run
+
   val LOG = LoggerFactory.getLogger(getClass().getName);
 
   def run() {
