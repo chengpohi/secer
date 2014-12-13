@@ -6,24 +6,24 @@ import org.bugogre.crawler.config._
 import java.util.concurrent.{Executors, ExecutorService}
 import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
 
+import org.bugogre.crawler.url.Url
+
 import scala.util.{Success, Failure}
 import scala.concurrent._
 
 import org.slf4j.LoggerFactory
 
-case class FetchItem(url: String)
+class FetcherJob extends Runnable {
+  val fetchItems = new LinkedBlockingQueue[Url]()
 
-class FetcherJob[T] extends Runnable {
-  val fetchItems = new LinkedBlockingQueue[T]()
-
-  def &(url: T): FetcherJob[T] = {
+  def &(url: Url): FetcherJob = {
     fetchItems put url
     this
   }
 
   def START = new Thread(this).start
 
-  def INPUT(url: T) = {
+  def INPUT(url: Url) = {
     &(url)
   }
 
@@ -40,9 +40,9 @@ class FetcherJob[T] extends Runnable {
     println("Threads: " + SecConfig.threads.getInt("fetcher"))
 
     while(true) {
-      val url: T = fetchItems take
+      val url: Url = fetchItems take
 
-      val web: Future[Web[T]] = future {
+      val web: Future[Web[Url]] = future {
         WebFactory ==> url
       }
 
