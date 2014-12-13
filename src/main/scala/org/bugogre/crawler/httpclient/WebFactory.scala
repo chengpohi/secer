@@ -18,7 +18,6 @@ object WebFactory {
   }
 
   def getEntityToStr[T](url: T): Web[T] = {
-
     val response = new DefaultHttpClient()
       .execute(new HttpGet(url.asInstanceOf[String]))
 
