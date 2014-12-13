@@ -7,7 +7,7 @@ import org.apache.http.util.EntityUtils
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-case class Web(url: String, html: String)
+case class Web[T](url: T, html: String)
 
 object WebFactory {
 
@@ -17,13 +17,15 @@ object WebFactory {
     null
   }
 
-  def getEntityToStr(url: String): Web = {
-    var response = (new DefaultHttpClient()).execute(new HttpGet(url))
+  def getEntityToStr[T](url: T): Web[T] = {
+
+    val response = new DefaultHttpClient()
+      .execute(new HttpGet(url.asInstanceOf[String]))
 
     Web(url, EntityUtils.toString(response.getEntity))
   }
 
-  def ==>(url: String): Web = {
+  def ==>[T](url: T): Web[T] = {
     getEntityToStr(url)
   }
 }

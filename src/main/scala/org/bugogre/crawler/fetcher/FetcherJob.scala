@@ -9,24 +9,22 @@ import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
 import scala.util.{Success, Failure}
 import scala.concurrent._
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.LoggerFactory
 
 case class FetchItem(url: String)
 
-class FetcherJob extends Runnable {
-  val fetchItems = new LinkedBlockingQueue[String]()
+class FetcherJob[T] extends Runnable {
+  val fetchItems = new LinkedBlockingQueue[T]()
 
-  def &(str: String): FetcherJob = {
-    fetchItems put str
+  def &(url: T): FetcherJob[T] = {
+    fetchItems put url
     this
   }
 
   def START = new Thread(this).start
 
-  def INPUT = {
-    println("Input Crawl Url: ")
-    &(readLine().asInstanceOf[String])
+  def INPUT(url: T) = {
+    &(url)
   }
 
   def STATUS = {
@@ -42,9 +40,9 @@ class FetcherJob extends Runnable {
     println("Threads: " + SecConfig.threads.getInt("fetcher"))
 
     while(true) {
-      val url = fetchItems take
+      val url: T = fetchItems take
 
-      val web: Future[Web] = future {
+      val web: Future[Web[T]] = future {
         WebFactory ==> url
       }
 
@@ -56,4 +54,5 @@ class FetcherJob extends Runnable {
       }
     }
   }
+
 }
