@@ -11,7 +11,7 @@ case class Web[T](url: T, html: String)
 
 object WebFactory {
 
-  val LOG = LoggerFactory.getLogger(getClass().getName);
+  val LOG = LoggerFactory.getLogger(getClass.getName);
 
   def getEntity(url: String): HttpEntity = {
     null

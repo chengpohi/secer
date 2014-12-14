@@ -14,6 +14,5 @@ object Crawler extends FetcherJob{
     &(Url("http://www.baidu.com"))
 
     START
-
   }
 }

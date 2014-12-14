@@ -3,8 +3,8 @@ package org.bugogre.crawler.fetcher
 import org.bugogre.crawler.httpclient._
 import org.bugogre.crawler.config._
 
-import java.util.concurrent.{Executors, ExecutorService}
-import java.util.concurrent.{BlockingQueue, LinkedBlockingQueue}
+import java.util.concurrent.Executors
+import java.util.concurrent.LinkedBlockingQueue
 
 import org.bugogre.crawler.url.Url
 
@@ -21,7 +21,7 @@ class FetcherJob extends Runnable {
     this
   }
 
-  def START = new Thread(this).start
+  def START = new Thread(this).start()
 
   def INPUT(url: Url) = {
     &(url)
@@ -31,11 +31,9 @@ class FetcherJob extends Runnable {
     println("FetchItems Size:" + fetchItems.size())
   }
 
-  val LOG = LoggerFactory.getLogger(getClass().getName);
+  val LOG = LoggerFactory.getLogger(getClass.getName);
 
   def run() {
-    implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(SecConfig.threads.getInt("fetcher")))
-
     println("Start Fetcher Job...")
     println("Threads: " + SecConfig.threads.getInt("fetcher"))
 
@@ -54,5 +52,5 @@ class FetcherJob extends Runnable {
       }
     }
   }
-
+  implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(SecConfig.threads.getInt("fetcher")))
 }
