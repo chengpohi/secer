@@ -16,10 +16,10 @@ case class Url(url: String) {
   def filterByRule(rule: Rule): Boolean = {
     rule.rule.foreach(p => {
       url match {
-        case p() =>
-        case _ => return false;
+        case p() => return true
+        case _ =>
       }
     })
-    true
+    false
   }
 }

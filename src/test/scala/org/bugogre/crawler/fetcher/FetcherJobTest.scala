@@ -13,13 +13,23 @@ class FetcherJobTest extends FlatSpec with MockFactory{
 
     assert(fetcher.fetchItems.size() === 0)
 
-    fetcher & Url("http://www.baidu.com")
+    fetcher & Url("http://www.example.com")
 
     assert(fetcher.fetchItems.size() === 1)
 
-    fetcher & Url("http://www.baidu.com")
+    fetcher & Url("http://www.example.com")
 
     assert(fetcher.fetchItems.size() === 2)
+  }
+
+  "FetchItems" should " filter illegal url" in {
+    val fetcher = new FetcherJob
+
+    fetcher & Url("http://www.zhihu.com")
+    fetcher INPUT Url("http://www.zhihu.com")
+    fetcher & Url("http://www.example.com")
+
+    assert(fetcher.fetchItems.size() === 1)
   }
 
   "FetchItems" should "succeed add input urls" in {
