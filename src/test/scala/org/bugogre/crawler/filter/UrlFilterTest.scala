@@ -9,10 +9,12 @@ import org.scalatest.FlatSpec
  */
 class UrlFilterTest extends FlatSpec{
   "Url Filter " should " filter url by rules" in {
-    val url = Url("http://www.zhihu.com")
+    val urls = List(Url("http://www.baidu.com"), Url("http://www.zhihu.com"), Url("http://www.zhihu.com"))
 
-    val rules = List{".*zhihu.*".r}
+    val rules = List(".*zhihu.*".r, ".*baidu.*".r)
     val rule = Rule(rules)
-    assert(url.filterByRule(rule) === true)
+    urls.filter(url => !url.filterByRule(rule)).map(u =>
+      assert(u.filterByRule(rule) === false)
+    )
   }
 }

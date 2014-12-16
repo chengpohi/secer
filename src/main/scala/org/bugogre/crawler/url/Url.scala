@@ -3,8 +3,6 @@ package org.bugogre.crawler.url
 import org.bugogre.crawler.exception.UrlIllegalException
 import org.bugogre.crawler.rule.Rule
 
-import scala.util.matching.Regex
-
 /**
  * Created by xiachen on 12/13/14.
  */
@@ -22,7 +20,6 @@ case class Url(url: String) {
         case _ => return false;
       }
     })
-
     true
   }
 }
