@@ -1,6 +1,5 @@
 package org.bugogre.crawler.fetcher
 
-import org.bugogre.crawler.config
 import org.bugogre.crawler.httpclient._
 import org.bugogre.crawler.config._
 
@@ -17,7 +16,7 @@ import org.slf4j.LoggerFactory
 
 class FetcherJob extends Runnable {
   val fetchItems = new LinkedBlockingQueue[Url]()
-  val rule = Rule(SecConfig.excludeUrlPatterns)
+  lazy val rule = Rule(SecConfig.excludeUrlPatterns)
 
   def &(url: Url): FetcherJob = {
     url.filterByRule(rule) match {
