@@ -11,5 +11,6 @@ libraryDependencies ++= Seq (
   "org.apache.httpcomponents" % "httpclient" % "4.3",
   "org.slf4j" % "slf4j-simple" % "1.7.7",
   "com.typesafe" % "config" % "1.2.1",
-  "org.scalamock" %% "scalamock-scalatest-support" % "3.2.1" % "test"
+  "org.scalamock" %% "scalamock-scalatest-support" % "3.2.1" % "test",
+  "org.jsoup" % "jsoup" % "1.7.2"
 )
