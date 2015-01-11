@@ -14,7 +14,7 @@ case class Url(url: String) {
   }
 
   def filterByRule(rule: Rule): Boolean = {
-    rule.rule.foreach(p => {
+    rule.rule.map(p => {
       url match {
         case p() => return true
         case _ =>

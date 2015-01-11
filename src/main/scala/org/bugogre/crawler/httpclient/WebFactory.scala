@@ -5,8 +5,7 @@ import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.util.EntityUtils
 import org.bugogre.crawler.url.Url
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.LoggerFactory
 
 case class Web[T](url: T, html: String)
 
