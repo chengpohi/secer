@@ -1,5 +1,7 @@
 package org.bugogre.crawler.app
 
+import java.util.concurrent.TimeUnit
+
 import org.bugogre.crawler.fetcher._
 import org.bugogre.crawler.url.Url
 
@@ -14,5 +16,9 @@ object Crawler extends FetcherJob{
     &(Url("http://www.baidu.com"))
 
     START
+
+    TimeUnit.SECONDS.sleep(5)
+    println("Hello Jack")
+    &(Url("http://www.zhihu.com"))
   }
 }

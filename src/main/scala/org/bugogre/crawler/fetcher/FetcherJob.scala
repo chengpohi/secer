@@ -36,11 +36,16 @@ class FetcherJob extends Runnable {
     println("FetchItems Size:" + fetchItems.size())
   }
 
+  def EXIT = {
+      println("Fetch All Urls, Crawler Exist.")
+      System.exit(0)
+  }
+
   val LOG = LoggerFactory.getLogger(getClass.getName);
 
   def run() {
     println("Start Fetcher Job...")
-    println("Threads: " + SecConfig.threads.getInt("fetcher"))
+    println("Fetcher Threads: " + SecConfig.threads.getInt("fetcher"))
 
     while(true) {
       val url: Url = fetchItems take
