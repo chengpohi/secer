@@ -4,21 +4,14 @@ import java.util.concurrent.TimeUnit
 
 import org.bugogre.crawler.fetcher._
 import org.bugogre.crawler.url.Url
+import org.bugogre.crawler.parser.HtmlParser
+
 
 /**
  * author: chengpohi@gmail.com
  */
-object Crawler extends FetcherJob{
+object Crawler{
   def main(args: Array[String]) {
-    &(Url("http://www.baidu.com"))
-    &(Url("http://www.baidu.com"))
-    &(Url("http://www.baidu.com"))
-    &(Url("http://www.baidu.com"))
-
-    START
-
-    TimeUnit.SECONDS.sleep(5)
-    println("Hello Jack")
-    &(Url("http://www.zhihu.com"))
+    akka.Main.main(Array(classOf[CrawlerRunner].getName))
   }
 }

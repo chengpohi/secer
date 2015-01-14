@@ -13,5 +13,5 @@ libraryDependencies ++= Seq (
   "com.typesafe" % "config" % "1.2.1",
   "org.scalamock" %% "scalamock-scalatest-support" % "3.2.1" % "test",
   "org.jsoup" % "jsoup" % "1.7.2",
-  "com.typesafe.akka" %% "akka-actor" % "2.4-SNAPSHOT"
+  "com.typesafe.akka" %% "akka-actor" % "2.3.8"
 )

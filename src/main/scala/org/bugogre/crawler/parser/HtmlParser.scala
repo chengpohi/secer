@@ -10,11 +10,13 @@ import org.jsoup.Jsoup
 import scala.concurrent.{Future, ExecutionContext}
 import scala.concurrent._
 
+import akka.actor.Actor
+import akka.actor.Props
+
 /**
  * Created by xiachen on 12/16/14.
  */
-class HtmlParser extends Runnable{
-  val webs = new LinkedBlockingQueue[Web[Url]]()
+class HtmlParser extends Actor{
   def parse(html: String): Html = {
     val doc = Jsoup.parse(html)
     Html(doc.title, doc, null)
@@ -25,14 +27,10 @@ class HtmlParser extends Runnable{
     Html(doc.title, doc, url)
   }
 
-  def run(): Unit = {
-    while(true) {
-      val web = webs take
-      val html: Future[Html] = future {
-        parse(web.html)
-      }
+  def receive = {
+    case str: String => {
+      println("I am HtmlParser")
+      sender ! str
     }
   }
-
-  implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(SecConfig.threads.getInt("fetcher")))
 }

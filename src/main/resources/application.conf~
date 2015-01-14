@@ -2,4 +2,22 @@ threads{
   fetcher: 10
 }
 
-jj.ff=12
+excludeUrls: [
+  ".*zhihu.*",
+  "www.google.com"
+]
+
+crawlUrl : [
+    {
+      url: "http://www.zhihu.com",
+      div: ""
+    },
+    {
+      url: "http://www.zhihu.com",
+      div: ""
+    },
+    {
+      url: "http://www.zhihu.com",
+      div: ""
+    }
+  ]
