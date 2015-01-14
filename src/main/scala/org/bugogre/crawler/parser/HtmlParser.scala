@@ -7,6 +7,8 @@ import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.url.Url
 import org.jsoup.Jsoup
 
+import org.slf4j.LoggerFactory
+
 import scala.concurrent.{Future, ExecutionContext}
 import scala.concurrent._
 
@@ -17,6 +19,8 @@ import akka.actor.Props
  * Created by xiachen on 12/16/14.
  */
 class HtmlParser extends Actor{
+  val LOG = LoggerFactory.getLogger(getClass.getName);
+
   def parse(html: String): Html = {
     val doc = Jsoup.parse(html)
     Html(doc.title, doc, null)
@@ -31,6 +35,9 @@ class HtmlParser extends Actor{
     case str: String => {
       println("I am HtmlParser")
       sender ! str
+    }
+    case web: Web[Url] => {
+      println("HtmlParser: " + web.html)
     }
   }
 }
