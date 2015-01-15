@@ -8,6 +8,7 @@ import org.bugogre.crawler.parser.HtmlParser
 
 import akka.actor.Actor
 import akka.actor.Props
+import akka.actor.ActorSystem
 
 import org.slf4j.LoggerFactory
 
@@ -16,7 +17,8 @@ import org.slf4j.LoggerFactory
  */
 object Crawler{
   def main(args: Array[String]) {
-    akka.Main.main(Array(classOf[Crawler].getName))
+    val system = ActorSystem("Crawler")
+    system.actorOf(Props[Crawler], "crawler")
   }
 }
 

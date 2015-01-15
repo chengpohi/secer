@@ -37,7 +37,7 @@ class HtmlParser extends Actor{
       sender ! str
     }
     case web: Web[Url] => {
-      println("HtmlParser: " + web.html)
+      println("HtmlParser: " + web.html.length)
     }
   }
 }
