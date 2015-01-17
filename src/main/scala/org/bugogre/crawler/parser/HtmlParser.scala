@@ -19,7 +19,7 @@ import akka.actor.Props
  * Created by xiachen on 12/16/14.
  */
 class HtmlParser extends Actor{
-  val LOG = LoggerFactory.getLogger(getClass.getName);
+  val LOG = LoggerFactory.getLogger(getClass.getName)
 
   def parse(html: String): Html = {
     val doc = Jsoup.parse(html)

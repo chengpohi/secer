@@ -24,7 +24,7 @@ object Crawler{
 
 class Crawler extends Actor {
 
-  val LOG = LoggerFactory.getLogger(getClass.getName);
+  val LOG = LoggerFactory.getLogger(getClass.getName)
 
   val webFetcher = context.actorOf(Props[WebFetcher], "webFetcher")
 

@@ -22,7 +22,7 @@ class WebFetcher extends Actor {
 
   lazy val rule = Rule(SecConfig.excludeUrlPatterns)
 
-  val LOG = LoggerFactory.getLogger(getClass.getName);
+  val LOG = LoggerFactory.getLogger(getClass.getName)
 
   val htmlParser = context.actorOf(Props[HtmlParser], "htmlParser")
 
