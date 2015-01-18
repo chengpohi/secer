@@ -1,8 +1,9 @@
 package org.bugogre.crawler.parser.unit
 
-import akka.actor.Actor
+import akka.actor.{Props, Actor}
 import org.bugogre.crawler.html.Page
 import org.bugogre.crawler.httpclient.Web
+import org.bugogre.crawler.indexer.PageIndexer
 import org.bugogre.crawler.url.Url
 import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory
  */
 class PageParser extends Actor{
   val LOG = LoggerFactory.getLogger(getClass.getName)
+  val pageIndexer = context.actorOf(Props[PageIndexer], "PageIndexer")
 
   def parse(html: String ): Page = parse(html, null)
 
@@ -27,6 +29,6 @@ class PageParser extends Actor{
       println("I am HtmlParser")
       sender ! str
     }
-    case web: Web[Url] => sender() ! parse(web)
+    case web: Web[Url] => pageIndexer ! parse(web)
   }
 }
