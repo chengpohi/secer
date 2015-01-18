@@ -6,7 +6,7 @@ import org.bugogre.crawler.config._
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 
-import org.bugogre.crawler.parser.unit.HtmlParser
+import org.bugogre.crawler.parser.unit.PageParser
 import org.bugogre.crawler.rule.Rule
 import org.bugogre.crawler.url.Url
 
@@ -24,7 +24,7 @@ class WebFetcher extends Actor {
 
   val LOG = LoggerFactory.getLogger(getClass.getName)
 
-  val htmlParser = context.actorOf(Props[HtmlParser], "htmlParser")
+  val htmlParser = context.actorOf(Props[PageParser], "htmlParser")
 
   override def preStart(): Unit = {
   }

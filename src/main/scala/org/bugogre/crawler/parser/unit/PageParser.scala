@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory
 /**
  * Created by xiachen on 12/16/14.
  */
-class HtmlParser extends Actor{
+class PageParser extends Actor{
   val LOG = LoggerFactory.getLogger(getClass.getName)
 
   def parse(html: String ): Page = parse(html, null)

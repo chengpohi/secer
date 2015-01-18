@@ -1,22 +1,22 @@
 package org.bugogre.crawler.parser
 
-import akka.actor.{Props, ActorSystem}
-import akka.testkit.{ImplicitSender, TestKit, TestActorRef}
+import akka.actor.{ActorSystem, Props}
+import akka.testkit.{ImplicitSender, TestKit}
 import org.bugogre.crawler.html.Page
 import org.bugogre.crawler.httpclient.Web
-import org.bugogre.crawler.parser.unit.HtmlParser
+import org.bugogre.crawler.parser.unit.PageParser
 import org.bugogre.crawler.url.Url
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
  * Created by xiachen on 12/16/14.
  */
-class HtmlParserTest(_system: ActorSystem) extends TestKit(_system)
+class PageParserTest(_system: ActorSystem) extends TestKit(_system)
 with ImplicitSender with WordSpecLike with Matchers with BeforeAndAfterAll {
-  val parser = system.actorOf(Props[HtmlParser], "HtmlParser")
+  val parser = system.actorOf(Props[PageParser], "HtmlParser")
   val htmlStr: String = "<html><head><title>title</title></head><body><p>Parsed HTML into a doc.</p></body></html>"
 
-  def this() = this(ActorSystem("MySpec"))
+  def this() = this(ActorSystem("PageParserTest"))
 
   override def afterAll {
     TestKit.shutdownActorSystem(system)

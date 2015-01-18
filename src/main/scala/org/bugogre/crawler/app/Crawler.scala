@@ -3,7 +3,7 @@ package org.bugogre.crawler.app
 import java.util.concurrent.TimeUnit
 
 import org.bugogre.crawler.fetcher._
-import org.bugogre.crawler.parser.unit.HtmlParser
+import org.bugogre.crawler.parser.unit.PageParser
 import org.bugogre.crawler.url.Url
 
 import akka.actor.Actor
