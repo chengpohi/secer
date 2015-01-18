@@ -6,9 +6,9 @@ import org.bugogre.crawler.config._
 import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 
+import org.bugogre.crawler.parser.unit.HtmlParser
 import org.bugogre.crawler.rule.Rule
 import org.bugogre.crawler.url.Url
-import org.bugogre.crawler.parser.HtmlParser
 
 import scala.util.{Success, Failure}
 import scala.concurrent._

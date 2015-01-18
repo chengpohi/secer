@@ -1,13 +1,11 @@
-package org.bugogre.crawler.parser
+package org.bugogre.crawler.parser.unit
 
+import akka.actor.Actor
 import org.bugogre.crawler.html.Html
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.url.Url
 import org.jsoup.Jsoup
-
 import org.slf4j.LoggerFactory
-
-import akka.actor.Actor
 
 /**
  * Created by xiachen on 12/16/14.

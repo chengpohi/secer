@@ -2,6 +2,7 @@ package org.bugogre.crawler.parser
 
 import akka.actor.ActorSystem
 import akka.testkit.{TestKit, TestActorRef}
+import org.bugogre.crawler.parser.unit.HtmlParser
 
 /**
  * Created by xiachen on 12/16/14.
@@ -11,6 +12,9 @@ object HtmlParserTest extends TestKit(ActorSystem("HtmlParserTest")){
   val actorRef = TestActorRef(new HtmlParser)
   val actor = actorRef.underlyingActor
   val page = actor.parse(htmlStr)
+
   assert(page.title == "title")
   assert(page.url == null)
+
+  val future = actorRef ! ""
 }
