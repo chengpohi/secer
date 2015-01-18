@@ -22,7 +22,7 @@ with ImplicitSender with WordSpecLike with Matchers with BeforeAndAfterAll {
     TestKit.shutdownActorSystem(system)
   }
 
-  "HtmlIndexer's indexUrl" must {
+  "PageIndexer's indexUrl" must {
     "not be empty" in {
       parser ! Web[Url](Url("http://www.baidu.com"), htmlStr)
       expectMsgPF() {

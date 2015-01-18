@@ -29,6 +29,10 @@ class PageParser extends Actor{
       println("I am HtmlParser")
       sender ! str
     }
-    case web: Web[Url] => pageIndexer ! parse(web)
+    case web: Web[Url] => {
+      val page = parse(web)
+      pageIndexer ! page
+      sender() ! page
+    }
   }
 }
