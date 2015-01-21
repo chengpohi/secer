@@ -19,9 +19,9 @@ class PageIndexer extends Actor {
   lazy val settings = ImmutableSettings.settingsBuilder().put("cluster.name", indexConfig.getString("cluster.name")).build()
   lazy val client = ElasticClient.remote(settings, (indexConfig.getString("host"), indexConfig.getInt("port")))
 
-  def index4elasticsearch(page: Page) = {
+  def index4elasticsearch(page: Page): Unit = {
     val state = client execute {
-      index into "threads" -> "users" fields (
+      index into page.indexName.get -> page.indexType.get fields (
         "title" -> page.title
         )
     }

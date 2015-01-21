@@ -1,15 +1,8 @@
 package org.bugogre.crawler.app
 
-import java.util.concurrent.TimeUnit
-
+import akka.actor.{Actor, ActorSystem, Props}
 import org.bugogre.crawler.fetcher._
-import org.bugogre.crawler.parser.unit.PageParser
 import org.bugogre.crawler.url.Url
-
-import akka.actor.Actor
-import akka.actor.Props
-import akka.actor.ActorSystem
-
 import org.slf4j.LoggerFactory
 
 /**

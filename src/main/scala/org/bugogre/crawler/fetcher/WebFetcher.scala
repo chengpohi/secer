@@ -1,22 +1,12 @@
 package org.bugogre.crawler.fetcher
 
-import org.bugogre.crawler.httpclient._
+import akka.actor.{Actor, Props}
 import org.bugogre.crawler.config._
-
-import java.util.concurrent.Executors
-import java.util.concurrent.LinkedBlockingQueue
-
+import org.bugogre.crawler.httpclient._
 import org.bugogre.crawler.parser.unit.PageParser
 import org.bugogre.crawler.rule.Rule
 import org.bugogre.crawler.url.Url
-
-import scala.util.{Success, Failure}
-import scala.concurrent._
-
 import org.slf4j.LoggerFactory
-
-import akka.actor.Actor
-import akka.actor.Props
 
 class WebFetcher extends Actor {
 
@@ -24,13 +14,9 @@ class WebFetcher extends Actor {
 
   val LOG = LoggerFactory.getLogger(getClass.getName)
 
-  val htmlParser = context.actorOf(Props[PageParser], "htmlParser")
+  val pageParser = context.actorOf(Props[PageParser], "htmlParser")
 
   override def preStart(): Unit = {
-  }
-
-  def parse(web: Web[Url]): Unit = {
-    htmlParser ! web
   }
 
   def fetch(url: Url): Web[Url] = {
@@ -40,11 +26,11 @@ class WebFetcher extends Actor {
   def receive = {
     case str: String => {
       println("I am WebFetcher.")
-      htmlParser ! str
+      pageParser ! str
     }
     case url: Url => {
       url.filterByRule(rule) match {
-        case false => parse(fetch(url))
+        case false => pageParser ! fetch(url)
         case _ =>
       }
     }
