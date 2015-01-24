@@ -6,6 +6,7 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.html.Page
 import org.elasticsearch.common.settings.ImmutableSettings
+import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
@@ -15,10 +16,11 @@ import scala.util.{Failure, Success}
  * Created by xiachen on 1/17/15.
  */
 class PageIndexer extends Actor {
+  lazy val LOG = LoggerFactory.getLogger(getClass.getName)
   lazy val indexConfig = ConfigFactory.load("indexer.conf").getConfig("index")
   lazy val settings = ImmutableSettings.settingsBuilder().put("cluster.name", indexConfig.getString("cluster.name")).build()
   lazy val client = ElasticClient.remote(settings, (indexConfig.getString("host"), indexConfig.getInt("port")))
-  //val log = Logging(context.system, this)
+
 
   def index4elasticsearch(page: Page): Unit = {
     val state = client execute {
@@ -39,7 +41,7 @@ class PageIndexer extends Actor {
       }
     }
     case page: Page => {
-      //log.info("Index Page: " + page.url)
+      LOG.info("Index Url: " + page.url)
       index4elasticsearch(page)
       sender() ! "page index"
     }

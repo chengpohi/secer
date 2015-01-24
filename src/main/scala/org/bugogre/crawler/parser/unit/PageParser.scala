@@ -8,6 +8,7 @@ import org.bugogre.crawler.indexer.PageIndexer
 import org.bugogre.crawler.url.Url
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 
@@ -15,7 +16,7 @@ import scala.collection.JavaConverters._
  * Created by xiachen on 12/16/14.
  */
 class PageParser extends Actor{
-  //val log = Logging(context.system, this)
+  lazy val LOG = LoggerFactory.getLogger(getClass.getName)
   val pageIndexer = context.actorOf(Props[PageIndexer], "PageIndexer")
   val webFetcher = context.actorOf(Props[WebFetcher], "WebFetcher")
 
@@ -37,6 +38,7 @@ class PageParser extends Actor{
     case str: String => {
     }
     case web: Web[Url] => {
+      LOG.info("Parse Url: " + web.url.url)
       val page = parse(web)
       pageIndexer ! page
     }

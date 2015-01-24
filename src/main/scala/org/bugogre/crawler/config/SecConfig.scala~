@@ -1,4 +1,0 @@
-import com.typesafe.config.ConfigFactory 
-
-object SecConfig {
-}
