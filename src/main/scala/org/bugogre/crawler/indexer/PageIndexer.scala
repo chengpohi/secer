@@ -6,8 +6,8 @@ import com.sksamuel.elastic4s.ElasticDsl._
 import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.html.Page
 import org.elasticsearch.common.settings.ImmutableSettings
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
 
@@ -18,6 +18,7 @@ class PageIndexer extends Actor {
   lazy val indexConfig = ConfigFactory.load("indexer.conf").getConfig("index")
   lazy val settings = ImmutableSettings.settingsBuilder().put("cluster.name", indexConfig.getString("cluster.name")).build()
   lazy val client = ElasticClient.remote(settings, (indexConfig.getString("host"), indexConfig.getInt("port")))
+  //val log = Logging(context.system, this)
 
   def index4elasticsearch(page: Page): Unit = {
     val state = client execute {
@@ -26,7 +27,7 @@ class PageIndexer extends Actor {
         )
     }
     state onComplete {
-      case Success(t) => println("Index Success ")
+      case Success(t) => println("Index Url: " + page.url + " Success")
       case Failure(t) => println("A Error Occurrence: " + t.getMessage)
     }
   }
@@ -38,6 +39,7 @@ class PageIndexer extends Actor {
       }
     }
     case page: Page => {
+      //log.info("Index Page: " + page.url)
       index4elasticsearch(page)
       sender() ! "page index"
     }

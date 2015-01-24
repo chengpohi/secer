@@ -6,13 +6,12 @@ import org.bugogre.crawler.httpclient._
 import org.bugogre.crawler.parser.unit.PageParser
 import org.bugogre.crawler.rule.Rule
 import org.bugogre.crawler.url.Url
-import org.slf4j.LoggerFactory
 
 class WebFetcher extends Actor {
 
   lazy val rule = Rule(SecConfig.excludeUrlPatterns)
 
-  val LOG = LoggerFactory.getLogger(getClass.getName)
+  //val log = Logging(context.system, this)
 
   val pageParser = context.actorOf(Props[PageParser], "htmlParser")
 
@@ -25,13 +24,15 @@ class WebFetcher extends Actor {
 
   def receive = {
     case str: String => {
-      println("I am WebFetcher.")
       pageParser ! str
     }
     case url: Url => {
       url.filterByRule(rule) match {
-        case false => pageParser ! fetch(url)
-        case _ =>
+        case false => {
+          pageParser ! fetch(url)
+        }
+        case _ => {
+        }
       }
     }
   }
