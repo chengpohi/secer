@@ -1,6 +1,6 @@
 package org.bugogre.crawler.httpclient
 
-import org.bugogre.crawler.url.Url
+import org.bugogre.crawler.url.FetchItem
 import org.scalatest.FlatSpec
 
 /**
@@ -8,8 +8,8 @@ import org.scalatest.FlatSpec
  */
 class WebFactoryTest extends FlatSpec{
   "Crawl Url " should " successful" in {
-    val webPage: Web[Url] =
-      WebFactory ==> Url("http://www.zhihu.com")
+    val webPage: Web[FetchItem] =
+      WebFactory ==> FetchItem("http://www.zhihu.com")
     assert(webPage.html.length != 0 )
   }
 }

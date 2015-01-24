@@ -6,7 +6,7 @@ import org.bugogre.crawler.rule.Rule
 /**
  * Created by xiachen on 12/13/14.
  */
-case class Url(url: String) {
+case class FetchItem(url: String) {
   val urlRegex = """^http.*""".r
   url match {
     case urlRegex() =>

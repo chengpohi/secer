@@ -3,7 +3,7 @@ import org.apache.http.HttpEntity
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.util.EntityUtils
-import org.bugogre.crawler.url.Url
+import org.bugogre.crawler.url.FetchItem
 
 import org.slf4j.LoggerFactory
 
@@ -17,14 +17,14 @@ object WebFactory {
     null
   }
 
-  def getEntityToStr(url: Url): Web[Url] = {
+  def getEntityToStr(url: FetchItem): Web[FetchItem] = {
     val response = new DefaultHttpClient()
-      .execute(new HttpGet(url.asInstanceOf[Url].url))
+      .execute(new HttpGet(url.asInstanceOf[FetchItem].url))
 
     Web(url, EntityUtils.toString(response.getEntity))
   }
 
-  def ==>(url: Url): Web[Url] = {
+  def ==>(url: FetchItem): Web[FetchItem] = {
     getEntityToStr(url)
   }
 }

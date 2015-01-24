@@ -5,7 +5,7 @@ import org.bugogre.crawler.config._
 import org.bugogre.crawler.httpclient._
 import org.bugogre.crawler.parser.unit.PageParser
 import org.bugogre.crawler.rule.Rule
-import org.bugogre.crawler.url.Url
+import org.bugogre.crawler.url.FetchItem
 import org.slf4j.LoggerFactory
 
 class WebFetcher extends Actor {
@@ -19,7 +19,7 @@ class WebFetcher extends Actor {
   override def preStart(): Unit = {
   }
 
-  def fetch(url: Url): Web[Url] = {
+  def fetch(url: FetchItem): Web[FetchItem] = {
     WebFactory ==> url
   }
 
@@ -27,7 +27,7 @@ class WebFetcher extends Actor {
     case str: String => {
       pageParser ! str
     }
-    case url: Url => {
+    case url: FetchItem => {
       url.filterByRule(rule) match {
         case false => {
           LOG.info("Fetch Url: " + url.url)

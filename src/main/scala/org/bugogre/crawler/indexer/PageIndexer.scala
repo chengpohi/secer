@@ -29,8 +29,8 @@ class PageIndexer extends Actor {
         )
     }
     state onComplete {
-      case Success(t) => println("Index Url: " + page.url + " Success")
-      case Failure(t) => println("A Error Occurrence: " + t.getMessage)
+      case Success(t) => LOG.info("Index Url: " + page.url.url + " Success")
+      case Failure(t) => LOG.error("A Index Error Occurrence: " + t.getMessage)
     }
   }
 
@@ -41,7 +41,7 @@ class PageIndexer extends Actor {
       }
     }
     case page: Page => {
-      LOG.info("Index Url: " + page.url)
+      LOG.info("Index Url: " + page.url.url)
       index4elasticsearch(page)
       sender() ! "page index"
     }

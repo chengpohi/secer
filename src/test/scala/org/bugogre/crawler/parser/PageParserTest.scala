@@ -5,7 +5,7 @@ import akka.testkit.{ImplicitSender, TestKit}
 import org.bugogre.crawler.html.Page
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.parser.unit.PageParser
-import org.bugogre.crawler.url.Url
+import org.bugogre.crawler.url.FetchItem
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -24,11 +24,11 @@ with ImplicitSender with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   "PageIndexer's indexUrl" must {
     "not be empty" in {
-      parser ! Web[Url](Url("http://www.baidu.com"), htmlStr)
+      parser ! Web[FetchItem](FetchItem("http://www.baidu.com"), htmlStr)
       expectMsgPF() {
         case page: Page =>  {
           assert(page.title == "title")
-          assert(page.url == Url("http://www.baidu.com"))
+          assert(page.url == FetchItem("http://www.baidu.com"))
         }
       }
     }

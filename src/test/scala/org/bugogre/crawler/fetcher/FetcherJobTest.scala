@@ -1,6 +1,6 @@
 package org.bugogre.crawler.fetcher
 
-import org.bugogre.crawler.url.Url
+import org.bugogre.crawler.url.FetchItem
 import org.scalatest.FlatSpec
 import org.scalamock.scalatest.MockFactory
 
@@ -13,11 +13,11 @@ class FetcherJobTest extends FlatSpec with MockFactory{
 
     assert(fetcher.fetchItems.size() === 0)
 
-    fetcher & Url("http://www.example.com")
+    fetcher & FetchItem("http://www.example.com")
 
     assert(fetcher.fetchItems.size() === 1)
 
-    fetcher & Url("http://www.example.com")
+    fetcher & FetchItem("http://www.example.com")
 
     assert(fetcher.fetchItems.size() === 2)
   }
@@ -25,9 +25,9 @@ class FetcherJobTest extends FlatSpec with MockFactory{
   "FetchItems" should " filter illegal url" in {
     val fetcher = new FetcherJob
 
-    fetcher & Url("http://www.zhihu.com")
-    fetcher INPUT Url("http://www.zhihu.com")
-    fetcher & Url("http://www.example.com")
+    fetcher & FetchItem("http://www.zhihu.com")
+    fetcher INPUT FetchItem("http://www.zhihu.com")
+    fetcher & FetchItem("http://www.example.com")
 
     assert(fetcher.fetchItems.size() === 1)
   }
@@ -37,7 +37,7 @@ class FetcherJobTest extends FlatSpec with MockFactory{
 
     assert(fetcher.fetchItems.size() === 0)
 
-    fetcher.INPUT(Url("http://www.google.com"))
+    fetcher.INPUT(FetchItem("http://www.google.com"))
 
     assert(fetcher.fetchItems.size() === 1)
   }

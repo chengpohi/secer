@@ -5,7 +5,7 @@ import org.bugogre.crawler.fetcher.WebFetcher
 import org.bugogre.crawler.html.Page
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.indexer.PageIndexer
-import org.bugogre.crawler.url.Url
+import org.bugogre.crawler.url.FetchItem
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.slf4j.LoggerFactory
@@ -26,18 +26,18 @@ class PageParser extends Actor{
     doc.select("a").asScala.map(u => println(u.attr("href")))
   }
 
-  def parse(html: String, url: Url): Page = {
+  def parse(html: String, url: FetchItem): Page = {
     val doc = Jsoup.parse(html)
     //fetcher(doc)
     Page(doc.title, doc, url, Some("www"), Some("china"))
   }
 
-  def parse(web: Web[Url]): Page = parse(web.html, web.url)
+  def parse(web: Web[FetchItem]): Page = parse(web.html, web.url)
 
   def receive = {
     case str: String => {
     }
-    case web: Web[Url] => {
+    case web: Web[FetchItem] => {
       LOG.info("Parse Url: " + web.url.url)
       val page = parse(web)
       pageIndexer ! page

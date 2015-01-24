@@ -7,7 +7,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.LinkedBlockingQueue
 
 import org.bugogre.crawler.rule.Rule
-import org.bugogre.crawler.url.Url
+import org.bugogre.crawler.url.FetchItem
 
 import scala.util.{Success, Failure}
 import scala.concurrent._
@@ -15,10 +15,10 @@ import scala.concurrent._
 import org.slf4j.LoggerFactory
 
 class FetcherJob extends Runnable {
-  val fetchItems = new LinkedBlockingQueue[Url]()
+  val fetchItems = new LinkedBlockingQueue[FetchItem]()
   lazy val rule = Rule(SecConfig.excludeUrlPatterns)
 
-  def &(url: Url): FetcherJob = {
+  def &(url: FetchItem): FetcherJob = {
     url.filterByRule(rule) match {
       case true =>
       case false => fetchItems put url
@@ -28,7 +28,7 @@ class FetcherJob extends Runnable {
 
   def START = new Thread(this).start()
 
-  def INPUT(url: Url) = {
+  def INPUT(url: FetchItem) = {
     &(url)
   }
 
@@ -48,9 +48,9 @@ class FetcherJob extends Runnable {
     println("Fetcher Threads: " + SecConfig.threads.getInt("fetcher"))
 
     while(true) {
-      val url: Url = fetchItems take
+      val url: FetchItem = fetchItems take
 
-      val web: Future[Web[Url]] = future {
+      val web: Future[Web[FetchItem]] = future {
         WebFactory ==> url
       }
 
