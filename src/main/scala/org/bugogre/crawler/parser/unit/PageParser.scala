@@ -1,7 +1,7 @@
 package org.bugogre.crawler.parser.unit
 
 import akka.actor.{Actor, Props}
-import org.bugogre.crawler.fetcher.WebFetcher
+import org.bugogre.crawler.fetcher.PageFetcher
 import org.bugogre.crawler.html.Page
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.indexer.PageIndexer
@@ -18,7 +18,7 @@ import scala.collection.JavaConverters._
 class PageParser extends Actor{
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
   val pageIndexer = context.actorOf(Props[PageIndexer], "PageIndexer")
-  val webFetcher = context.actorOf(Props[WebFetcher], "WebFetcher")
+  val webFetcher = context.actorOf(Props[PageFetcher], "WebFetcher")
 
   def parse(html: String ): Page = parse(html, null)
 

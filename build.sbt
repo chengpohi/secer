@@ -15,6 +15,7 @@ libraryDependencies ++= Seq (
   "org.jsoup" % "jsoup" % "1.7.2",
   "com.typesafe.akka" %% "akka-actor" % "2.3.8",
   "com.typesafe.akka" %% "akka-testkit" % "2.3.8",
+  "com.typesafe.akka" %% "akka-remote" % "2.3.8",
   "com.sksamuel.elastic4s" %% "elastic4s" % "1.4.8",
   "com.fasterxml.jackson.core" % "jackson-core" % "2.4.2",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.2",

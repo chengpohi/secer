@@ -1,6 +1,7 @@
 package org.bugogre.crawler.fetcher
 
-import akka.actor.{Actor, Props}
+import akka.actor.{ActorSystem, Actor, Props}
+import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.config._
 import org.bugogre.crawler.httpclient._
 import org.bugogre.crawler.parser.unit.PageParser
@@ -8,7 +9,13 @@ import org.bugogre.crawler.rule.Rule
 import org.bugogre.crawler.url.FetchItem
 import org.slf4j.LoggerFactory
 
-class WebFetcher extends Actor {
+object PageFetcher {
+  def main(args: Array[String]): Unit = {
+    val system = ActorSystem("Crawler", ConfigFactory.load("fetcher"))
+    system.actorOf(Props[PageFetcher], "pagefetcher")
+  }
+}
+class PageFetcher extends Actor {
 
   lazy val rule = Rule(SecConfig.excludeUrlPatterns)
 

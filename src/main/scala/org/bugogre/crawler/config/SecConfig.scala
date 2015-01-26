@@ -9,4 +9,5 @@ object SecConfig {
   lazy val threads = config.getConfig("threads")
   lazy val excludeUrlPatterns: List[Regex] = config.getStringList("excludeUrls").toList.flatMap(u => List(u.r))
   lazy val indexUrl = config.getConfig("index").getConfig("host")
+  lazy val crawlerPort = config.getConfig("crawler").getString("host")
 }
