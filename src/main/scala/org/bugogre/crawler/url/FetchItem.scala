@@ -7,9 +7,9 @@ import org.bugogre.crawler.rule.Rule
  * Created by xiachen on 12/13/14.
  */
 case class FetchItem(url: String) {
-  val urlRegex = """^http.*""".r
+  val UrlRegex = """^http.*""".r
   url match {
-    case urlRegex() =>
+    case UrlRegex() =>
     case _ => throw new UrlIllegalException("Url is Illegal")
   }
 

@@ -17,7 +17,7 @@ object PageFetcher {
 }
 class PageFetcher extends Actor {
 
-  lazy val rule = Rule(SecConfig.excludeUrlPatterns)
+  lazy val rule = Rule(SecConfig.EXCLUDE_URL_PATTERNS)
 
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
 

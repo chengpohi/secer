@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory
 
 class FetcherJob extends Runnable {
   val fetchItems = new LinkedBlockingQueue[FetchItem]()
-  lazy val rule = Rule(SecConfig.excludeUrlPatterns)
+  lazy val rule = Rule(SecConfig.EXCLUDE_URL_PATTERNS)
 
   def &(url: FetchItem): FetcherJob = {
     url.filterByRule(rule) match {
@@ -45,7 +45,7 @@ class FetcherJob extends Runnable {
 
   def run() {
     println("Start Fetcher Job...")
-    println("Fetcher Threads: " + SecConfig.threads.getInt("fetcher"))
+    println("Fetcher Threads: " + SecConfig.MAX_THREADS.getInt("fetcher"))
 
     while(true) {
       val url: FetchItem = fetchItems take
@@ -62,5 +62,5 @@ class FetcherJob extends Runnable {
       }
     }
   }
-  implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(SecConfig.threads.getInt("fetcher")))
+  implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(SecConfig.MAX_THREADS.getInt("fetcher")))
 }

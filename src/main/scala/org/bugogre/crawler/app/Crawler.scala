@@ -16,7 +16,7 @@ object Crawler{
   def main(args: Array[String]) {
     val system = ActorSystem("Crawler", ConfigFactory.load("crawler"))
 
-    val remoteHostPort = SecConfig.crawlerPort
+    val remoteHostPort = SecConfig.CRAWLER_PORT
     val remotePath = s"akka.tcp://Crawler@$remoteHostPort/user/pagefetcher"
 
     system.actorOf(Props(new Crawler(remotePath)), "crawler")
