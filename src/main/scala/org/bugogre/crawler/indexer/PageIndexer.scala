@@ -24,12 +24,12 @@ class PageIndexer extends Actor {
 
   def index4elasticsearch(page: Page): Unit = {
     val state = client execute {
-      index into page.indexName.get -> page.indexType.get fields (
+      index into page.item.indexName -> page.item.indexType fields (
         "title" -> page.title
         )
     }
     state onComplete {
-      case Success(t) => LOG.info("Index Url: " + page.url.url + " Success")
+      case Success(t) => LOG.info("Index Url: " + page.item.url + " Success")
       case Failure(t) => LOG.error("A Index Error Occurrence: " + t.getMessage)
     }
   }
@@ -41,7 +41,7 @@ class PageIndexer extends Actor {
       }
     }
     case page: Page => {
-      LOG.info("Index Url: " + page.url.url)
+      LOG.info("Index Url: " + page.item.url)
       index4elasticsearch(page)
       sender() ! "page index"
     }

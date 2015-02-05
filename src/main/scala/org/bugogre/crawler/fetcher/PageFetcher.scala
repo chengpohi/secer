@@ -26,8 +26,8 @@ class PageFetcher extends Actor {
   override def preStart(): Unit = {
   }
 
-  def fetch(url: FetchItem): Web[FetchItem] = {
-    WebFactory ==> url
+  def fetch(item: FetchItem): Web[FetchItem] = {
+    WebFactory ==> item
   }
 
   def receive = {

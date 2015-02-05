@@ -4,6 +4,7 @@ import akka.actor._
 import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.config.SecConfig
 import org.bugogre.crawler.fetcher._
+import org.bugogre.crawler.indexer.FieldSelector
 import org.bugogre.crawler.url.FetchItem
 import org.slf4j.LoggerFactory
 
@@ -56,7 +57,8 @@ class Crawler(path: String) extends Actor {
 
   def active(actor: ActorRef): Receive = {
     case Start => {
-      actor ! FetchItem("http://www.baidu.com")
+      val fields = List(FieldSelector("title", "title"))
+      actor ! FetchItem("http://www.baidu.com", "it", "baidu", fields)
     }
     case Done =>
   }

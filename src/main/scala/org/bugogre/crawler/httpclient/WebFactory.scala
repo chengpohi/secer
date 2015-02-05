@@ -17,14 +17,14 @@ object WebFactory {
     null
   }
 
-  def getEntityToStr(url: FetchItem): Web[FetchItem] = {
+  def getEntityToStr(item: FetchItem): Web[FetchItem] = {
     val response = new DefaultHttpClient()
-      .execute(new HttpGet(url.asInstanceOf[FetchItem].url))
+      .execute(new HttpGet(item.asInstanceOf[FetchItem].url))
 
-    Web(url, EntityUtils.toString(response.getEntity))
+    Web(item, EntityUtils.toString(response.getEntity))
   }
 
-  def ==>(url: FetchItem): Web[FetchItem] = {
-    getEntityToStr(url)
+  def ==>(item: FetchItem): Web[FetchItem] = {
+    getEntityToStr(item)
   }
 }

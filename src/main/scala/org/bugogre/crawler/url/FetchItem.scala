@@ -1,11 +1,12 @@
 package org.bugogre.crawler.url
 
+import org.bugogre.crawler.indexer.FieldSelector
 import org.bugogre.crawler.rule.Rule
 
 /**
  * Created by xiachen on 12/13/14.
  */
-case class FetchItem(url: String) {
+case class FetchItem(url: String, indexName: String, indexType: String, selectors: List[FieldSelector]) {
   lazy val UrlRegex = """^http.*""".r
 
   def filterByRule(rule: Rule): Boolean = {
