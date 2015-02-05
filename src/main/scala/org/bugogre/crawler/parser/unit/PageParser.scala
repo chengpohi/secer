@@ -29,7 +29,7 @@ class PageParser extends Actor{
 
   def parse(html: String ): Page = parse(html, null)
 
-  def fetcher(doc: Document): Unit = {
+  def hrefs(doc: Document): Unit = {
     doc.select("a").asScala.map(u => println(u.attr("href")))
   }
 
@@ -39,13 +39,12 @@ class PageParser extends Actor{
     Page(doc.title, doc, item, hash(html), parseBySelector(doc, item.selectors))
   }
 
-  def selectBySelector(doc: Document, selector: String) = {
-    doc.select(selector).asScala.map(u => println(u))
+  def selectBySelector(doc: Document, selector: String): String = {
+    doc.select(selector).first().html()
   }
 
   def parseBySelector(doc: Document, fieldSelectors: List[FieldSelector]): List[IndexField] = {
-    for (fieldSelector <- fieldSelectors) yield selectBySelector(doc, fieldSelector.selector)
-    null
+    for (fieldSelector <- fieldSelectors) yield IndexField(fieldSelector.field, selectBySelector(doc, fieldSelector.selector))
   }
 
   def parse(web: Web[FetchItem]): Page = parse(web.html, web.url)
