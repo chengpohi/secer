@@ -2,10 +2,7 @@ package org.bugogre.crawler.parser
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import org.bugogre.crawler.html.Page
-import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.parser.unit.PageParser
-import org.bugogre.crawler.url.FetchItem
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -20,17 +17,5 @@ with ImplicitSender with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   override def afterAll {
     TestKit.shutdownActorSystem(system)
-  }
-
-  "PageIndexer's indexUrl" must {
-    "not be empty" in {
-      parser ! Web[FetchItem](FetchItem("http://www.baidu.com"), htmlStr)
-      expectMsgPF() {
-        case page: Page =>  {
-          assert(page.title == "title")
-          assert(page.url == FetchItem("http://www.baidu.com"))
-        }
-      }
-    }
   }
 }

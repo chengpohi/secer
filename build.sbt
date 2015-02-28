@@ -2,7 +2,7 @@ name := "seccrawler"
 
 version := "1.0"
 
-scalaVersion := "2.11.1"
+scalaVersion := "2.11.3"
 
 unmanagedBase := baseDirectory.value / "lib"
 
@@ -19,5 +19,12 @@ libraryDependencies ++= Seq (
   "com.sksamuel.elastic4s" %% "elastic4s" % "1.4.8",
   "com.fasterxml.jackson.core" % "jackson-core" % "2.4.2",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.2",
+  "org.scalanlp" %% "breeze" % "0.10",
+  "org.scalanlp" %% "breeze-natives" % "0.10",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.4.2"
+)
+
+resolvers ++= Seq(
+            "Sonatype Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/",
+            "Sonatype Releases" at "https://oss.sonatype.org/content/repositories/releases/"
 )

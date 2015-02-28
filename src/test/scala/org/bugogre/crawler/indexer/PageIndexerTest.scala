@@ -1,12 +1,8 @@
 package org.bugogre.crawler.indexer
 
-import akka.actor.ActorSystem
-import akka.actor.Props
-import akka.testkit.{TestKit, ImplicitSender}
-import org.bugogre.crawler.html.Page
-import org.scalatest.WordSpecLike
-import org.scalatest.Matchers
-import org.scalatest.BeforeAndAfterAll
+import akka.actor.{ActorSystem, Props}
+import akka.testkit.{ImplicitSender, TestKit}
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
  * Created by xiachen on 1/18/15.
@@ -30,10 +26,4 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
   }
 
-  "PageIndexer index" must {
-    " page to elasticsearch" in {
-      indexer ! Page("indexTitle", null, null)
-      expectMsg("page index")
-    }
-  }
 }
