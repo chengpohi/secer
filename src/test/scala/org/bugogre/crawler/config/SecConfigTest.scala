@@ -11,6 +11,6 @@ class SecConfigTest extends FlatSpec{
   }
 
   "Exclude Urls" should " fetch successfully" in {
-    assert(SecConfig.EXCLUDE_URL_PATTERNS.size >= 2)
+    assert(SecConfig.EXCLUDE_URL_PATTERNS.size >= 1)
   }
 }

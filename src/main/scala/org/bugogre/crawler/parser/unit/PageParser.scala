@@ -36,7 +36,7 @@ class PageParser extends Actor{
   def parse(html: String, item: FetchItem): Page = {
     val doc = Jsoup.parse(html)
     //fetcher(doc)
-    Page(doc.title, doc, item, hash(html), parseBySelector(doc, item.selectors))
+    Page(doc, item, hash(html), parseBySelector(doc, item.selectors))
   }
 
   def selectBySelector(doc: Document, selector: String): String = {

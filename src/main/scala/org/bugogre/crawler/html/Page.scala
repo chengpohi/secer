@@ -7,4 +7,4 @@ import org.jsoup.nodes.Document
 /**
  * Created by xiachen on 12/16/14.
  */
-case class Page(title: String, doc: Document, item: FetchItem, md5: String, indexes: List[IndexField]) {}
+case class Page(doc: Document, fetchItem: FetchItem, md5: String, indexes: List[IndexField]) {}
