@@ -47,15 +47,16 @@ class PageParser extends Actor{
     for (fieldSelector <- fieldSelectors) yield IndexField(fieldSelector.field, selectBySelector(doc, fieldSelector.selector))
   }
 
-  def parse(web: Web[FetchItem]): Page = parse(web.html, web.url)
+  def parse(web: Web[FetchItem]): Page = parse(web.html, web.fetchItem)
 
   def receive = {
     case str: String => {
     }
     case web: Web[FetchItem] => {
-      LOG.info("Parse Url: " + web.url.url)
+      LOG.info("Parse Url: " + web.fetchItem.url)
       val page = parse(web)
       pageIndexer ! page
+      sender() ! web.fetchItem.url + "parse finished."
     }
   }
 }

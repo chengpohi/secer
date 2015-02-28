@@ -34,11 +34,12 @@ class PageFetcher extends Actor {
     case str: String => {
       pageParser ! str
     }
-    case url: FetchItem => {
-      url.filterByRule(rule) match {
+    case fetchItem: FetchItem => {
+      fetchItem.filterByRule(rule) match {
         case false => {
-          LOG.info("Fetch Url: " + url.url)
-          pageParser ! fetch(url)
+          LOG.info("Fetch Url: " + fetchItem.url)
+          pageParser ! fetch(fetchItem)
+          sender() ! fetchItem.url + " fetch finished."
         }
         case _ => {
         }

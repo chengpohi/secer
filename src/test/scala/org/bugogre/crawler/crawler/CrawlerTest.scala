@@ -9,6 +9,6 @@ import org.scalatest.FlatSpec
  */
 class CrawlerTest  extends FlatSpec with MockFactory{
   val crawler = Crawler
-  "Crawler" should " fetch url by inpu" in {
+  "Crawler" should " fetch url by input" in {
   }
 }

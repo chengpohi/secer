@@ -7,7 +7,7 @@ import org.bugogre.crawler.url.FetchItem
 
 import org.slf4j.LoggerFactory
 
-case class Web[T](url: T, html: String)
+case class Web[T](fetchItem: T, html: String)
 
 object WebFactory {
 
