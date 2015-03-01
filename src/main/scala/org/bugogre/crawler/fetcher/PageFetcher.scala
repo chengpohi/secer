@@ -1,9 +1,9 @@
 package org.bugogre.crawler.fetcher
 
-import akka.actor.{ActorSystem, Actor, Props}
+import akka.actor.{Actor, ActorSystem, Props}
 import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.config._
-import org.bugogre.crawler.httpclient._
+import org.bugogre.crawler.fetcher.impl.HtmlPageFetcher
 import org.bugogre.crawler.parser.PageParser
 import org.bugogre.crawler.rule.Rule
 import org.bugogre.crawler.url.FetchItem
@@ -15,6 +15,7 @@ object PageFetcher {
     system.actorOf(Props[PageFetcher], "pagefetcher")
   }
 }
+
 class PageFetcher extends Actor {
 
   lazy val rule = Rule(SecConfig.EXCLUDE_URL_PATTERNS)
@@ -26,10 +27,6 @@ class PageFetcher extends Actor {
   override def preStart(): Unit = {
   }
 
-  def fetch(item: FetchItem): Web[FetchItem] = {
-    WebFactory ==> item
-  }
-
   def receive = {
     case str: String => {
       pageParser ! str
@@ -38,7 +35,7 @@ class PageFetcher extends Actor {
       fetchItem.filterByRule(rule) match {
         case false => {
           LOG.info("Fetch Url: " + fetchItem.url)
-          pageParser ! fetch(fetchItem)
+          pageParser ! HtmlPageFetcher.fetch(fetchItem)
           sender() ! fetchItem.url + " fetch finished."
         }
         case _ => {
