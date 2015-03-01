@@ -4,7 +4,7 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.indexer.FieldSelector
-import org.bugogre.crawler.parser.unit.PageParser
+import org.bugogre.crawler.parser.PageParser
 import org.bugogre.crawler.url.FetchItem
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 

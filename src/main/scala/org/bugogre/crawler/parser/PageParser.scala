@@ -1,10 +1,10 @@
-package org.bugogre.crawler.parser.unit
+package org.bugogre.crawler.parser
 
 import akka.actor.{Actor, Props}
 import org.bugogre.crawler.fetcher.PageFetcher
 import org.bugogre.crawler.html.Page
 import org.bugogre.crawler.httpclient.Web
-import org.bugogre.crawler.indexer.{IndexField, PageIndexer, FieldSelector}
+import org.bugogre.crawler.indexer.{FieldSelector, IndexField, PageIndexer}
 import org.bugogre.crawler.url.FetchItem
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
