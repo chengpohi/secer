@@ -7,7 +7,7 @@ import org.scalatest.FlatSpec
  */
 class SecConfigTest extends FlatSpec{
   "Thread" should " fetch successfully" in {
-    assert(SecConfig.MAX_THREADS.getInt("fetcher") === 10)
+    assert(SecConfig.MAX_THREADS === 10)
   }
 
   "Exclude Urls" should " fetch successfully" in {

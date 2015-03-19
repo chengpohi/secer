@@ -26,6 +26,7 @@ object ElasticIndexer {
   def index4elasticsearch(page: Page): Unit = {
     var indexes = page.indexes.groupBy(k => k.field).map(k => (k._2(0).field, k._2(0).content))
     indexes += ("_md5" -> page.md5)
+    indexes += ("_urlMd5" -> page.urlMd5)
     indexes += ("_url" -> page.fetchItem.url)
     indexes += ("_date" -> System.currentTimeMillis().toString)
 

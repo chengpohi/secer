@@ -32,7 +32,7 @@ object HtmlPageParser {
 
   def parse(html: String, item: FetchItem): (Page, mutable.Buffer[FetchItem]) = {
     val doc = Jsoup.parse(html)
-    (Page(doc, item, hash(html), parseBySelector(doc, item.selectors)), hrefs(doc, item))
+    (Page(doc, item, hash(html), hash(item.url), parseBySelector(doc, item.selectors)), hrefs(doc, item))
   }
 
   def selectBySelector(doc: Document, selector: String): String = {
