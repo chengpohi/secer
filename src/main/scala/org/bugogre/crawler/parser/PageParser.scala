@@ -22,8 +22,9 @@ class PageParser extends Actor{
     }
     case web: Web[FetchItem] => {
       LOG.info("Parse Url: " + web.fetchItem.url)
-      pageIndexer ! HtmlPageParser.parse(web)
-      sender() ! web.fetchItem.url + "parse finished."
+      val res = HtmlPageParser.parse(web)
+      pageIndexer ! res._1
+      sender() ! res._2
     }
   }
 }

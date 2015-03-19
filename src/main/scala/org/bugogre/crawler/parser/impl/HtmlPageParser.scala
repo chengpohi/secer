@@ -14,6 +14,7 @@ import scala.collection.mutable
  */
 object HtmlPageParser {
   lazy val m = java.security.MessageDigest.getInstance("MD5")
+
   def normalize(url: String) = UrlNormalizer.normalize(url)
 
   def hash(s: String): String = {
@@ -22,18 +23,16 @@ object HtmlPageParser {
     new java.math.BigInteger(1, m.digest()).toString(16)
   }
 
-  def parse(html: String): Page = parse(html, null)
+  def parse(html: String): (Page, mutable.Buffer[FetchItem]) = parse(html, null)
 
-  def hrefs(doc: Document): mutable.Buffer[String] = {
-    for (href <- doc.select("a").asScala) yield normalize(href.attr("abs:href"))
+  def hrefs(doc: Document, item: FetchItem): mutable.Buffer[FetchItem] = {
+    for (href <- doc.select("a").asScala) yield FetchItem(normalize(href.attr("abs:href")),
+      item.indexName, item.indexType, item.selectors)
   }
 
-  def parse(html: String, item: FetchItem): Page = {
+  def parse(html: String, item: FetchItem): (Page, mutable.Buffer[FetchItem]) = {
     val doc = Jsoup.parse(html)
-    hrefs(doc).map(url =>
-      println(url)
-    )
-    Page(doc, item, hash(html), parseBySelector(doc, item.selectors))
+    (Page(doc, item, hash(html), parseBySelector(doc, item.selectors)), hrefs(doc, item))
   }
 
   def selectBySelector(doc: Document, selector: String): String = {
@@ -44,5 +43,5 @@ object HtmlPageParser {
     for (fieldSelector <- fieldSelectors) yield IndexField(fieldSelector.field, selectBySelector(doc, fieldSelector.selector))
   }
 
-  def parse(web: Web[FetchItem]): Page = parse(web.html, web.fetchItem)
+  def parse(web: Web[FetchItem]): (Page, mutable.Buffer[FetchItem]) = parse(web.html, web.fetchItem)
 }

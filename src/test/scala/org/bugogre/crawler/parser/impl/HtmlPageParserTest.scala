@@ -8,7 +8,7 @@ import org.scalatest.FlatSpec
  */
 class HtmlPageParserTest extends FlatSpec{
   val web = WebBuilder.web
-  val page =  HtmlPageParser.parse(web)
+  val page =  HtmlPageParser.parse(web)._1
   "Html Page Parser " should "parse web" in{
     assert(page != null)
   }
@@ -18,6 +18,6 @@ class HtmlPageParserTest extends FlatSpec{
   }
 
   "Html Page Parser " should "get all hrefs" in{
-    HtmlPageParser.hrefs(page.doc).map(u => println(u))
+    HtmlPageParser.hrefs(page.doc, page.fetchItem).map(u => println(u))
   }
 }
