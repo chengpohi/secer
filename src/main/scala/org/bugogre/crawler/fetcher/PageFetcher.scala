@@ -30,7 +30,7 @@ class PageFetcher extends Actor {
 
   val pageParser = context.actorOf(Props[PageParser], "htmlParser")
 
-  implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(10))
+  implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(SecConfig.MAX_THREADS))
 
   override def preStart(): Unit = {
   }
