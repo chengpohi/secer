@@ -5,7 +5,7 @@ import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.config.SecConfig
 import org.bugogre.crawler.fetcher._
 import org.bugogre.crawler.indexer.FieldSelector
-import org.bugogre.crawler.url.FetchItem
+import org.bugogre.crawler.url.{UrlNormalizer, FetchItem}
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.duration.Duration
@@ -58,7 +58,7 @@ class Crawler(path: String) extends Actor {
   def active(actor: ActorRef): Receive = {
     case Start => {
       val fields = List(FieldSelector("_title", "title"), FieldSelector("_content", "body"))
-      actor ! FetchItem("http://www.zhihu.com", "ask", "zhihu", fields)
+      actor ! FetchItem(UrlNormalizer.normalize("http://www.zhihu.com"), "ask", "zhihu", fields)
     }
     case Done =>
   }
