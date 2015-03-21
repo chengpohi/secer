@@ -12,11 +12,6 @@ class PageIndexer extends Actor {
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
 
   def receive: Receive = {
-    case str: String => {
-      str match {
-        case "indexUrl" => sender() ! ElasticIndexer.indexConfig.getString("host")
-      }
-    }
     case page: Page => {
       LOG.info("Index Url: " + page.fetchItem.url)
       ElasticIndexer.index4elasticsearch(page)
