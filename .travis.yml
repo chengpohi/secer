@@ -1,0 +1,7 @@
+language: scala
+scala:
+- 2.11.3
+script:
+- sbt compile
+jdk:
+- oraclejdk8
