@@ -12,29 +12,38 @@ class HtmlToMarkdown {
   val HR: String = "hr"
   val HEADER = List("h1", "h2", "h3", "h4", "h5", "h6")
   val NEW_LINE: String = " "
+  val CONTENT_NEW_LINE: String = "!@#"
 
   def parse(html: String): String = {
     val doc = Jsoup.parse(html)
     parseHeader(doc)
     parseHR(doc)
     parseHref(doc)
-    doc.text().replaceAll(NEW_LINE, "\r\n\r\n")
+    parseDiv(doc)
+    parseParagraph(doc)
+    doc.text().replaceAll(NEW_LINE, "\r\n\r\n").replaceAll(CONTENT_NEW_LINE, " ")
   }
 
   def replaceBlockQuotes(html: String): String = {
     null
   }
 
+  def parseDiv(doc: Document) = {
+    doc.getElementsByTag("div").asScala.map(h => {
+      val content = NEW_LINE + h.text().replaceAll(NEW_LINE, CONTENT_NEW_LINE) + NEW_LINE
+      h.empty().append(content)
+    })
+  }
   def parseParagraph(doc: Document) = {
     doc.getElementsByTag("p").asScala.map(h => {
-      val content = NEW_LINE + h.text() + NEW_LINE
+      val content = NEW_LINE + h.text().replaceAll(NEW_LINE, CONTENT_NEW_LINE) + NEW_LINE
       h.empty().append(content)
     })
   }
 
   def parseHref(doc: Document) = {
     doc.getElementsByTag("a").asScala.map(h => {
-      val content = "[" + h.text() + "](" + h.attr("href") + ")"
+      val content = "[" + h.text().replaceAll(NEW_LINE, CONTENT_NEW_LINE) + "](" + h.attr("href") + ")"
       h.empty().append(content)
     })
   }
@@ -48,7 +57,7 @@ class HtmlToMarkdown {
   def parseHeader(doc: Document) = {
     HEADER.map(t =>
       doc.getElementsByTag(t).asScala.map(h => {
-        val content = getTitle(t) + h.text() + NEW_LINE
+        val content = getTitle(t) + h.text().replaceAll(NEW_LINE, CONTENT_NEW_LINE) + NEW_LINE
         h.empty().append(content)
       })
     )
