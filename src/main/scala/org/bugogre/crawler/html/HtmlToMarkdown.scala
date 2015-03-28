@@ -18,6 +18,7 @@ class HtmlToMarkdown {
 
   def parse(html: String): String = {
     val doc = Jsoup.parse(html)
+    parseStrong(doc)
     parseHeader(doc)
     parseHR(doc)
     parseHref(doc)
@@ -37,6 +38,20 @@ class HtmlToMarkdown {
     doc.getElementsByTag("code").asScala.map(h => {
       val content = "~~~" + TABLE_NEW_LINE + filterSpace(h.text()) + TABLE_NEW_LINE + "~~~" + NEW_LINE
       h.html(content)
+    })
+  }
+
+  def parseStrong(doc: Document) = {
+    doc.getElementsByTag("strong").asScala.map(h => {
+      val content = "**" + filterSpace(h.text()) + "**"
+      h.html(content)
+    })
+
+    doc.getElementsByTag("strong").asScala.map(h => {
+      h.getElementsByTag("em").asScala.map(e => {
+        val content = "***" + filterSpace(e.text()) + "***"
+        h.html(content)
+      })
     })
   }
 
@@ -86,6 +101,9 @@ class HtmlToMarkdown {
 
   def parseParagraph(doc: Document) = {
     doc.getElementsByTag("p").asScala.map(h => {
+      h.getElementsByTag("code").asScala.map(c => {
+        c.html("`" + c.text() + "`")
+      })
       val content = NEW_LINE + filterSpace(h.text()) + NEW_LINE
       h.html(content)
     })
@@ -122,7 +140,7 @@ class HtmlToMarkdown {
 
   def filterSpace(str: String): String = str.replaceAll(NEW_LINE, CONTENT_NEW_LINE)
 
-  def getHr(): String = NEW_LINE + "-------" + NEW_LINE
+  def getHr: String = NEW_LINE + "-------" + NEW_LINE
 
   def getTitle(title: String): String = title match {
     case "h1" => "#"
