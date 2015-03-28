@@ -15,6 +15,12 @@ class HtmlToMarkdown {
   val CONTENT_NEW_LINE: String = "!@#"
   val TABLE_NEW_LINE: String = "%%%"
   val NONE_TAG_NAME: String = "NONE"
+  val TABLE_SPLIT_LINE: String = " | "
+  val CODE_LINE : String = "~~~"
+  val STRONG_SYMBOL : String = "**"
+  val STRONG_ITALIC : String = "***"
+  val BLOCK_QUOTE: String = ">"
+  val THEAD_LINE : String = "-----"
 
   def parse(html: String): String = {
     val doc = Jsoup.parse(html)
@@ -36,20 +42,20 @@ class HtmlToMarkdown {
 
   def parseCode(doc: Document) = {
     doc.getElementsByTag("code").asScala.map(h => {
-      val content = "~~~" + TABLE_NEW_LINE + filterSpace(h.text()) + TABLE_NEW_LINE + "~~~" + NEW_LINE
+      val content = CODE_LINE + TABLE_NEW_LINE + filterSpace(h.text()) + TABLE_NEW_LINE + CODE_LINE + NEW_LINE
       h.html(content)
     })
   }
 
   def parseStrong(doc: Document) = {
     doc.getElementsByTag("strong").asScala.map(h => {
-      val content = "**" + filterSpace(h.text()) + "**"
+      val content = STRONG_SYMBOL + filterSpace(h.text()) + STRONG_SYMBOL
       h.html(content)
     })
 
     doc.getElementsByTag("strong").asScala.map(h => {
       h.getElementsByTag("em").asScala.map(e => {
-        val content = "***" + filterSpace(e.text()) + "***"
+        val content = STRONG_ITALIC + filterSpace(e.text()) + STRONG_ITALIC
         h.html(content)
       })
     })
@@ -57,7 +63,7 @@ class HtmlToMarkdown {
 
   def parseBlockQuotes(doc: Document) = {
     doc.getElementsByTag("blockquote").asScala.map(h => {
-      val content = NEW_LINE + ">" + CONTENT_NEW_LINE + filterSpace(h.text()) + NEW_LINE
+      val content = NEW_LINE + BLOCK_QUOTE + CONTENT_NEW_LINE + filterSpace(h.text()) + NEW_LINE
       h.html(content)
     })
   }
@@ -75,15 +81,16 @@ class HtmlToMarkdown {
         .getElementsByTag("tr").first()
         .getElementsByTag("th")
 
+
       val header = {
         val h = for (t <- thead.asScala) yield filterSpace(t.text())
-        val split = for (s <- h) yield "-----"
-        filterSpace(h.mkString(" | ")) + TABLE_NEW_LINE + filterSpace(split.mkString(" | ")) + TABLE_NEW_LINE
+        val split = for (s <- h) yield THEAD_LINE
+        filterSpace(h.mkString(TABLE_SPLIT_LINE)) + TABLE_NEW_LINE + filterSpace(split.mkString(TABLE_SPLIT_LINE)) + TABLE_NEW_LINE
       }
 
       val content = for (tr <- h.getElementsByTag("tbody").first().getElementsByTag("tr").asScala) yield {
         val t = for (t <- tr.getElementsByTag("td").asScala) yield filterSpace(t.text())
-        filterSpace(t.mkString(" | "))
+        filterSpace(t.mkString(TABLE_SPLIT_LINE))
       }
 
       h.html(header + content.mkString(TABLE_NEW_LINE) + NEW_LINE)
@@ -140,7 +147,7 @@ class HtmlToMarkdown {
 
   def filterSpace(str: String): String = str.replaceAll(NEW_LINE, CONTENT_NEW_LINE)
 
-  def getHr: String = NEW_LINE + "-------" + NEW_LINE
+  def getHr: String = NEW_LINE + "-----" + NEW_LINE
 
   def getTitle(title: String): String = title match {
     case "h1" => "#"
