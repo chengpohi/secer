@@ -4,7 +4,6 @@ import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.indexer.FieldSelector
-import org.bugogre.crawler.parser.PageParser
 import org.bugogre.crawler.url.FetchItem
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
@@ -22,14 +21,5 @@ with ImplicitSender with WordSpecLike with Matchers with BeforeAndAfterAll {
   def this() = this(ActorSystem("PageParserTest"))
 
   override def afterAll {
-  }
-
-  "PageParser " must {
-    "parse page" in {
-      parser ! web
-      expectMsgPF() {
-        case str: String => _system.shutdown()
-      }
-    }
   }
 }

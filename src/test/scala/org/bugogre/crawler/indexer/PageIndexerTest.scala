@@ -16,14 +16,4 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
   override def afterAll {
     TestKit.shutdownActorSystem(system)
   }
-
-  "PageIndexer's indexUrl" must {
-    "not be empty" in {
-      indexer ! "indexUrl"
-      expectMsgPF() {
-        case str: String => ()
-      }
-    }
-  }
-
 }
