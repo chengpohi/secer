@@ -76,11 +76,11 @@ class HtmlToMarkdown {
   }
 
   def parseTable(doc: Document) = {
-    doc.getElementsByTag("table").asScala.map(h => {
-      val thead = h.getElementsByTag("thead").first()
-        .getElementsByTag("tr").first()
+    doc.getElementsByTag("table").asScala.filter(u => u.getElementsByTag("thead") == null)
+      .map(h => {
+      val tr = h.getElementsByTag("thead").first().getElementsByTag("tr")
+      val thead = tr.first()
         .getElementsByTag("th")
-
 
       val header = {
         val h = for (t <- thead.asScala) yield filterSpace(t.text())
@@ -159,3 +159,4 @@ class HtmlToMarkdown {
     case _ => "#"
   }
 }
+

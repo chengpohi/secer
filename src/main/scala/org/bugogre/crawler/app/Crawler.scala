@@ -57,8 +57,12 @@ class Crawler(path: String) extends Actor {
 
   def active(actor: ActorRef): Receive = {
     case Start => {
-      val fields = List(FieldSelector("_title", "title"), FieldSelector("_content", "body"))
-      actor ! FetchItem(UrlNormalizer.normalize("http://www.zhihu.com"), "ask", "zhihu", fields)
+      val fields = List(
+        FieldSelector("_title", "title"),
+        FieldSelector("_answers", "div#answers"),
+        FieldSelector("_question", "div.question")
+      )
+      actor ! FetchItem(UrlNormalizer.normalize("http://stackoverflow.com/"), "turing", "stackoverflow", fields)
     }
     case Done =>
   }

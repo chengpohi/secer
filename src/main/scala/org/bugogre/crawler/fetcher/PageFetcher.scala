@@ -35,34 +35,26 @@ class PageFetcher extends Actor {
   override def preStart(): Unit = {
   }
 
+  def fetch(fetchItem: FetchItem) = {
+    fetchItem.filter(rule) match {
+      case false =>
+        LOG.info("Fetch Url: " + fetchItem.url)
+        pageParser ! HtmlPageFetcher.fetch(fetchItem)
+        sender() ! fetchItem.url + " fetch finished."
+      case _ =>
+    }
+  }
+
   def receive = {
     case str: String => {
       pageParser ! str
     }
-    case fetchItem: FetchItem => {
-      fetchItem.filterByRule(rule) match {
-        case false => {
-          LOG.info("Fetch Url: " + fetchItem.url)
-          pageParser ! HtmlPageFetcher.fetch(fetchItem)
-          sender() ! fetchItem.url + " fetch finished."
-        }
-        case _ => {
-        }
-      }
-    }
+    case fetchItem: FetchItem => fetch(fetchItem)
     case fetchItems: mutable.Buffer[FetchItem] => {
       fetchItems.filter(_.url.length != 0).map(fetchItem => {
         Future {
           blocking {
-            fetchItem.filterByRule(rule) match {
-              case false => {
-                LOG.info("Fetch Url: " + fetchItem.url)
-                pageParser ! HtmlPageFetcher.fetch(fetchItem)
-                sender() ! fetchItem.url + " fetch finished."
-              }
-              case _ => {
-              }
-            }
+            fetch(fetchItem)
           }
         }
       })

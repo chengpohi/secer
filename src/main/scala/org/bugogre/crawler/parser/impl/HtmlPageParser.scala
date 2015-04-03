@@ -5,7 +5,7 @@ import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.indexer.{FieldSelector, IndexField}
 import org.bugogre.crawler.url.{UrlNormalizer, FetchItem}
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
+import org.jsoup.nodes.{Element, Document}
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 
@@ -36,7 +36,10 @@ object HtmlPageParser {
   }
 
   def selectBySelector(doc: Document, selector: String): String = {
-    doc.select(selector).first().html()
+    doc.select(selector).first() match {
+      case el: Element => el.html()
+      case null => ""
+    }
   }
 
   def parseBySelector(doc: Document, fieldSelectors: List[FieldSelector]): List[IndexField] = {
