@@ -1,6 +1,8 @@
 package org.bugogre.crawler.url.filter
 
+import org.bugogre.crawler.elastic.search.ElasticSearchClient
 import org.bugogre.crawler.rule.Rule
+import org.elasticsearch.search.SearchHit
 
 /**
  * Created by xiachen on 4/3/15.
@@ -23,7 +25,15 @@ object UrlFilter {
     false
   }
 
-  def filterByTime(url: String, rule: Rule): Boolean = {
-    true
+  def filterByTime(url: String, indexName: String, indexType: String): Boolean = {
+    ElasticSearchClient.searchUrl(indexName, indexType, url) match {
+      case null => true
+      case result: SearchHit => {
+        if (System.currentTimeMillis() - 24 * 60 * 60 * 1000 >= result.getSource.get("_date").asInstanceOf[String].toLong)
+          false
+        else
+          true
+      }
+    }
   }
 }

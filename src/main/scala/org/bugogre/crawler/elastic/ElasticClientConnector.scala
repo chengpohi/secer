@@ -1,7 +1,9 @@
 package org.bugogre.crawler.elastic
 
 import com.sksamuel.elastic4s.ElasticClient
+
 import com.typesafe.config.ConfigFactory
+
 import org.elasticsearch.common.settings.ImmutableSettings
 
 /**

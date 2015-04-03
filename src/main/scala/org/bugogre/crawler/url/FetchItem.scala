@@ -9,7 +9,7 @@ import org.bugogre.crawler.url.filter.UrlFilter
  */
 case class FetchItem(url: String, indexName: String, indexType: String, selectors: List[FieldSelector]) {
   def filter(rule: Rule): Boolean = {
-    UrlFilter.filterByRule(url, rule)
-    UrlFilter.filterByTime(url, rule)
+    //UrlFilter.filterByRule(url, rule) ||
+    UrlFilter.filterByTime(url, indexName, indexType)
   }
 }
