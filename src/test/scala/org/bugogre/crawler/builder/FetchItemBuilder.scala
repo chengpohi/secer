@@ -8,7 +8,11 @@ import org.bugogre.crawler.url.FetchItem
  */
 object FetchItemBuilder {
   def fetchItem = {
-    val fields = List(FieldSelector("_title", "title"), FieldSelector("_content", "body"))
-    FetchItem("http://www.zhihu.com", "ask", "zhihu", fields)
+    val fields = List(
+        FieldSelector("_title", "title"),
+        FieldSelector("_answers", "div#answers"),
+        FieldSelector("_question", "div.question")
+      )
+    FetchItem("http://stackoverflow.com", "turing", "stackoverflow", fields)
   }
 }

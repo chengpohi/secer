@@ -1,6 +1,6 @@
 package org.bugogre.crawler.parser.impl
 
-import org.bugogre.crawler.html.Page
+import org.bugogre.crawler.html.{HtmlToMarkdown, Page}
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.indexer.{FieldSelector, IndexField}
 import org.bugogre.crawler.url.{UrlNormalizer, FetchItem}
@@ -14,6 +14,7 @@ import scala.collection.mutable
  */
 object HtmlPageParser {
   lazy val m = java.security.MessageDigest.getInstance("MD5")
+  lazy val htmlToMarkdown = new HtmlToMarkdown
 
   def normalize(url: String) = UrlNormalizer.normalize(url)
 
@@ -43,7 +44,8 @@ object HtmlPageParser {
   }
 
   def parseBySelector(doc: Document, fieldSelectors: List[FieldSelector]): List[IndexField] = {
-    for (fieldSelector <- fieldSelectors) yield IndexField(fieldSelector.field, selectBySelector(doc, fieldSelector.selector))
+    for (fieldSelector <- fieldSelectors) yield IndexField(fieldSelector.field,
+      htmlToMarkdown.parse(selectBySelector(doc, fieldSelector.selector)))
   }
 
   def parse(web: Web[FetchItem]): (Page, mutable.Buffer[FetchItem]) = parse(web.html, web.fetchItem)

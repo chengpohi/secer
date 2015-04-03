@@ -24,9 +24,6 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
   "Page Fetcher " must {
     "fetch url" in {
       pageFetcher ! fetchItem
-      expectMsgPF() {
-        case str: String =>
-      }
     }
   }
 }

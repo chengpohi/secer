@@ -59,8 +59,7 @@ class Crawler(path: String) extends Actor {
     case Start => {
       val fields = List(
         FieldSelector("_title", "title"),
-        FieldSelector("_answers", "div#answers"),
-        FieldSelector("_question", "div.question")
+        FieldSelector("_answers", "div.question  div.post-text")
       )
       actor ! FetchItem(UrlNormalizer.normalize("http://stackoverflow.com/"), "turing", "stackoverflow", fields)
     }
