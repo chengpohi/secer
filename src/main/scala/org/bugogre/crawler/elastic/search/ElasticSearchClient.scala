@@ -22,6 +22,18 @@ object ElasticSearchClient {
   def searchCall(indexName: String, indexType: String, field: String, key: String): SearchResponse =
     client.execute { search in indexName -> indexType query s"$field:$key" }.await
 
+  def comparePage(indexName: String, indexType: String, md5: String, urlMd5: String): SearchResponse =
+    client.execute {
+      search in indexName -> indexType query {
+        bool {
+          must (
+            termQuery("_md5", md5),
+            termQuery("_urlMd5", urlMd5)
+          )
+        }
+      }
+    }.await
+
   def searchUrl(indexName: String, indexType: String, key: String): SearchHit = {
     val hits = searchCall(indexName, indexType, "_urlMd5", hash(key)).getHits
     hits.getTotalHits match {
