@@ -18,13 +18,14 @@ class PageParser extends Actor{
   val webFetcher = context.actorOf(Props[PageFetcher], "WebFetcher")
 
   def receive = {
-    case str: String => {
-    }
-    case web: Web[FetchItem] => {
-      LOG.info("Parse Url: " + web.fetchItem.url)
-      val res = HtmlPageParser.parse(web)
-      pageIndexer ! res._1
-      sender() ! res._2
-    }
+    case str: String =>
+    case web: Web[FetchItem] => parse(web)
+  }
+
+  def parse(web: Web[FetchItem]): Unit = {
+    LOG.info("Parse Url: " + web.fetchItem.url)
+    val res = HtmlPageParser.parse(web)
+    pageIndexer ! res._1
+    sender() ! res._2
   }
 }

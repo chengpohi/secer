@@ -19,9 +19,8 @@ object ElasticSearchClient {
     new java.math.BigInteger(1, m.digest()).toString(16)
   }
 
-  def searchCall(indexName: String, indexType: String, field: String, key: String): SearchResponse = {
+  def searchCall(indexName: String, indexType: String, field: String, key: String): SearchResponse =
     client.execute { search in indexName -> indexType query s"$field:$key" }.await
-  }
 
   def searchUrl(indexName: String, indexType: String, key: String): SearchHit = {
     val hits = searchCall(indexName, indexType, "_urlMd5", hash(key)).getHits
