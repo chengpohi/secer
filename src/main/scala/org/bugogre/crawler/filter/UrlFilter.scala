@@ -1,4 +1,4 @@
-package org.bugogre.crawler.url.filter
+package org.bugogre.crawler.filter
 
 import org.bugogre.crawler.elastic.search.ElasticSearchClient
 import org.bugogre.crawler.rule.Rule

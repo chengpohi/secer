@@ -48,5 +48,5 @@ object HtmlPageParser {
       htmlToMarkdown.parse(selectBySelector(doc, fieldSelector.selector)))
   }
 
-  def parse(web: Web[FetchItem]): (Page, mutable.Buffer[FetchItem]) = parse(web.html, web.fetchItem)
+  def parse(web: Web): (Page, mutable.Buffer[FetchItem]) = parse(web.html, web.fetchItem)
 }

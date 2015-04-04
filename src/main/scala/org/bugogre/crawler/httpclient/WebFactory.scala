@@ -3,11 +3,16 @@ import org.apache.http.HttpEntity
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.util.EntityUtils
+import org.bugogre.crawler.filter.PageFilter
 import org.bugogre.crawler.url.FetchItem
 
 import org.slf4j.LoggerFactory
 
-case class Web[T](fetchItem: T, html: String)
+case class Web(fetchItem: FetchItem, html: String) {
+  def filter(): Boolean = {
+    PageFilter.filterContent(fetchItem, html)
+  }
+}
 
 object WebFactory {
 
@@ -17,14 +22,14 @@ object WebFactory {
     null
   }
 
-  def getEntityToStr(item: FetchItem): Web[FetchItem] = {
+  def getEntityToStr(item: FetchItem): Web = {
     val response = new DefaultHttpClient()
       .execute(new HttpGet(item.asInstanceOf[FetchItem].url))
 
     Web(item, EntityUtils.toString(response.getEntity))
   }
 
-  def ==>(item: FetchItem): Web[FetchItem] = {
+  def ==>(item: FetchItem): Web = {
     getEntityToStr(item)
   }
 }

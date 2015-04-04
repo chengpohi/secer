@@ -1,5 +1,6 @@
 package org.bugogre.crawler.url
 
+import org.bugogre.crawler.filter.UrlFilter
 import org.bugogre.crawler.indexer.FieldSelector
 import org.bugogre.crawler.rule.Rule
 
@@ -8,8 +9,6 @@ import org.bugogre.crawler.rule.Rule
  */
 case class FetchItem(url: String, indexName: String, indexType: String, selectors: List[FieldSelector]) {
   def filter(rule: Rule): Boolean = {
-    //UrlFilter.filterByRule(url, rule) ||
-    //UrlFilter.filterByTime(url, indexName, indexType)
-    false
+    UrlFilter.filterByRule(url, rule)
   }
 }

@@ -22,13 +22,13 @@ object ElasticSearchClient {
   def searchCall(indexName: String, indexType: String, field: String, key: String): SearchResponse =
     client.execute { search in indexName -> indexType query s"$field:$key" }.await
 
-  def comparePage(indexName: String, indexType: String, md5: String, urlMd5: String): SearchResponse =
+  def comparePage(indexName: String, indexType: String, html: String, url: String): SearchResponse =
     client.execute {
       search in indexName -> indexType query {
         bool {
           must (
-            termQuery("_md5", md5),
-            termQuery("_urlMd5", urlMd5)
+            termQuery("_md5", hash(html)),
+            termQuery("_urlMd5", hash(url))
           )
         }
       }
