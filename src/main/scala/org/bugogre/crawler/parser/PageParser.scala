@@ -28,7 +28,7 @@ class PageParser extends Actor {
         val res = HtmlPageParser.parse(web)
         pageIndexer ! res._1
         sender() ! res._2
-      case true =>
+      case true => LOG.info(web.fetchItem.url + " has parsed and indexed, so ignore it.")
     }
   }
 }
