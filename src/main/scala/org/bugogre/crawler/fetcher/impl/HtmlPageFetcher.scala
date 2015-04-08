@@ -1,6 +1,6 @@
 package org.bugogre.crawler.fetcher.impl
 
-import org.bugogre.crawler.httpclient.{WebFactory, Web}
+import org.bugogre.crawler.httpclient.{HttpResponse, Web}
 import org.bugogre.crawler.url.FetchItem
 
 /**
@@ -8,6 +8,6 @@ import org.bugogre.crawler.url.FetchItem
  */
 object HtmlPageFetcher {
   def fetch(item: FetchItem): Web = {
-    WebFactory ==> item
+    HttpResponse ==> item
   }
 }

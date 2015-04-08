@@ -14,7 +14,7 @@ case class Web(fetchItem: FetchItem, html: String) {
   }
 }
 
-object WebFactory {
+object HttpResponse {
 
   val LOG = LoggerFactory.getLogger(getClass.getName);
 
