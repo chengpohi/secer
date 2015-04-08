@@ -38,9 +38,13 @@ class PageFetcher extends Actor {
   def fetch(fetchItem: FetchItem) = {
     fetchItem.filter(rule) match {
       case false =>
-        LOG.info("Fetch Url: " + fetchItem.url)
-        pageParser ! HtmlPageFetcher.fetch(fetchItem)
-        sender() ! fetchItem.url + " fetch finished."
+        Future {
+          blocking {
+            LOG.info("Fetch Url: " + fetchItem.url)
+            pageParser ! HtmlPageFetcher.fetch(fetchItem)
+            sender() ! fetchItem.url + " fetch finished."
+          }
+        }
       case _ =>
     }
   }
@@ -51,13 +55,7 @@ class PageFetcher extends Actor {
     }
     case fetchItem: FetchItem => fetch(fetchItem)
     case fetchItems: mutable.Buffer[FetchItem] => {
-      fetchItems.filter(_.url.length != 0).map(fetchItem => {
-        Future {
-          blocking {
-            fetch(fetchItem)
-          }
-        }
-      })
+      fetchItems.filter(_.url.length != 0).map(fetchItem => fetch(fetchItem))
     }
   }
 }
