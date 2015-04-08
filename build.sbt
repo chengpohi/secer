@@ -6,6 +6,8 @@ scalaVersion := "2.11.3"
 
 unmanagedBase := baseDirectory.value / "lib"
 
+ivyScala := ivyScala.value map { _.copy(overrideScalaVersion = true) }
+
 libraryDependencies ++= Seq(
   "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test",
   "org.apache.httpcomponents" % "httpclient" % "4.3",

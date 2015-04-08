@@ -11,9 +11,7 @@ import org.bugogre.crawler.rule.Rule
 import org.bugogre.crawler.url.FetchItem
 import org.slf4j.LoggerFactory
 
-import scala.collection.mutable
-import scala.concurrent.{Future, blocking}
-import scala.concurrent._
+import scala.concurrent.{Future, blocking, _}
 
 object PageFetcher {
   def main(args: Array[String]): Unit = {
@@ -50,12 +48,10 @@ class PageFetcher extends Actor {
   }
 
   def receive = {
-    case str: String => {
+    case str: String =>
       pageParser ! str
-    }
     case fetchItem: FetchItem => fetch(fetchItem)
-    case fetchItems: mutable.Buffer[FetchItem] => {
-      fetchItems.filter(_.url.length != 0).map(fetchItem => fetch(fetchItem))
-    }
+    case fetchItems: List[_] =>
+      fetchItems.asInstanceOf[List[FetchItem]].filter(_.url.length != 0).map(fetchItem => fetch(fetchItem))
   }
 }
