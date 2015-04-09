@@ -1,5 +1,6 @@
 package org.bugogre.crawler.filter
 
+import org.bugogre.crawler.config.SecConfig
 import org.bugogre.crawler.elastic.search.ElasticSearchClient
 import org.bugogre.crawler.rule.Rule
 import org.elasticsearch.indices.IndexMissingException
@@ -11,7 +12,9 @@ import org.elasticsearch.search.SearchHit
 object UrlFilter {
   lazy val UrlRegex = """^http.*""".r
 
-  def filterByRule(url: String, rule: Rule): Boolean = {
+  lazy val rule = Rule(SecConfig.EXCLUDE_URL_PATTERNS)
+
+  def filterByRule(url: String): Boolean = {
     url match {
       case UrlRegex() =>
       case _ => return false

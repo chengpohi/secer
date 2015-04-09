@@ -7,7 +7,6 @@ import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.config._
 import org.bugogre.crawler.fetcher.impl.HtmlPageFetcher
 import org.bugogre.crawler.parser.PageParser
-import org.bugogre.crawler.rule.Rule
 import org.bugogre.crawler.url.FetchItem
 import org.slf4j.LoggerFactory
 
@@ -21,9 +20,6 @@ object PageFetcher {
 }
 
 class PageFetcher extends Actor {
-
-  lazy val rule = Rule(SecConfig.EXCLUDE_URL_PATTERNS)
-
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
 
   val pageParser = context.actorOf(Props[PageParser], "htmlParser")
@@ -34,24 +30,30 @@ class PageFetcher extends Actor {
   }
 
   def fetch(fetchItem: FetchItem) = {
-    fetchItem.filter(rule) match {
+    fetchItem.filter() match {
       case false =>
-        Future {
-          blocking {
-            LOG.info("Fetch Url: " + fetchItem.url)
-            pageParser ! HtmlPageFetcher.fetch(fetchItem)
-            sender() ! fetchItem.url + " fetch finished."
-          }
-        }
+        LOG.info("Fetch Url: " + fetchItem.url)
+        pageParser ! HtmlPageFetcher.fetch(fetchItem)
+        sender() ! fetchItem.url + " fetch finished."
       case _ =>
+    }
+  }
+
+  def asyncFetch(fetchItem: FetchItem) = {
+    Future {
+      blocking {
+        fetch(fetchItem)
+      }
     }
   }
 
   def receive = {
     case str: String =>
       pageParser ! str
-    case fetchItem: FetchItem => fetch(fetchItem)
+    case fetchItem: FetchItem => asyncFetch(fetchItem)
     case fetchItems: List[_] =>
-      fetchItems.asInstanceOf[List[FetchItem]].filter(_.url.length != 0).map(fetchItem => fetch(fetchItem))
+      fetchItems.asInstanceOf[List[FetchItem]]
+        .filter(_.url.length != 0)
+        .map(fetchItem => asyncFetch(fetchItem))
   }
 }
