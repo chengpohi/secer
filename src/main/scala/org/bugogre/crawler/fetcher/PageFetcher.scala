@@ -29,20 +29,16 @@ class PageFetcher extends Actor {
   override def preStart(): Unit = {
   }
 
-  def fetch(fetchItem: FetchItem) = {
-    fetchItem.filter() match {
-      case false =>
-        LOG.info("Fetch Url: " + fetchItem.url)
-        pageParser ! HtmlPageFetcher.fetch(fetchItem)
-        sender() ! fetchItem.url + " fetch finished."
-      case _ =>
-    }
+  def fetch(fetchItem: FetchItem): Unit = {
+    LOG.info("Fetch Url: " + fetchItem.url)
+    pageParser ! HtmlPageFetcher.fetch(fetchItem)
+    sender() ! fetchItem.url + " fetch finished."
   }
 
   def asyncFetch(fetchItem: FetchItem) = {
     Future {
       blocking {
-        fetch(fetchItem)
+        fetchItem.filterOrFetch(fetch)
       }
     }
   }
