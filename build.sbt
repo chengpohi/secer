@@ -1,4 +1,4 @@
-name := "seccrawler"
+name := "secer"
 
 version := "1.0"
 
