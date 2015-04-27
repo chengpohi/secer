@@ -1,32 +1,29 @@
 package org.bugogre.crawler.httpclient
+
 import org.apache.http.HttpEntity
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.impl.client.DefaultHttpClient
-import org.apache.http.util.EntityUtils
 import org.bugogre.crawler.filter.PageFilter
 import org.bugogre.crawler.url.FetchItem
-
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.slf4j.LoggerFactory
 
-case class Web(fetchItem: FetchItem, html: String) {
+case class Web(fetchItem: FetchItem, doc: Document) {
   def filter(): Boolean = {
-    PageFilter.filterContent(fetchItem, html)
+    PageFilter.filterContent(fetchItem, doc.html())
   }
 }
 
 object HttpResponse {
-
-  val LOG = LoggerFactory.getLogger(getClass.getName);
+  val LOG = LoggerFactory.getLogger(getClass.getName)
 
   def getEntity(url: String): HttpEntity = {
     null
   }
 
   def getEntityToStr(item: FetchItem): Web = {
-    val response = new DefaultHttpClient()
-      .execute(new HttpGet(item.asInstanceOf[FetchItem].url))
+    val doc = Jsoup.connect(item.url).get()
 
-    Web(item, EntityUtils.toString(response.getEntity))
+    Web(item, doc)
   }
 
   def ==>(item: FetchItem): Web = {

@@ -24,16 +24,15 @@ object HtmlPageParser {
     new java.math.BigInteger(1, m.digest()).toString(16)
   }
 
-  def parse(html: String): (Page, List[FetchItem]) = parse(html, null)
+  def parse(html: String): (Page, List[FetchItem]) = parse(Jsoup.parse(html), null)
 
   def hrefs(doc: Document, item: FetchItem): List[FetchItem] = {
     for (href: Element  <- doc.select("a").asScala.toList) yield FetchItem(normalize(href.attr("abs:href")),
       item.indexName, item.indexType, item.selectors)
   }
 
-  def parse(html: String, item: FetchItem): (Page, List[FetchItem]) = {
-    val doc = Jsoup.parse(html)
-    (Page(doc, item, hash(html), hash(item.url), parseBySelector(doc, item.selectors)), hrefs(doc, item))
+  def parse(doc: Document, item: FetchItem): (Page, List[FetchItem]) = {
+    (Page(doc, item, hash(doc.html), hash(item.url), parseBySelector(doc, item.selectors)), hrefs(doc, item))
   }
 
   def selectBySelector(doc: Document, selector: String): String = {
@@ -48,5 +47,5 @@ object HtmlPageParser {
       htmlToMarkdown.parse(selectBySelector(doc, fieldSelector.selector)))
   }
 
-  def parse(web: Web): (Page, List[FetchItem]) = parse(web.html, web.fetchItem)
+  def parse(web: Web): (Page, List[FetchItem]) = parse(web.doc, web.fetchItem)
 }
