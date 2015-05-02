@@ -1,8 +1,8 @@
 package org.bugogre.crawler.indexer
 
 import akka.actor.Actor
+import org.bugogre.crawler.elastic.index.ElasticIndexer
 import org.bugogre.crawler.html.Page
-import org.bugogre.crawler.indexer.impl.ElasticIndexer
 import org.slf4j.LoggerFactory
 
 /**

@@ -1,11 +1,9 @@
-package org.bugogre.crawler.indexer.impl
+package org.bugogre.crawler.elastic.index
 
 import com.sksamuel.elastic4s.ElasticDsl._
 import com.sksamuel.elastic4s.source.StringDocumentSource
-
 import org.bugogre.crawler.elastic.ElasticClientConnector
 import org.bugogre.crawler.html.Page
-
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,5 +33,6 @@ object ElasticIndexer {
       case Failure(t) => LOG.error("A Index Error Occurrence: " + t.getMessage)
     }
   }
-
 }
+
+
