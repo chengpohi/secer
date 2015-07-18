@@ -7,6 +7,8 @@ import org.bugogre.crawler.fetcher._
 import org.bugogre.crawler.indexer.FieldSelector
 import org.bugogre.crawler.url.{UrlNormalizer, FetchItem}
 import org.slf4j.LoggerFactory
+import scala.io.StdIn.readLine
+
 
 import scala.concurrent.duration.Duration
 
@@ -21,6 +23,19 @@ object Crawler{
     val remotePath = s"akka.tcp://Crawler@$remoteHostPort/user/pagefetcher"
 
     system.actorOf(Props(new Crawler(remotePath)), "crawler")
+    while(true) {
+      println("Index:")
+      val indexName = readLine()
+
+      println("TYPE:")
+      val indexType = readLine()
+
+      println("URL:")
+      val url = readLine()
+
+      println("Index Div:")
+      val indexDiv = readLine()
+    }
   }
 
   sealed trait Echo
