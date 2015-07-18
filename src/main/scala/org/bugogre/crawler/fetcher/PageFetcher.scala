@@ -3,11 +3,11 @@ package org.bugogre.crawler.fetcher
 import java.util.concurrent.Executors
 
 import akka.actor.{Actor, ActorSystem, Props}
+import com.secer.elastic.model.FetchItem
 import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.config._
 import org.bugogre.crawler.fetcher.impl.HtmlPageFetcher
 import org.bugogre.crawler.parser.PageParser
-import org.bugogre.crawler.url.FetchItem
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.{Future, blocking, _}

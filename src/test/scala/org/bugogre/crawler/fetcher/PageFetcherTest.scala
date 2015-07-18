@@ -2,8 +2,7 @@ package org.bugogre.crawler.fetcher
 
 import akka.actor.{Props, ActorSystem}
 import akka.testkit.{ImplicitSender, TestKit}
-import org.bugogre.crawler.indexer.FieldSelector
-import org.bugogre.crawler.url.FetchItem
+import com.secer.elastic.model.{FieldSelector, FetchItem}
 import org.scalatest.{BeforeAndAfterAll, WordSpecLike, Matchers}
 
 /**

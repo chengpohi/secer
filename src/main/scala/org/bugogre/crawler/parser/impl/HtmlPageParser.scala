@@ -1,9 +1,9 @@
 package org.bugogre.crawler.parser.impl
 
-import org.bugogre.crawler.html.{HtmlToMarkdown, Page}
+import com.secer.elastic.model.{FieldSelector, FetchItem, Page, IndexField}
+import org.bugogre.crawler.html.HtmlToMarkdown
 import org.bugogre.crawler.httpclient.Web
-import org.bugogre.crawler.indexer.{FieldSelector, IndexField}
-import org.bugogre.crawler.url.{FetchItem, UrlNormalizer}
+import org.bugogre.crawler.url.UrlNormalizer
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 

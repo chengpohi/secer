@@ -1,9 +1,11 @@
 package org.bugogre.crawler.indexer
 
 import akka.actor.Actor
-import org.bugogre.crawler.elastic.index.ElasticIndexer
-import org.bugogre.crawler.html.Page
+import com.secer.elastic.index.ElasticIndexer
+import com.secer.elastic.model.Page
 import org.slf4j.LoggerFactory
+
+
 
 /**
  * Created by xiachen on 1/17/15.

@@ -1,5 +1,6 @@
 package org.bugogre.crawler.elastic.search
 
+import com.secer.elastic.search.ElasticSearchClient
 import org.scalatest.FlatSpec
 
 /**

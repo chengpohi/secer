@@ -1,7 +1,7 @@
 package org.bugogre.crawler.fetcher.impl
 
+import com.secer.elastic.model.FetchItem
 import org.bugogre.crawler.httpclient.{HttpResponse, Web}
-import org.bugogre.crawler.url.FetchItem
 
 /**
  * Created by xiachen on 3/1/15.

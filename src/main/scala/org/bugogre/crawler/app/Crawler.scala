@@ -1,11 +1,11 @@
 package org.bugogre.crawler.app
 
 import akka.actor._
+import com.secer.elastic.model.{FieldSelector, FetchItem}
 import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.config.SecConfig
 import org.bugogre.crawler.fetcher._
-import org.bugogre.crawler.indexer.FieldSelector
-import org.bugogre.crawler.url.{UrlNormalizer, FetchItem}
+import org.bugogre.crawler.url.UrlNormalizer
 import org.slf4j.LoggerFactory
 import scala.io.StdIn.readLine
 

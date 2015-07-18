@@ -2,9 +2,8 @@ package org.bugogre.crawler.parser
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
+import com.secer.elastic.model.{FieldSelector, FetchItem}
 import org.bugogre.crawler.httpclient.Web
-import org.bugogre.crawler.indexer.FieldSelector
-import org.bugogre.crawler.url.FetchItem
 import org.jsoup.Jsoup
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 

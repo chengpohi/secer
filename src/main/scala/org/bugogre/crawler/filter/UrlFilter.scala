@@ -1,7 +1,7 @@
 package org.bugogre.crawler.filter
 
+import com.secer.elastic.search.ElasticSearchClient
 import org.bugogre.crawler.config.SecConfig
-import org.bugogre.crawler.elastic.search.ElasticSearchClient
 import org.bugogre.crawler.rule.Rule
 import org.elasticsearch.indices.IndexMissingException
 import org.elasticsearch.search.SearchHit

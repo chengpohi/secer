@@ -1,7 +1,6 @@
 package org.bugogre.crawler.builder
 
-import org.bugogre.crawler.indexer.FieldSelector
-import org.bugogre.crawler.url.FetchItem
+import com.secer.elastic.model.{FetchItem, FieldSelector}
 
 /**
  * Created by xiachen on 3/1/15.

@@ -1,8 +1,8 @@
 package org.bugogre.crawler.httpclient
 
+import com.secer.elastic.model.FetchItem
 import org.apache.http.HttpEntity
 import org.bugogre.crawler.filter.PageFilter
-import org.bugogre.crawler.url.FetchItem
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.slf4j.LoggerFactory
