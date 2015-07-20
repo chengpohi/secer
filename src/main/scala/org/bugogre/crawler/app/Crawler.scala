@@ -1,21 +1,21 @@
 package org.bugogre.crawler.app
 
 import akka.actor._
-import com.secer.elastic.model.{FieldSelector, FetchItem}
+import com.secer.elastic.model.FetchItem
 import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.config.SecConfig
 import org.bugogre.crawler.fetcher._
 import org.bugogre.crawler.url.UrlNormalizer
+import org.bugogre.crawler.util.JSONUtil
 import org.slf4j.LoggerFactory
-import scala.io.StdIn.readLine
-
 
 import scala.concurrent.duration.Duration
+import scala.io.StdIn.readLine
 
 /**
  * author: chengpohi@gmail.com
  */
-object Crawler{
+object Crawler {
   def main(args: Array[String]) {
     val system = ActorSystem("Crawler", ConfigFactory.load("crawler"))
 
@@ -23,28 +23,16 @@ object Crawler{
     val remotePath = s"akka.tcp://Crawler@$remoteHostPort/user/pagefetcher"
 
     system.actorOf(Props(new Crawler(remotePath)), "crawler")
-    while(true) {
-      println("Index:")
-      val indexName = readLine()
-
-      println("TYPE:")
-      val indexType = readLine()
-
-      println("URL:")
-      val url = readLine()
-
-      println("Index Div:")
-      val indexDiv = readLine()
-    }
   }
-
-  sealed trait Echo
-  case object Start extends Echo
-  case object Done extends Echo
 }
 
+sealed trait Echo
+
+case object Start extends Echo
+
+case object Done extends Echo
+
 class Crawler(path: String) extends Actor {
-  import org.bugogre.crawler.app.Crawler._
 
   val pageFetcher = context.actorOf(Props[PageFetcher], "PageFetcher")
   val LOG = LoggerFactory.getLogger(getClass.getName)
@@ -66,17 +54,31 @@ class Crawler(path: String) extends Actor {
       context.become(active(actor))
       context.setReceiveTimeout(Duration.Undefined)
       self ! Start
-    case ActorIdentity(`path`, None)        => LOG.error(s"remote actor not found $path")
-    case ReceiveTimeout                     => sendIdentifyRequest()
+    case ActorIdentity(`path`, None) => LOG.error(s"remote actor not found $path")
+    case ReceiveTimeout => sendIdentifyRequest()
   }
 
   def active(actor: ActorRef): Receive = {
     case Start => {
-      val fields = List(
-        FieldSelector("_title", "title"),
-        FieldSelector("_question", "div.question  div.post-text")
-      )
-      actor ! FetchItem(UrlNormalizer.normalize("http://stackoverflow.com/"), "turing", "stackoverflow", fields)
+      while (true) {
+        print("Index:")
+        val indexName = readLine()
+
+        print("TYPE:")
+        val indexType = readLine()
+
+        print("URL:")
+        val url = readLine()
+
+        print("Index Div:")
+        //[{"field": "_title", "selector": "title"}, {"field": "_question", "selector": "div.question  div.post-text"}]
+        val indexDiv = readLine()
+
+        val fields = JSONUtil.fieldSelectorParser(indexDiv)
+
+        println("Send To Crawler...")
+        actor ! FetchItem(UrlNormalizer.normalize(url), indexName, indexType, fields)
+      }
     }
     case Done =>
   }
