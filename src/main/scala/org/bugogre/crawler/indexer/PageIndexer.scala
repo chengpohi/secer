@@ -1,7 +1,7 @@
 package org.bugogre.crawler.indexer
 
 import akka.actor.Actor
-import com.secer.elastic.index.ElasticIndexer
+import com.secer.elastic.controller.PageController
 import com.secer.elastic.model.Page
 import org.slf4j.LoggerFactory
 
@@ -16,7 +16,7 @@ class PageIndexer extends Actor {
   def receive: Receive = {
     case page: Page => {
       LOG.info("Index Url: " + page.fetchItem.url)
-      ElasticIndexer.index4elasticsearch(page)
+      PageController.indexPage(page)
       sender() ! "page index"
     }
   }

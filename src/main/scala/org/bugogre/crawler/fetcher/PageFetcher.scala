@@ -10,7 +10,7 @@ import org.bugogre.crawler.fetcher.impl.HtmlPageFetcher
 import org.bugogre.crawler.parser.PageParser
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.{Future, blocking, _}
+import scala.concurrent._
 
 object PageFetcher {
   def main(args: Array[String]): Unit = {
@@ -36,11 +36,12 @@ class PageFetcher extends Actor {
   }
 
   def asyncFetch(fetchItem: FetchItem) = {
-    Future {
-      blocking {
-        fetchItem.filterOrFetch(fetch)
-      }
-    }
+    fetch(fetchItem)
+    //Future {
+    //  blocking {
+        //fetchItem.filterOrFetch(fetch)
+    //  }
+    //}
   }
 
   def receive = {

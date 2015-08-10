@@ -64,7 +64,7 @@ class Crawler(path: String) extends Actor {
         print("Index:")
         val indexName = readLine()
 
-        print("TYPE:")
+        print("Type:")
         val indexType = readLine()
 
         print("URL:")

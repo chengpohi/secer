@@ -21,7 +21,9 @@ object HttpResponse {
   }
 
   def getEntityToStr(item: FetchItem): Web = {
-    val doc = Jsoup.connect(item.url).get()
+    val doc = Jsoup.connect(item.url)
+      .timeout(3000)
+      .get()
 
     Web(item, doc)
   }
