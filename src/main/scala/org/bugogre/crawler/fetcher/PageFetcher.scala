@@ -37,11 +37,11 @@ class PageFetcher extends Actor {
 
   def asyncFetch(fetchItem: FetchItem) = {
     fetch(fetchItem)
-    //Future {
-    //  blocking {
-        //fetchItem.filterOrFetch(fetch)
-    //  }
-    //}
+    Future {
+      blocking {
+        fetchItem.filterOrFetch(fetch)
+      }
+    }
   }
 
   def receive = {
@@ -51,6 +51,6 @@ class PageFetcher extends Actor {
     case fetchItems: List[_] =>
       fetchItems.asInstanceOf[List[FetchItem]]
         .filter(_.url.length != 0)
-        .map(fetchItem => asyncFetch(fetchItem))
+        .foreach(fetchItem => asyncFetch(fetchItem))
   }
 }
