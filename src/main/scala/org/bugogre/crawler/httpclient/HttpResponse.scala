@@ -2,6 +2,9 @@ package org.bugogre.crawler.httpclient
 
 import com.secer.elastic.model.FetchItem
 import org.apache.http.HttpEntity
+import org.apache.http.client.methods.HttpGet
+import org.apache.http.impl.client.HttpClientBuilder
+import org.apache.http.util.EntityUtils
 import org.bugogre.crawler.filter.PageFilter
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -21,11 +24,11 @@ object HttpResponse {
   }
 
   def getEntityToStr(item: FetchItem): Web = {
-    val doc = Jsoup.connect(item.url)
-      .timeout(3000)
-      .get()
 
-    Web(item, doc)
+    val response = HttpClientBuilder.create().build()
+      .execute(new HttpGet(item.asInstanceOf[FetchItem].url))
+
+    Web(item, Jsoup.parse(EntityUtils.toString(response.getEntity)))
   }
 
   def ==>(item: FetchItem): Web = {
