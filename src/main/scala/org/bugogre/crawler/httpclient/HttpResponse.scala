@@ -1,7 +1,7 @@
 package org.bugogre.crawler.httpclient
 
 import com.secer.elastic.model.FetchItem
-import org.apache.http.HttpEntity
+import org.apache.http.{HttpResponse, HttpEntity}
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.util.EntityUtils
@@ -25,8 +25,9 @@ object HttpResponse {
 
   def getEntityToStr(item: FetchItem): Web = {
 
-    val response = HttpClientBuilder.create().build()
-      .execute(new HttpGet(item.asInstanceOf[FetchItem].url))
+    val request: HttpGet = new HttpGet(item.url)
+
+    val response: HttpResponse = HttpClientBuilder.create().build().execute(request)
 
     Web(item, Jsoup.parse(EntityUtils.toString(response.getEntity)))
   }
