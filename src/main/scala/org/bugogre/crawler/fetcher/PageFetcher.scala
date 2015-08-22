@@ -1,10 +1,13 @@
 package org.bugogre.crawler.fetcher
 
+import java.net.{NoRouteToHostException, UnknownHostException}
 import java.util.concurrent.Executors
 
 import akka.actor.{Actor, ActorSystem, Props}
 import com.secer.elastic.model.FetchItem
 import com.typesafe.config.ConfigFactory
+import org.apache.http.client.ClientProtocolException
+import org.apache.http.conn.HttpHostConnectException
 import org.bugogre.crawler.config._
 import org.bugogre.crawler.fetcher.impl.HtmlPageFetcher
 import org.bugogre.crawler.parser.PageParser
@@ -29,17 +32,23 @@ class PageFetcher extends Actor {
   override def preStart(): Unit = {
   }
 
-  def fetch(fetchItem: FetchItem): Unit = {
-    LOG.info("Fetch Url: " + fetchItem.url)
-    pageParser ! HtmlPageFetcher.fetch(fetchItem)
-    sender() ! fetchItem.url + " fetch finished."
+  def fetch(fetchItem: FetchItem): String = {
+    LOG.info("Fetch Url: " + fetchItem.url.toString)
+    try {
+      pageParser ! HtmlPageFetcher.fetch(fetchItem)
+      fetchItem.url.toString + " fetch finished."
+    } catch {
+      case e: ClientProtocolException => "client redirect exception:" + fetchItem.url.toString
+      case e: UnknownHostException => "unknown url: " + fetchItem.url.toString
+      case e: HttpHostConnectException => "host can't connect exception:" + fetchItem.url.toString
+      case e: NoRouteToHostException => "no route to host exception:" + fetchItem.url.toString
+    }
   }
 
-  def asyncFetch(fetchItem: FetchItem) = {
-    fetch(fetchItem)
+  def asyncFetch(fetchItem: FetchItem): Future[String] = {
     Future {
       blocking {
-        fetchItem.filterOrFetch(fetch)
+        fetch(fetchItem)
       }
     }
   }
@@ -47,10 +56,13 @@ class PageFetcher extends Actor {
   def receive = {
     case str: String =>
       pageParser ! str
-    case fetchItem: FetchItem => asyncFetch(fetchItem)
+    case fetchItem: FetchItem => {
+      asyncFetch(fetchItem)
+      sender() ! s"${fetchItem.url.toString} async fetching."
+    }
     case fetchItems: List[_] =>
       fetchItems.asInstanceOf[List[FetchItem]]
-        .filter(_.url.length != 0)
+        .filter(_.url.toString.length != 0)
         .foreach(fetchItem => asyncFetch(fetchItem))
   }
 }

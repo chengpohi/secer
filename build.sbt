@@ -2,7 +2,7 @@ name := "secer"
 
 version := "1.0"
 
-scalaVersion := "2.11.3"
+scalaVersion := "2.11.7"
 
 unmanagedBase := baseDirectory.value / "lib"
 
@@ -22,6 +22,7 @@ libraryDependencies ++= Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % "2.4.2",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.2",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.4.2",
+  "org.siny.web" % "siny_2.11" % "1.0",
   "org.json4s" %% "json4s-native" % "3.2.10",
   "org.json4s" %% "json4s-jackson" % "3.2.10"
 )

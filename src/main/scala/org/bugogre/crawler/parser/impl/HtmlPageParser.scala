@@ -1,6 +1,8 @@
 package org.bugogre.crawler.parser.impl
 
-import com.secer.elastic.model.{FieldSelector, FetchItem, Page, IndexField}
+import java.net.{URL, URI}
+
+import com.secer.elastic.model.{FetchItem, FieldSelector, IndexField, Page}
 import org.bugogre.crawler.html.HtmlToMarkdown
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.url.UrlNormalizer
@@ -26,13 +28,21 @@ object HtmlPageParser {
 
   def parse(html: String): (Page, List[FetchItem]) = parse(Jsoup.parse(html), null)
 
-  def hrefs(doc: Document, item: FetchItem): List[FetchItem] = {
-    for (href: Element  <- doc.select("a").asScala.toList) yield FetchItem(normalize(href.attr("abs:href")),
-      item.indexName, item.indexType, item.selectors)
+  def filterHref(url: URL, target: String): Boolean = {
+    val t = new URI(target)
+    url.getHost == t.getHost
   }
 
+  def hrefs(doc: Document, item: FetchItem): List[FetchItem] = {
+    for {
+      href: Element  <- doc.select("a").asScala.toList
+      if filterHref(item.url, href.attr("abs:href"))
+    } yield FetchItem(normalize(href.attr("abs:href")), item.indexName, item.indexType, item.selectors)
+  }
+
+
   def parse(doc: Document, item: FetchItem): (Page, List[FetchItem]) = {
-    (Page(doc, item, hash(doc.html), hash(item.url), parseBySelector(doc, item.selectors)), hrefs(doc, item))
+    (Page(doc, item, hash(doc.html), hash(item.url.toString), parseBySelector(doc, item.selectors)), hrefs(doc, item))
   }
 
   def selectBySelector(doc: Document, selector: String): String = {

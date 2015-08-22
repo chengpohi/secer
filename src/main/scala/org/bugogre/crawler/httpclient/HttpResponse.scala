@@ -25,7 +25,7 @@ object HttpResponse {
 
   def getEntityToStr(item: FetchItem): Web = {
 
-    val request: HttpGet = new HttpGet(item.url)
+    val request: HttpGet = new HttpGet(item.url.toString)
 
     val response: HttpResponse = HttpClientBuilder.create().build().execute(request)
 
