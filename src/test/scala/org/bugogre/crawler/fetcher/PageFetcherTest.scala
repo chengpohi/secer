@@ -1,5 +1,7 @@
 package org.bugogre.crawler.fetcher
 
+import java.net.URL
+
 import akka.actor.{Props, ActorSystem}
 import akka.testkit.{ImplicitSender, TestKit}
 import com.secer.elastic.model.{FieldSelector, FetchItem}
@@ -17,7 +19,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
   override def afterAll {
   }
 
-  val fetchItem = FetchItem("http://www.zhihu.com", "ask", "zhihu",
+  val fetchItem = FetchItem(new URL("http://www.zhihu.com"), "ask", "zhihu",
     List(FieldSelector("_title", "title"), FieldSelector("_content", "body")))
 
   "Page Fetcher " must {

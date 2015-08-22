@@ -1,8 +1,8 @@
 package org.bugogre.crawler.httpclient
 
 import com.secer.elastic.model.FetchItem
-import org.apache.http.{HttpResponse, HttpEntity}
-import org.apache.http.client.methods.HttpGet
+import org.apache.http.HttpEntity
+import org.apache.http.client.methods.{CloseableHttpResponse, HttpGet}
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.util.EntityUtils
 import org.bugogre.crawler.filter.PageFilter
@@ -24,12 +24,15 @@ object HttpResponse {
   }
 
   def getEntityToStr(item: FetchItem): Web = {
+    val url = item.url
 
-    val request: HttpGet = new HttpGet(item.url.toString)
+    val request: HttpGet = new HttpGet(url.toString)
+    val response: CloseableHttpResponse = HttpClientBuilder.create().build().execute(request)
 
-    val response: HttpResponse = HttpClientBuilder.create().build().execute(request)
+    val doc = Jsoup.parse(EntityUtils.toString(response.getEntity))
+    doc.setBaseUri(url.getProtocol + "://" + url.getHost)
 
-    Web(item, Jsoup.parse(EntityUtils.toString(response.getEntity)))
+    Web(item, doc)
   }
 
   def ==>(item: FetchItem): Web = {

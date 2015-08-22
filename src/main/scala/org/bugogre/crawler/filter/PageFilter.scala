@@ -11,7 +11,7 @@ import org.elasticsearch.indices.IndexMissingException
 object PageFilter {
   def filterContent(fetchItem: FetchItem, html: String): Boolean = {
     try {
-      ElasticSearchClient.comparePage(fetchItem.indexName, fetchItem.indexType, html, fetchItem.url) match {
+      ElasticSearchClient.comparePage(fetchItem.indexName, fetchItem.indexType, html, fetchItem.url.toString) match {
         case x: SearchResponse if x.getHits.getTotalHits > 0 => true
         case _ => false
       }

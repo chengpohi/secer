@@ -1,5 +1,7 @@
 package org.bugogre.crawler.builder
 
+import java.net.URL
+
 import com.secer.elastic.model.{FetchItem, FieldSelector}
 
 /**
@@ -12,6 +14,6 @@ object FetchItemBuilder {
         FieldSelector("_answers", "div#answers"),
         FieldSelector("_question", "div.question")
       )
-    FetchItem("http://stackoverflow.com", "turing", "stackoverflow", fields)
+    FetchItem(new URL("http://stackoverflow.com"), "turing", "stackoverflow", fields)
   }
 }

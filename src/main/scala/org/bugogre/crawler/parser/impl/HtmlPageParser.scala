@@ -1,6 +1,6 @@
 package org.bugogre.crawler.parser.impl
 
-import java.net.{URL, URI}
+import java.net.{MalformedURLException, URL}
 
 import com.secer.elastic.model.{FetchItem, FieldSelector, IndexField, Page}
 import org.bugogre.crawler.html.HtmlToMarkdown
@@ -18,7 +18,7 @@ object HtmlPageParser {
   lazy val m = java.security.MessageDigest.getInstance("MD5")
   lazy val htmlToMarkdown = new HtmlToMarkdown
 
-  def normalize(url: String) = UrlNormalizer.normalize(url)
+  def normalize(url: String): URL = UrlNormalizer.normalize(url)
 
   def hash(s: String): String = {
     val b = s.getBytes("UTF-8")
@@ -29,15 +29,20 @@ object HtmlPageParser {
   def parse(html: String): (Page, List[FetchItem]) = parse(Jsoup.parse(html), null)
 
   def filterHref(url: URL, target: String): Boolean = {
-    val t = new URI(target)
-    url.getHost == t.getHost
+    try {
+      val t: URL = new URL(target)
+      url.getHost == t.getHost
+    } catch {
+      case e: MalformedURLException => false
+    }
   }
 
   def hrefs(doc: Document, item: FetchItem): List[FetchItem] = {
     for {
-      href: Element  <- doc.select("a").asScala.toList
-      if filterHref(item.url, href.attr("abs:href"))
-    } yield FetchItem(normalize(href.attr("abs:href")), item.indexName, item.indexType, item.selectors)
+      href: Element <- doc.select("a").asScala.toList
+      u: String = href.absUrl("href")
+      if filterHref(item.url, u)
+    } yield FetchItem(normalize(u), item.indexName, item.indexType, item.selectors)
   }
 
 
