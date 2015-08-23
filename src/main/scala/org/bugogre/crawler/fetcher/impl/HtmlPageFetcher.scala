@@ -4,6 +4,7 @@ import com.secer.elastic.model.FetchItem
 import org.bugogre.crawler.httpclient.{HttpResponse, Web}
 
 /**
+ * Page Fetcher
  * Created by xiachen on 3/1/15.
  */
 object HtmlPageFetcher {

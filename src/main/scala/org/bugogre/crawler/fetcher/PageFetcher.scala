@@ -1,6 +1,6 @@
 package org.bugogre.crawler.fetcher
 
-import java.net.{SocketException, NoRouteToHostException, UnknownHostException}
+import java.net.{NoRouteToHostException, SocketException, UnknownHostException}
 import java.util.concurrent.Executors
 
 import akka.actor.{Actor, ActorSystem, Props}
@@ -9,7 +9,7 @@ import com.typesafe.config.ConfigFactory
 import org.apache.http.NoHttpResponseException
 import org.apache.http.client.ClientProtocolException
 import org.apache.http.conn.HttpHostConnectException
-import org.bugogre.crawler.cache.URLCache
+import org.bugogre.crawler.cache.URLCache.FETCH_ITEM_CACHE
 import org.bugogre.crawler.config._
 import org.bugogre.crawler.fetcher.impl.HtmlPageFetcher
 import org.bugogre.crawler.parser.PageParser
@@ -35,12 +35,12 @@ class PageFetcher extends Actor {
   }
 
   def fetch(fetchItem: FetchItem): String = {
-    URLCache.FETCH_ITEM_CACHE.containsKey(fetchItem.url.toString) match {
+    FETCH_ITEM_CACHE.containsKey(fetchItem.url.toString) match {
       case false =>
         try {
           LOG.info("Fetch Url: " + fetchItem.url.toString)
-          LOG.info("Cache Size: " + URLCache.FETCH_ITEM_CACHE.size)
-          URLCache.FETCH_ITEM_CACHE.put(fetchItem.url.toString, fetchItem)
+          LOG.info("Cache Size: " + FETCH_ITEM_CACHE.size)
+          FETCH_ITEM_CACHE.put(fetchItem.url.toString, fetchItem)
           pageParser ! HtmlPageFetcher.fetch(fetchItem)
           fetchItem.url.toString + " fetch finished."
         } catch {
