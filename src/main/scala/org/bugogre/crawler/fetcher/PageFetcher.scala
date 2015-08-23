@@ -1,13 +1,15 @@
 package org.bugogre.crawler.fetcher
 
-import java.net.{NoRouteToHostException, UnknownHostException}
+import java.net.{SocketException, NoRouteToHostException, UnknownHostException}
 import java.util.concurrent.Executors
 
 import akka.actor.{Actor, ActorSystem, Props}
 import com.secer.elastic.model.FetchItem
 import com.typesafe.config.ConfigFactory
+import org.apache.http.NoHttpResponseException
 import org.apache.http.client.ClientProtocolException
 import org.apache.http.conn.HttpHostConnectException
+import org.bugogre.crawler.cache.URLCache
 import org.bugogre.crawler.config._
 import org.bugogre.crawler.fetcher.impl.HtmlPageFetcher
 import org.bugogre.crawler.parser.PageParser
@@ -33,15 +35,24 @@ class PageFetcher extends Actor {
   }
 
   def fetch(fetchItem: FetchItem): String = {
-    LOG.info("Fetch Url: " + fetchItem.url.toString)
-    try {
-      pageParser ! HtmlPageFetcher.fetch(fetchItem)
-      fetchItem.url.toString + " fetch finished."
-    } catch {
-      case e: ClientProtocolException => "client redirect exception:" + fetchItem.url.toString
-      case e: UnknownHostException => "unknown url: " + fetchItem.url.toString
-      case e: HttpHostConnectException => "host can't connect exception:" + fetchItem.url.toString
-      case e: NoRouteToHostException => "no route to host exception:" + fetchItem.url.toString
+    URLCache.FETCH_ITEM_CAHCE.containsKey(fetchItem.url.toString) match {
+      case false =>
+        try {
+          LOG.info("Fetch Url: " + fetchItem.url.toString)
+          URLCache.FETCH_ITEM_CAHCE.put(fetchItem.url.toString, fetchItem)
+          pageParser ! HtmlPageFetcher.fetch(fetchItem)
+          fetchItem.url.toString + " fetch finished."
+        } catch {
+          case e: ClientProtocolException => "client redirect exception:" + fetchItem.url.toString
+          case e: UnknownHostException => "unknown url: " + fetchItem.url.toString
+          case e: HttpHostConnectException => "host can't connect exception:" + fetchItem.url.toString
+          case e: NoRouteToHostException => "no route to host exception:" + fetchItem.url.toString
+          case e: SocketException => "socket exception:" + fetchItem.url.toString
+          case e: NoHttpResponseException => "no http response exception: " + fetchItem.url.toString
+        }
+      case true =>
+        LOG.info(s"${fetchItem.url.toString} item have fetched.")
+        s"${fetchItem.url.toString} item have fetched."
     }
   }
 

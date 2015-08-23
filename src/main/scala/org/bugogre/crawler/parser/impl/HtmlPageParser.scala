@@ -3,6 +3,8 @@ package org.bugogre.crawler.parser.impl
 import java.net.{MalformedURLException, URL}
 
 import com.secer.elastic.model.{FetchItem, FieldSelector, IndexField, Page}
+import com.secer.elastic.util.HashUtil
+import org.bugogre.crawler.cache.URLCache
 import org.bugogre.crawler.html.HtmlToMarkdown
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.url.UrlNormalizer
@@ -37,17 +39,21 @@ object HtmlPageParser {
     }
   }
 
+  def filterFetchedItem(url: String, item: FetchItem): Boolean =
+    !URLCache.FETCH_ITEM_CAHCE.containsKey(normalize(url).toString)
+
   def hrefs(doc: Document, item: FetchItem): List[FetchItem] = {
     for {
-      href: Element <- doc.select("a").asScala.toList
-      u: String = href.absUrl("href")
-      if filterHref(item.url, u)
-    } yield FetchItem(normalize(u), item.indexName, item.indexType, item.selectors)
+      href: String <- doc.select("a").asScala.toList
+        .map(e => e.absUrl("href"))
+        .filter(e => filterHref(item.url, e))
+        .filter(e => filterFetchedItem(e, item))
+    } yield FetchItem(normalize(href), item.indexName, item.indexType, item.selectors)
   }
 
 
   def parse(doc: Document, item: FetchItem): (Page, List[FetchItem]) = {
-    (Page(doc, item, hash(doc.html), hash(item.url.toString), parseBySelector(doc, item.selectors)), hrefs(doc, item))
+    (Page(doc, item, HashUtil.hashString(doc.html), hash(item.url.toString), parseBySelector(doc, item.selectors)), hrefs(doc, item))
   }
 
   def selectBySelector(doc: Document, selector: String): String = {
