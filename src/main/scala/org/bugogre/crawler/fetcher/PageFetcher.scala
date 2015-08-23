@@ -35,11 +35,12 @@ class PageFetcher extends Actor {
   }
 
   def fetch(fetchItem: FetchItem): String = {
-    URLCache.FETCH_ITEM_CAHCE.containsKey(fetchItem.url.toString) match {
+    URLCache.FETCH_ITEM_CACHE.containsKey(fetchItem.url.toString) match {
       case false =>
         try {
           LOG.info("Fetch Url: " + fetchItem.url.toString)
-          URLCache.FETCH_ITEM_CAHCE.put(fetchItem.url.toString, fetchItem)
+          LOG.info("Cache Size: " + URLCache.FETCH_ITEM_CACHE.size)
+          URLCache.FETCH_ITEM_CACHE.put(fetchItem.url.toString, fetchItem)
           pageParser ! HtmlPageFetcher.fetch(fetchItem)
           fetchItem.url.toString + " fetch finished."
         } catch {

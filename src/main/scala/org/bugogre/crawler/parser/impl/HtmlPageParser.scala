@@ -40,7 +40,7 @@ object HtmlPageParser {
   }
 
   def filterFetchedItem(url: String, item: FetchItem): Boolean =
-    !URLCache.FETCH_ITEM_CAHCE.containsKey(normalize(url).toString)
+    !URLCache.FETCH_ITEM_CACHE.containsKey(normalize(url).toString)
 
   def filterFetchItemByUrlRegex(url: String, regex: String): Boolean = {
     url.matches(regex)

@@ -9,5 +9,5 @@ import com.secer.elastic.model.FetchItem
  * Created by chengpohi on 8/23/15.
  */
 object URLCache {
-  val FETCH_ITEM_CAHCE: ConcurrentMap[String, FetchItem] = new ConcurrentHashMap[String, FetchItem]()
+  val FETCH_ITEM_CACHE: ConcurrentMap[String, FetchItem] = new ConcurrentHashMap[String, FetchItem]()
 }
