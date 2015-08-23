@@ -42,13 +42,18 @@ object HtmlPageParser {
   def filterFetchedItem(url: String, item: FetchItem): Boolean =
     !URLCache.FETCH_ITEM_CAHCE.containsKey(normalize(url).toString)
 
+  def filterFetchItemByUrlRegex(url: String, regex: String): Boolean = {
+    url.matches(regex)
+  }
+
   def hrefs(doc: Document, item: FetchItem): List[FetchItem] = {
     for {
       href: String <- doc.select("a").asScala.toList
         .map(e => e.absUrl("href"))
         .filter(e => filterHref(item.url, e))
         .filter(e => filterFetchedItem(e, item))
-    } yield FetchItem(normalize(href), item.indexName, item.indexType, item.selectors)
+        .filter(e => filterFetchItemByUrlRegex(e, item.urlRegex.getOrElse(".*")))
+    } yield FetchItem(normalize(href), item.indexName, item.indexType, item.selectors, item.urlRegex)
   }
 
 

@@ -14,6 +14,6 @@ object FetchItemBuilder {
         FieldSelector("_answers", "div#answers"),
         FieldSelector("_question", "div.question")
       )
-    FetchItem(new URL("http://stackoverflow.com"), "turing", "stackoverflow", fields)
+    FetchItem(new URL("http://stackoverflow.com"), "turing", "stackoverflow", fields, Option("*"))
   }
 }

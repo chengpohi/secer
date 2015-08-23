@@ -19,11 +19,13 @@ object JSONUtil {
     val indexName = f \\ "indexName"
     val indexType = f \\ "indexType"
     val selectors = f \\ "selectors"
+    val urlRegex = f \\ "urlRegex"
     FetchItem(
       new URL(url.extract[String]),
       indexName.extract[String],
       indexType.extract[String],
-      selectors.extract[List[FieldSelector]]
+      selectors.extract[List[FieldSelector]],
+      Option(urlRegex.extract[String])
     )
   }
 }
