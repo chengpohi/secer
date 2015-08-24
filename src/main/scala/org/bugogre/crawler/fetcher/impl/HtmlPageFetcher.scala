@@ -47,9 +47,6 @@ class HtmlPageFetcher(pageParser: ActorRef) {
           case e: SocketException => "socket exception:" + fetchItem.url.toString
           case e: NoHttpResponseException => "no http response exception: " + fetchItem.url.toString
         }
-      case true =>
-        LOG.info(s"${fetchItem.url.toString} item have fetched.")
-        s"${fetchItem.url.toString} item have fetched."
     }
   }
 
