@@ -27,26 +27,20 @@ class HtmlPageFetcher(pageParser: ActorRef) {
   implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(SecConfig.MAX_THREADS))
 
   def fetch(fetchItem: FetchItem): String = {
-    fetchFilter(fetchItem) match {
-      case false =>
-        LOG.info(s"${fetchItem.url.toString} item have fetched.")
-        s"${fetchItem.url.toString} item have fetched."
-      case true =>
-        try {
-          LOG.info("Fetch Url: " + fetchItem.url.toString)
-          LOG.info("Cache Size: " + FETCH_ITEM_CACHE.size)
-          FETCH_ITEM_CACHE.put(fetchItem.url.toString, fetchItem)
-          val w = HttpResponse ==> fetchItem
-          pageParser ! w
-          fetchItem.url.toString + " fetch finished."
-        } catch {
-          case e: ClientProtocolException => "client redirect exception:" + fetchItem.url.toString
-          case e: UnknownHostException => "unknown url: " + fetchItem.url.toString
-          case e: HttpHostConnectException => "host can't connect exception:" + fetchItem.url.toString
-          case e: NoRouteToHostException => "no route to host exception:" + fetchItem.url.toString
-          case e: SocketException => "socket exception:" + fetchItem.url.toString
-          case e: NoHttpResponseException => "no http response exception: " + fetchItem.url.toString
-        }
+    try {
+      LOG.info("Fetch Url: " + fetchItem.url.toString)
+      LOG.info("Cache Size: " + FETCH_ITEM_CACHE.size)
+      FETCH_ITEM_CACHE.put(fetchItem.url.toString, fetchItem)
+      val w = HttpResponse ==> fetchItem
+      pageParser ! w
+      fetchItem.url.toString + " fetch finished."
+    } catch {
+      case e: ClientProtocolException => "client redirect exception:" + fetchItem.url.toString
+      case e: UnknownHostException => "unknown url: " + fetchItem.url.toString
+      case e: HttpHostConnectException => "host can't connect exception:" + fetchItem.url.toString
+      case e: NoRouteToHostException => "no route to host exception:" + fetchItem.url.toString
+      case e: SocketException => "socket exception:" + fetchItem.url.toString
+      case e: NoHttpResponseException => "no http response exception: " + fetchItem.url.toString
     }
   }
 
