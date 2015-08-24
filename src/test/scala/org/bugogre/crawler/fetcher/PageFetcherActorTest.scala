@@ -10,9 +10,9 @@ import org.scalatest.{BeforeAndAfterAll, WordSpecLike, Matchers}
 /**
  * Created by xiachen on 2/28/15.
  */
-class PageFetcherTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
+class PageFetcherActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
 with WordSpecLike with Matchers with BeforeAndAfterAll {
-  val pageFetcher = system.actorOf(Props[PageFetcher], "PageFetcher")
+  val pageFetcher = system.actorOf(Props[PageFetcherActor], "PageFetcher")
 
   def this() = this(ActorSystem("PageFetcherSpec"))
 

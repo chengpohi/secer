@@ -4,7 +4,7 @@ import java.util.concurrent.Executors
 
 import akka.actor.{Actor, Props}
 import org.bugogre.crawler.config.SecConfig
-import org.bugogre.crawler.fetcher.PageFetcher
+import org.bugogre.crawler.fetcher.PageFetcherActor
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.indexer.PageIndexer
 import org.bugogre.crawler.parser.impl.HtmlPageParser
@@ -22,7 +22,7 @@ class PageParser extends Actor {
   implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(SecConfig.MAX_THREADS))
 
   val pageIndexer = context.actorOf(Props[PageIndexer], "PageIndexer")
-  val pageFetcher = context.actorOf(Props[PageFetcher], "PageFetcher")
+  val pageFetcher = context.actorOf(Props[PageFetcherActor], "PageFetcher")
 
   def receive = {
     case str: String =>
