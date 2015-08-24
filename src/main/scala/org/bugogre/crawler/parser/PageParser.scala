@@ -45,11 +45,4 @@ class PageParser extends Actor {
       }
     }
   }
-
-  def parse(web: Web): Unit = {
-    web.filter() match {
-      case false =>
-      case true => LOG.info(web.fetchItem.url.toString + " has parsed and indexed, so ignore it.")
-    }
-  }
 }

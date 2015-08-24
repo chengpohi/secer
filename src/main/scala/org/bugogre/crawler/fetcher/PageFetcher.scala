@@ -4,6 +4,7 @@ import java.net.{NoRouteToHostException, SocketException, UnknownHostException}
 import java.util.concurrent.Executors
 
 import akka.actor.{Actor, ActorSystem, Props}
+import com.secer.elastic.controller.PageController._
 import com.secer.elastic.model.FetchItem
 import com.typesafe.config.ConfigFactory
 import org.apache.http.NoHttpResponseException
@@ -35,8 +36,11 @@ class PageFetcher extends Actor {
   }
 
   def fetch(fetchItem: FetchItem): String = {
-    FETCH_ITEM_CACHE.containsKey(fetchItem.url.toString) match {
+    fetchFilter(fetchItem) match {
       case false =>
+        LOG.info(s"${fetchItem.url.toString} item have fetched.")
+        s"${fetchItem.url.toString} item have fetched."
+      case true =>
         try {
           LOG.info("Fetch Url: " + fetchItem.url.toString)
           LOG.info("Cache Size: " + FETCH_ITEM_CACHE.size)
@@ -55,6 +59,18 @@ class PageFetcher extends Actor {
         LOG.info(s"${fetchItem.url.toString} item have fetched.")
         s"${fetchItem.url.toString} item have fetched."
     }
+  }
+
+  def fetchFilter(fetchItem: FetchItem): Boolean = {
+    if(FETCH_ITEM_CACHE.containsKey(fetchItem.url.toString))
+      return false
+
+    if(pageWhetherExist(fetchItem)) {
+      FETCH_ITEM_CACHE.put(fetchItem.url.toString, fetchItem)
+      return false
+    }
+
+    true
   }
 
   def asyncFetch(fetchItem: FetchItem): Future[String] = {
