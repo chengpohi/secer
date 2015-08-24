@@ -4,7 +4,7 @@ import akka.actor.{Actor, Props}
 
 import org.bugogre.crawler.fetcher.PageFetcherActor
 import org.bugogre.crawler.httpclient.Web
-import org.bugogre.crawler.indexer.PageIndexer
+import org.bugogre.crawler.indexer.PageIndexerActor
 import org.bugogre.crawler.parser.impl.HtmlPageParser
 
 import org.slf4j.LoggerFactory
@@ -14,10 +14,10 @@ import org.slf4j.LoggerFactory
  * Page Parser
  * Created by xiachen on 12/16/14.
  */
-class PageParser extends Actor {
+class PageParserActor extends Actor {
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
 
-  val pageIndexer = context.actorOf(Props[PageIndexer], "PageIndexer")
+  val pageIndexer = context.actorOf(Props[PageIndexerActor], "PageIndexer")
 
   val pageFetcher = context.actorOf(Props[PageFetcherActor], "PageFetcher")
 

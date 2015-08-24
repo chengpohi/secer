@@ -8,9 +8,9 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
  * Created by xiachen on 1/18/15.
  */
 
-class PageIndexerTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
+class PageIndexerActorTest(_system: ActorSystem) extends TestKit(_system) with ImplicitSender
 with WordSpecLike with Matchers with BeforeAndAfterAll {
-  val indexer = system.actorOf(Props[PageIndexer], "PageIndexer")
+  val indexer = system.actorOf(Props[PageIndexerActor], "PageIndexer")
 
   def this() = this(ActorSystem("PageIndexerSpec"))
   override def afterAll {

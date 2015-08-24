@@ -5,7 +5,7 @@ import akka.actor.{Actor, ActorSystem, Props}
 import com.secer.elastic.model.FetchItem
 import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.fetcher.impl.HtmlPageFetcher
-import org.bugogre.crawler.parser.PageParser
+import org.bugogre.crawler.parser.PageParserActor
 import org.slf4j.LoggerFactory
 
 object PageFetcherActor {
@@ -18,7 +18,7 @@ object PageFetcherActor {
 class PageFetcherActor extends Actor {
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
 
-  val pageParser = context.actorOf(Props[PageParser], "htmlParser")
+  val pageParser = context.actorOf(Props[PageParserActor], "htmlParser")
 
   val htmlPageFetcher = new HtmlPageFetcher(pageParser)
 
