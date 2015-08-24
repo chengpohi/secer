@@ -1,24 +1,35 @@
 package org.bugogre.crawler.parser.impl
 
 import java.net.{MalformedURLException, URL}
+import java.util.concurrent.Executors
+
+import akka.actor.ActorRef
 
 import com.secer.elastic.model.{FetchItem, FieldSelector, IndexField, Page}
 import com.secer.elastic.util.HashUtil
 import org.bugogre.crawler.cache.URLCache
+import org.bugogre.crawler.config.SecConfig
 import org.bugogre.crawler.html.HtmlToMarkdown
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.url.UrlNormalizer
+
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
+import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
+import scala.concurrent._
 
 /**
  * Created by xiachen on 3/1/15.
  */
-object HtmlPageParser {
+class HtmlPageParser(pageFetcher: ActorRef, pageIndexer: ActorRef) {
+  lazy val LOG = LoggerFactory.getLogger(getClass.getName)
+
   lazy val m = java.security.MessageDigest.getInstance("MD5")
   lazy val htmlToMarkdown = new HtmlToMarkdown
+
+  implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(SecConfig.MAX_THREADS))
 
   def normalize(url: String): URL = UrlNormalizer.normalize(url)
 
@@ -74,4 +85,19 @@ object HtmlPageParser {
   }
 
   def parse(web: Web): (Page, List[FetchItem]) = parse(web.doc, web.fetchItem)
+
+
+  def asyncParse(web: Web): Future[String] = {
+    Future {
+      blocking {
+        val res = parse(web)
+        pageIndexer ! res._1
+
+        LOG.info(s"Seeds size: ${res._2.length} url: ${web.fetchItem.url.toString}")
+
+        pageFetcher ! res._2
+        ""
+      }
+    }
+  }
 }

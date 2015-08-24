@@ -1,7 +1,6 @@
 package org.bugogre.crawler.parser.impl
 
 import org.bugogre.crawler.builder.WebBuilder
-import org.bugogre.crawler.parser.impl.HtmlPageParser.filterFetchItemByUrlRegex
 import org.scalatest.FlatSpec
 
 /**
@@ -9,7 +8,8 @@ import org.scalatest.FlatSpec
  */
 class HtmlPageParserTest extends FlatSpec {
   val web = WebBuilder.web
-  val page = HtmlPageParser.parse(web)._1
+  val htmlPageParser = new HtmlPageParser(null, null)
+  val page = htmlPageParser.parse(web)._1
   val urlFilter = List(
     (".*", "http://www.google.com", true),
     ("http://www.google.com/.*", "http://www.google.com", false),
@@ -25,12 +25,12 @@ class HtmlPageParserTest extends FlatSpec {
   }
 
   "Html Page Parser " should "get all hrefs" in {
-    assert(HtmlPageParser.hrefs(page.doc, page.fetchItem).nonEmpty)
+    assert(htmlPageParser.hrefs(page.doc, page.fetchItem).nonEmpty)
   }
 
   "Html Page Parser " should "filter href by regex" in {
     urlFilter.foreach(t => {
-      assert(filterFetchItemByUrlRegex(t._1, t._2) == t._3)
+      assert(htmlPageParser.filterFetchItemByUrlRegex(t._2, t._1) == t._3)
     })
   }
 }
