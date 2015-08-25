@@ -12,7 +12,7 @@ import org.apache.http.conn.HttpHostConnectException
 import org.bugogre.crawler.cache.URLCache.FETCH_ITEM_CACHE
 import org.bugogre.crawler.config._
 import org.bugogre.crawler.httpclient.HttpResponse
-import org.slf4j.LoggerFactory
+import org.slf4j.{MDC, LoggerFactory}
 
 import scala.concurrent._
 
@@ -28,11 +28,13 @@ class HtmlPageFetcher(pageParser: ActorRef) {
 
   def fetch(fetchItem: FetchItem): String = {
     try {
+      MDC.put("logFileName", (Thread.currentThread().getId % SecConfig.MAX_THREADS + 1).toString)
       LOG.info("Fetch Url: " + fetchItem.url.toString)
       LOG.info("Cache Size: " + FETCH_ITEM_CACHE.size)
       FETCH_ITEM_CACHE.put(fetchItem.url.toString, fetchItem)
       val w = HttpResponse ==> fetchItem
       pageParser ! w
+      MDC.remove("logFileName")
       fetchItem.url.toString + " fetch finished."
     } catch {
       case e: ClientProtocolException => "client redirect exception:" + fetchItem.url.toString
