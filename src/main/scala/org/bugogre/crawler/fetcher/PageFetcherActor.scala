@@ -29,13 +29,11 @@ class PageFetcherActor extends Actor {
   def receive = {
     case str: String =>
       pageParser ! str
-    case fetchItem: FetchItem if htmlPageFetcher.fetchFilter(fetchItem) =>
+    case fetchItem: FetchItem =>
       htmlPageFetcher.asyncFetch(fetchItem)
       sender() ! s"${fetchItem.url.toString} async fetching."
     case fetchItems: List[_] =>
       fetchItems.asInstanceOf[List[FetchItem]]
-        .filter(_.url.toString.length != 0)
-        .filter(f => htmlPageFetcher.fetchFilter(f))
         .foreach(fetchItem => htmlPageFetcher.asyncFetch(fetchItem))
     case _ => LOG.info("Object Exist.")
   }

@@ -4,15 +4,14 @@ import java.net.{MalformedURLException, URL}
 import java.util.concurrent.Executors
 
 import akka.actor.ActorRef
-
+import com.secer.elastic.controller.PageController._
 import com.secer.elastic.model.{FetchItem, FieldSelector, IndexField, Page}
 import com.secer.elastic.util.HashUtil
-import org.bugogre.crawler.cache.URLCache
+import org.bugogre.crawler.cache.URLCache._
 import org.bugogre.crawler.config.SecConfig
 import org.bugogre.crawler.html.HtmlToMarkdown
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.url.UrlNormalizer
-
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import org.slf4j.LoggerFactory
@@ -50,8 +49,15 @@ class HtmlPageParser(pageFetcher: ActorRef, pageIndexer: ActorRef) {
     }
   }
 
-  def filterFetchedItem(url: String, item: FetchItem): Boolean =
-    !URLCache.FETCH_ITEM_CACHE.containsKey(normalize(url).toString)
+  def filterFetchedItem(item: FetchItem): Boolean = {
+    if (FETCH_ITEM_CACHE.containsKey(item.url.toString))
+      return false
+    if (pageWhetherExist(item)) {
+      FETCH_ITEM_CACHE.put(item.url.toString, item)
+      return false
+    }
+    true
+  }
 
   def filterFetchItemByUrlRegex(url: String, regex: String): Boolean = {
     url.matches(regex)
@@ -59,12 +65,13 @@ class HtmlPageParser(pageFetcher: ActorRef, pageIndexer: ActorRef) {
 
   def hrefs(doc: Document, item: FetchItem): List[FetchItem] = {
     for {
-      href: String <- doc.select("a").asScala.toList
+      i: FetchItem <- doc.select("a").asScala.toList
         .map(e => e.absUrl("href"))
-        .filter(e => filterHref(item.url, e))
-        .filter(e => filterFetchedItem(e, item))
-        .filter(e => filterFetchItemByUrlRegex(e, item.urlRegex.getOrElse(".*")))
-    } yield FetchItem(normalize(href), item.indexName, item.indexType, item.selectors, item.urlRegex)
+        .filter(e => e.length != 0)
+        .map(e => FetchItem(normalize(e), item.indexName, item.indexType, item.selectors, item.urlRegex))
+        .filter(e => filterFetchItemByUrlRegex(e.url.toString, e.urlRegex.getOrElse(".*")))
+        .filter(e => filterFetchedItem(e))
+    } yield i
   }
 
 
