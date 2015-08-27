@@ -1,13 +1,11 @@
 package org.bugogre.crawler.parser.impl
 
-import java.net.{MalformedURLException, URL}
+import java.net.URL
 import java.util.concurrent.Executors
 
 import akka.actor.ActorRef
-import com.secer.elastic.controller.PageController._
 import com.secer.elastic.model.{FetchItem, FieldSelector, IndexField, Page}
 import com.secer.elastic.util.HashUtil
-import org.bugogre.crawler.cache.URLCache._
 import org.bugogre.crawler.config.SecConfig
 import org.bugogre.crawler.html.HtmlToMarkdown
 import org.bugogre.crawler.httpclient.Web
@@ -40,37 +38,12 @@ class HtmlPageParser(pageFetcher: ActorRef, pageIndexer: ActorRef) {
 
   def parse(html: String): (Page, List[FetchItem]) = parse(Jsoup.parse(html), null)
 
-  def filterHref(url: URL, target: String): Boolean = {
-    try {
-      val t: URL = new URL(target)
-      url.getHost == t.getHost
-    } catch {
-      case e: MalformedURLException => false
-    }
-  }
-
-  def filterFetchedItem(item: FetchItem): Boolean = {
-    if (FETCH_ITEM_CACHE.containsKey(item.url.toString))
-      return false
-    if (pageWhetherExist(item)) {
-      FETCH_ITEM_CACHE.put(item.url.toString, item)
-      return false
-    }
-    true
-  }
-
-  def filterFetchItemByUrlRegex(url: String, regex: String): Boolean = {
-    url.matches(regex)
-  }
-
   def hrefs(doc: Document, item: FetchItem): List[FetchItem] = {
     for {
       i: FetchItem <- doc.select("a").asScala.toList
         .map(e => e.absUrl("href"))
         .filter(e => e.length != 0)
         .map(e => FetchItem(normalize(e), item.indexName, item.indexType, item.selectors, item.urlRegex))
-        .filter(e => filterFetchItemByUrlRegex(e.url.toString, e.urlRegex.getOrElse(".*")))
-        .filter(e => filterFetchedItem(e))
     } yield i
   }
 
@@ -100,7 +73,7 @@ class HtmlPageParser(pageFetcher: ActorRef, pageIndexer: ActorRef) {
         val res = parse(web)
         pageIndexer ! res._1
 
-        LOG.info(s"Seeds size: ${res._2.length} url: ${web.fetchItem.url.toString}")
+        LOG.info(s"Parser Seeds size: ${res._2.length}")
 
         pageFetcher ! res._2
         ""

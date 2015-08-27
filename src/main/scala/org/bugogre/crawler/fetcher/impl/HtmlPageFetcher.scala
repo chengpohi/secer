@@ -5,6 +5,8 @@ import java.util.concurrent.Executors
 
 import akka.actor.ActorRef
 import com.secer.elastic.model.FetchItem
+import com.secer.elastic.controller.PageController._
+import com.secer.elastic.util.HashUtil
 import org.apache.http.NoHttpResponseException
 import org.apache.http.client.ClientProtocolException
 import org.apache.http.conn.HttpHostConnectException
@@ -28,9 +30,7 @@ class HtmlPageFetcher(pageParser: ActorRef) {
   def fetch(fetchItem: FetchItem): String = {
     try {
       MDC.put("logFileName", (Thread.currentThread().getId % SecConfig.MAX_THREADS + 1).toString)
-      LOG.info("Fetch Url: " + fetchItem.url.toString)
-      LOG.info("Cache Size: " + FETCH_ITEM_CACHE.size)
-      FETCH_ITEM_CACHE.put(fetchItem.url.toString, fetchItem)
+      LOG.info("Cache Size: " + FETCH_ITEM_CACHE.size + ", Fetch Url: " + fetchItem.url.toString)
       val w = HttpResponse ==> fetchItem
       pageParser ! w
       MDC.remove("logFileName")
@@ -44,6 +44,30 @@ class HtmlPageFetcher(pageParser: ActorRef) {
       case e: NoHttpResponseException => "no http response exception: " + fetchItem.url.toString
     }
   }
+
+  def filterFetchedItem(item: FetchItem): Boolean = {
+    this.synchronized {
+      val hashUrl = HashUtil.hashString(item.url.toString)
+      if (FETCH_ITEM_CACHE.containsKey(hashUrl)) {
+        return false
+      }
+      if (pageWhetherExist(item)) {
+        FETCH_ITEM_CACHE.put(hashUrl, item)
+        return false
+      }
+      FETCH_ITEM_CACHE.put(hashUrl, item)
+      true
+    }
+  }
+
+  def filterFetchItemByUrlRegex(url: String, regex: String): Boolean = {
+    url.matches(regex)
+  }
+
+  def filter(item: FetchItem): Boolean = {
+    filterFetchItemByUrlRegex(item.url.toString, item.urlRegex.get) && filterFetchedItem(item)
+  }
+
 
   def asyncFetch(fetchItem: FetchItem): Future[String] = {
     Future {

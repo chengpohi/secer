@@ -10,12 +10,7 @@ class HtmlPageParserActorTest extends FlatSpec {
   val web = WebBuilder.web
   val htmlPageParser = new HtmlPageParser(null, null)
   val page = htmlPageParser.parse(web)._1
-  val urlFilter = List(
-    (".*", "http://www.google.com", true),
-    ("http://www.google.com/.*", "http://www.google.com", false),
-    ("http://stackoverflow.com/.*", "http://stackoverflow.com/questions/4636610/how-to-pattern-match-using-regular-expression-in-scala", true),
-    ("http://stackoverflow.com/questions/\\d+/.*", "http://stackoverflow.com/questions/4636610/how-to-pattern-match-using-regular-expression-in-scala", true)
-  )
+
   "Html Page Parser " should "parse web" in {
     assert(page != null)
   }
@@ -28,9 +23,4 @@ class HtmlPageParserActorTest extends FlatSpec {
     assert(htmlPageParser.hrefs(page.doc, page.fetchItem).nonEmpty)
   }
 
-  "Html Page Parser " should "filter href by regex" in {
-    urlFilter.foreach(t => {
-      assert(htmlPageParser.filterFetchItemByUrlRegex(t._2, t._1) == t._3)
-    })
-  }
 }
