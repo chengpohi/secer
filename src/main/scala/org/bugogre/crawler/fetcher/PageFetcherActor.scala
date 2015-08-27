@@ -25,6 +25,9 @@ class PageFetcherActor extends Actor {
   override def preStart(): Unit = {
   }
 
+  override def postStop() = {
+    LOG.info("Stopping parent Actor")
+  }
 
   def receive = {
     case str: String =>

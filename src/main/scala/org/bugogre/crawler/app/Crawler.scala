@@ -1,5 +1,8 @@
 package org.bugogre.crawler.app
 
+import java.util.concurrent.TimeUnit
+
+import akka.actor.SupervisorStrategy.Restart
 import akka.actor._
 import com.secer.elastic.model.FetchItem
 import com.typesafe.config.ConfigFactory
@@ -13,7 +16,8 @@ import org.siny.web.rest.controller.RestController._
 import org.siny.web.session.HttpSession
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /**
  * author: chengpohi@gmail.com
@@ -40,6 +44,14 @@ case object Done extends Echo
 class Crawler(path: String) extends Actor with Siny {
   val LOG = LoggerFactory.getLogger(getClass.getName)
 
+  override val supervisorStrategy =
+    OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
+      case _: Exception => {
+        LOG.info("INFO")
+        Restart
+      }
+    }
+
   override def preStart(): Unit = {
     this.initialize()
   }
@@ -58,17 +70,24 @@ class Crawler(path: String) extends Actor with Siny {
       context.become(active(actor))
       context.setReceiveTimeout(Duration.Undefined)
       self ! Start
-    case ActorIdentity(`path`, None) => LOG.error(s"remote actor not found $path")
-    case ReceiveTimeout => sendIdentifyRequest()
-    case str: String => {
-      LOG.info(str)
+    case ActorIdentity(`path`, None) => {
+      LOG.error(s"remote actor not found $path")
+      TimeUnit.SECONDS.sleep(3)
+      sendIdentifyRequest()
     }
+    case ReceiveTimeout => sendIdentifyRequest()
+    case str: String =>
+      LOG.info(str)
   }
 
   def active(actor: ActorRef): Receive = {
     case Start =>
     case fetchItem: FetchItem => {
       actor ! fetchItem
+    }
+    case Terminated(_) => {
+      context.unbecome()
+      sendIdentifyRequest()
     }
     case str: String => {
       LOG.info(str)
