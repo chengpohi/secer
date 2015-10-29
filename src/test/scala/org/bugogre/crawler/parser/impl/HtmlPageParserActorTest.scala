@@ -8,7 +8,7 @@ import org.scalatest.FlatSpec
  */
 class HtmlPageParserActorTest extends FlatSpec {
   val web = WebBuilder.web
-  val htmlPageParser = new HtmlPageParser(null, null)
+  val htmlPageParser = new HtmlPageParser(null)
   val page = htmlPageParser.parse(web)._1
 
   "Html Page Parser " should "parse web" in {

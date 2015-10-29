@@ -1,12 +1,11 @@
 package org.bugogre.crawler.fetcher
 
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor._
 import com.secer.elastic.model.FetchItem
 import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.fetcher.impl.HtmlPageFetcher
 import org.bugogre.crawler.parser.PageParserActor
-import org.slf4j.LoggerFactory
 
 object PageFetcherActor {
   def main(args: Array[String]): Unit = {
@@ -15,30 +14,39 @@ object PageFetcherActor {
   }
 }
 
-class PageFetcherActor extends Actor {
-  lazy val LOG = LoggerFactory.getLogger(getClass.getName)
-
+class PageFetcherActor extends Actor with ActorLogging {
   val pageParser = context.actorOf(Props[PageParserActor], "htmlParser")
 
-  val htmlPageFetcher = new HtmlPageFetcher(pageParser)
+  var fetchers = Map[String, ActorRef]()
 
   override def preStart(): Unit = {
   }
 
   override def postStop() = {
-    LOG.info("Stopping parent Actor")
+    log.info("Stopping parent Actor")
   }
 
   def receive = {
     case str: String =>
       pageParser ! str
-    case fetchItem: FetchItem if htmlPageFetcher.filter(fetchItem)=>
-      htmlPageFetcher.asyncFetch(fetchItem)
-      sender() ! s"${fetchItem.url.toString} async fetching."
-    case fetchItems: List[_] =>
-      fetchItems.asInstanceOf[List[FetchItem]]
-        .filter(f => htmlPageFetcher.filter(f))
-        .foreach(fetchItem => htmlPageFetcher.asyncFetch(fetchItem))
-    case _ => LOG.info("Object Exist.")
+    case fetchItem: FetchItem =>
+      val fetcherName: String = s"""${fetchItem.indexName}-${fetchItem.indexType}"""
+      fetchers.get(fetcherName) match {
+        case None =>
+          val fetcher = createNewFetcher(fetchItem, pageParser)
+          fetchers += fetcherName -> fetcher
+          log.info("create a new fetcher with: " + fetcherName)
+          fetcher ! fetchItem
+        case actorRef: Option[ActorRef] =>
+          log.info("continue fetcher: " + fetcherName)
+          actorRef.get ! fetchItem
+      }
+      sender() ! s"${fetchItem.url.toString} has been sended to child fetcher to fetch."
+    case _ => log.info("Object Exist.")
+  }
+
+  def createNewFetcher(fetchItem: FetchItem, parser: ActorRef): ActorRef = {
+    val htmlPageFetcher = context.actorOf(Props(classOf[HtmlPageFetcher], parser, fetchItem))
+    htmlPageFetcher
   }
 }

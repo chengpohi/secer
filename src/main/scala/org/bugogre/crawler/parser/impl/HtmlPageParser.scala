@@ -20,7 +20,7 @@ import scala.concurrent._
 /**
  * Created by xiachen on 3/1/15.
  */
-class HtmlPageParser(pageFetcher: ActorRef, pageIndexer: ActorRef) {
+class HtmlPageParser(pageIndexer: ActorRef) {
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
 
   lazy val m = java.security.MessageDigest.getInstance("MD5")
@@ -67,7 +67,7 @@ class HtmlPageParser(pageFetcher: ActorRef, pageIndexer: ActorRef) {
   def parse(web: Web): (Page, List[FetchItem]) = parse(web.doc, web.fetchItem)
 
 
-  def asyncParse(web: Web): Future[String] = {
+  def asyncParse(sender: ActorRef, web: Web): Future[String] = {
     Future {
       blocking {
         val res = parse(web)
@@ -75,7 +75,7 @@ class HtmlPageParser(pageFetcher: ActorRef, pageIndexer: ActorRef) {
 
         LOG.info(s"Parser Seeds size: ${res._2.length}")
 
-        pageFetcher ! res._2
+        sender ! res._2
         ""
       }
     }

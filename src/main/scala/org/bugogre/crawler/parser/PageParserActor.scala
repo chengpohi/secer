@@ -1,12 +1,9 @@
 package org.bugogre.crawler.parser
 
 import akka.actor.{Actor, Props}
-
-import org.bugogre.crawler.fetcher.PageFetcherActor
 import org.bugogre.crawler.httpclient.Web
 import org.bugogre.crawler.indexer.PageIndexerActor
 import org.bugogre.crawler.parser.impl.HtmlPageParser
-
 import org.slf4j.LoggerFactory
 
 
@@ -19,14 +16,12 @@ class PageParserActor extends Actor {
 
   val pageIndexer = context.actorOf(Props[PageIndexerActor], "PageIndexer")
 
-  val pageFetcher = context.actorOf(Props[PageFetcherActor], "PageFetcher")
-
-  val pageParser = new HtmlPageParser(pageFetcher, pageIndexer)
+  val pageParser = new HtmlPageParser(pageIndexer)
 
   def receive = {
     case str: String =>
     case web: Web =>
       LOG.info("Parse Url: " + web.fetchItem.url.toString)
-      pageParser.asyncParse(web)
+      pageParser.asyncParse(sender(), web)
   }
 }

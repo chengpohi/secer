@@ -2,7 +2,7 @@
 
 function zhihu(){
   curl -v --cookie "USER_TOKEN=Yes" -XPOST "localhost:9000/crawler" -d '{ 
-	"url": "http://www.zhihu.com/question/20666092", 
+	"url": "http://www.zhihu.com/question/21426423", 
 	"indexName": "www", 
 	"indexType": "zhihu", 
 	"selectors": [ {"field": "title", "selector": "div#zh-question-title"} ], 
@@ -21,7 +21,8 @@ function stackoverflow(){
 }
 
 function printDetail(){
-    echo "--------------------------------"
+    echo -e
+    echo -e "--------------------------------"
     echo "1. Zhihu Crawler"
     echo "2. Stackoverflow Crawler"
     echo "0. Exit"

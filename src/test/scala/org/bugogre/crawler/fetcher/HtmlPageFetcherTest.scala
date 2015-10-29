@@ -8,7 +8,7 @@ import org.scalatest.FlatSpec
  * Created by chengpohi on 8/26/15.
  */
 class HtmlPageFetcherTest  extends FlatSpec {
-  val htmlPageFetcher = new HtmlPageFetcher(null)
+  val htmlPageFetcher = new HtmlPageFetcher(null, null)
   val urlFilter = List(
     (".*", "http://www.google.com", true),
     ("http://www.google.com/.*", "http://www.google.com", false),

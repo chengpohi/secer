@@ -3,9 +3,9 @@ package org.bugogre.crawler.fetcher.impl
 import java.net.{NoRouteToHostException, SocketException, UnknownHostException}
 import java.util.concurrent.Executors
 
-import akka.actor.ActorRef
-import com.secer.elastic.model.FetchItem
+import akka.actor.{Actor, ActorLogging, ActorRef}
 import com.secer.elastic.controller.PageController._
+import com.secer.elastic.model.FetchItem
 import com.secer.elastic.util.HashUtil
 import org.apache.http.NoHttpResponseException
 import org.apache.http.client.ClientProtocolException
@@ -13,7 +13,7 @@ import org.apache.http.conn.HttpHostConnectException
 import org.bugogre.crawler.cache.URLCache.FETCH_ITEM_CACHE
 import org.bugogre.crawler.config._
 import org.bugogre.crawler.httpclient.HttpResponse
-import org.slf4j.{LoggerFactory, MDC}
+import org.slf4j.MDC
 
 import scala.concurrent._
 
@@ -22,15 +22,13 @@ import scala.concurrent._
  * Page Fetcher
  * Created by xiachen on 3/1/15.
  */
-class HtmlPageFetcher(pageParser: ActorRef) {
-  lazy val LOG = LoggerFactory.getLogger(getClass.getName)
-
+class HtmlPageFetcher(pageParser: ActorRef, fetchItem: FetchItem) extends Actor with ActorLogging {
   implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(SecConfig.MAX_THREADS))
 
   def fetch(fetchItem: FetchItem): String = {
     try {
       MDC.put("logFileName", (Thread.currentThread().getId % SecConfig.MAX_THREADS + 1).toString)
-      LOG.info("Cache Size: " + FETCH_ITEM_CACHE.size + ", Fetch Url: " + fetchItem.url.toString)
+      log.info("Cache Size: " + FETCH_ITEM_CACHE.size + ", Fetch Url: " + fetchItem.url.toString)
       val w = HttpResponse ==> fetchItem
       pageParser ! w
       MDC.remove("logFileName")
@@ -75,5 +73,15 @@ class HtmlPageFetcher(pageParser: ActorRef) {
         fetch(fetchItem)
       }
     }
+  }
+
+  override def receive: Receive = {
+    case fetchItem: FetchItem if filter(fetchItem) =>
+      asyncFetch(fetchItem)
+    case fetchItems: List[_] =>
+      fetchItems.asInstanceOf[List[FetchItem]]
+        .filter(f => filter(f))
+        .foreach(fetchItem => asyncFetch(fetchItem))
+    case _ => log.info("item has been fetched!!!")
   }
 }
