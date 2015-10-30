@@ -27,7 +27,7 @@ object Crawler extends Siny {
     val system = ActorSystem("Crawler", ConfigFactory.load("crawler"))
 
     val remoteHostPort = SecConfig.CRAWLER_PORT
-    val remotePath = s"akka.tcp://Crawler@$remoteHostPort/user/pagefetcher"
+    val remotePath = s"akka.tcp://Crawler@$remoteHostPort/user/page-fetcher"
 
     system.actorOf(Props(new Crawler(remotePath)), "crawler")
   }

@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory
 /**
  * Created by xiachen on 1/17/15.
  */
-class PageIndexerActor extends Actor {
+class PageIndexerService extends Actor {
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
   val htmlPageIndexer = new HtmlPageIndexer
 

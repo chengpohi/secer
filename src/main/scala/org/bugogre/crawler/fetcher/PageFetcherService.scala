@@ -5,17 +5,17 @@ import akka.actor._
 import com.secer.elastic.model.FetchItem
 import com.typesafe.config.ConfigFactory
 import org.bugogre.crawler.fetcher.impl.HtmlPageFetcher
-import org.bugogre.crawler.parser.PageParserActor
+import org.bugogre.crawler.parser.PageParserService
 
-object PageFetcherActor {
+object PageFetcherService {
   def main(args: Array[String]): Unit = {
     val system = ActorSystem("Crawler", ConfigFactory.load("fetcher"))
-    system.actorOf(Props[PageFetcherActor], "pagefetcher")
+    system.actorOf(Props[PageFetcherService], "page-fetcher")
   }
 }
 
-class PageFetcherActor extends Actor with ActorLogging {
-  val pageParser = context.actorOf(Props[PageParserActor], "htmlParser")
+class PageFetcherService extends Actor with ActorLogging {
+  val pageParser = context.actorOf(Props[PageParserService], "html-parser")
 
   var fetchers = Map[String, ActorRef]()
 
@@ -27,8 +27,6 @@ class PageFetcherActor extends Actor with ActorLogging {
   }
 
   def receive = {
-    case str: String =>
-      pageParser ! str
     case fetchItem: FetchItem =>
       val fetcherName: String = s"""${fetchItem.indexName}-${fetchItem.indexType}"""
       fetchers.get(fetcherName) match {

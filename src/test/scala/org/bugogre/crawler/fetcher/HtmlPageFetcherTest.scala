@@ -1,14 +1,22 @@
 package org.bugogre.crawler.fetcher
 
+import akka.actor.ActorSystem
+import akka.testkit.{ImplicitSender, TestKit}
 import org.bugogre.crawler.fetcher.impl.HtmlPageFetcher
-import org.scalatest.FlatSpec
+import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
 
 /**
  * seccrawler
  * Created by chengpohi on 8/26/15.
  */
-class HtmlPageFetcherTest  extends FlatSpec {
+class HtmlPageFetcherTest  (_system: ActorSystem)
+  extends TestKit(_system)
+  with FlatSpecLike
+  with Matchers
+  with BeforeAndAfterAll
+  with ImplicitSender {
   val htmlPageFetcher = new HtmlPageFetcher(null, null)
+
   val urlFilter = List(
     (".*", "http://www.google.com", true),
     ("http://www.google.com/.*", "http://www.google.com", false),

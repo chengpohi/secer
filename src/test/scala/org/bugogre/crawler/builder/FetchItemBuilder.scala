@@ -16,4 +16,8 @@ object FetchItemBuilder {
       )
     FetchItem(new URL("http://stackoverflow.com"), "turing", "stackoverflow", fields, Option(".*"))
   }
+
+  def build(): FetchItem = {
+    fetchItem
+  }
 }
