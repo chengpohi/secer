@@ -1,13 +1,12 @@
 package org.bugogre.crawler.parser.impl
 
-import scala.io.Source
-
 /**
  * seccrawler
  * Created by chengpohi on 12/25/15.
  */
 object EnWikiParser {
-
+  val START_TAG = "<page>"
+  val END_TAG = "</page>"
   implicit class PredicateSliceIterator(it: Iterator[String]) {
     def sliceByPredicate(start: String => Boolean, end: String => Boolean): Iterator[String] = {
       val self = it.buffered
@@ -19,14 +18,12 @@ object EnWikiParser {
             self.next()
           while(self.hasNext && !end(self.head))
             sb.append(self.next())
-          if (self.hasNext) {
-            sb.toString() + self.next()
-          } else {
-            ""
-          }
+          sb.toString() + self.next()
         }
 
         def hasNext = {
+          while(self.hasNext && !start(self.head))
+            self.next()
           self.hasNext
         }
 
@@ -35,12 +32,5 @@ object EnWikiParser {
         }
       }
     }
-  }
-
-  val START_TAG = "<page>"
-  val END_TAG = "</page>"
-
-  def main(args: Array[String]): Unit = {
-    Source.fromFile("./test.xml").getLines().sliceByPredicate(START_TAG.equals, END_TAG.equals).foreach(println)
   }
 }
