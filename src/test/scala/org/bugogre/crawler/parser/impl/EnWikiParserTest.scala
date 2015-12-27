@@ -9,8 +9,8 @@ import scala.io.Source
  * Created by chengpohi on 12/26/15.
  */
 class EnWikiParserTest extends FlatSpec {
-
   import EnWikiParser._
+  import IteratorHelper._
 
   "SliceByPredicate " should " slice iterator by predicate" in {
     val pages: List[String] =
