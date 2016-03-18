@@ -1,0 +1,83 @@
+package com.github.chengpohi.fetcher.impl
+
+import java.net.{NoRouteToHostException, SocketException, UnknownHostException}
+import java.util.concurrent.Executors
+
+import akka.actor.{Actor, ActorLogging, ActorRef}
+import com.github.chengpohi.fetcher.cache.URLCache
+import com.github.chengpohi.fetcher.cache.URLCache.FETCH_ITEM_CACHE
+import com.github.chengpohi.fetcher.config.FetcherConfig
+import com.github.chengpohi.fetcher.httpclient.HttpResponse
+import com.github.chengpohi.fetcher.model._
+import com.github.chengpohi.fetcher.util.FetcherHelper
+import org.apache.http.NoHttpResponseException
+import org.apache.http.client.ClientProtocolException
+import org.apache.http.conn.HttpHostConnectException
+import org.slf4j.MDC
+
+import scala.concurrent._
+
+
+/**
+ * Page Fetcher
+ * Created by xiachen on 3/1/15.
+ */
+class HtmlPageFetcher(pageParser: ActorRef, fetchItem: FetchItem) extends Actor with ActorLogging {
+  implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(FetcherConfig.MAX_THREADS))
+
+  def fetch(fetchItem: FetchItem): String = {
+    try {
+      MDC.put("logFileName", (Thread.currentThread().getId % FetcherConfig.MAX_THREADS + 1).toString)
+      log.info("Cache Size: " + FETCH_ITEM_CACHE.size + ", Fetch Url: " + fetchItem.url.toString)
+      val w = HttpResponse ==> fetchItem
+      pageParser ! w
+      MDC.remove("logFileName")
+      fetchItem.url.toString + " fetch finished."
+    } catch {
+      case e: ClientProtocolException => "client redirect exception:" + fetchItem.url.toString
+      case e: UnknownHostException => "unknown url: " + fetchItem.url.toString
+      case e: HttpHostConnectException => "host can't connect exception:" + fetchItem.url.toString
+      case e: NoRouteToHostException => "no route to host exception:" + fetchItem.url.toString
+      case e: SocketException => "socket exception:" + fetchItem.url.toString
+      case e: NoHttpResponseException => "no http response exception: " + fetchItem.url.toString
+    }
+  }
+
+  def filterFetchedItem(item: FetchItem): Boolean = {
+    this.synchronized {
+      val hashUrl = FetcherHelper.hashString(item.url.toString)
+      if (FETCH_ITEM_CACHE.containsKey(hashUrl)) {
+        return false
+      }
+      FETCH_ITEM_CACHE.put(hashUrl, item)
+      true
+    }
+  }
+
+  def filterFetchItemByUrlRegex(url: String, regex: String): Boolean = {
+    url.matches(regex)
+  }
+
+  def filter(item: FetchItem): Boolean = {
+    filterFetchItemByUrlRegex(item.url.toString, item.urlRegex.get) && filterFetchedItem(item)
+  }
+
+
+  def asyncFetch(fetchItem: FetchItem): Future[String] = {
+    Future {
+      blocking {
+        fetch(fetchItem)
+      }
+    }
+  }
+
+  override def receive: Receive = {
+    case fetchItem: FetchItem if filter(fetchItem) =>
+      asyncFetch(fetchItem)
+    case fetchItems: List[_] =>
+      fetchItems.asInstanceOf[List[FetchItem]]
+        .filter(f => filter(f))
+        .foreach(fetchItem => asyncFetch(fetchItem))
+    case _ => log.info("item has been fetched!!!")
+  }
+}
