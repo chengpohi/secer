@@ -6,7 +6,7 @@ import scala.io.Source
  * seccrawler
  * Created by chengpohi on 12/25/15.
  */
-case class Page(title: String, redirectTitle: String, text: String, contributor: String, model: String,
+case class WikiPage(title: String, redirectTitle: String, text: String, contributor: String, model: String,
                 timestamp: String,
                 format: String,
                 comment: String) {
@@ -35,8 +35,7 @@ object EnWikiParser {
       val model: String = (p \\ "model").text
       val format: String = (p \\ "format").text
       val comment: String = (p \\ "revision" \\ "comment").text
-
-      val page = Page(title, redirectTitle, text, contributor, model, timestamp, format, comment)
+      val page = WikiPage(title, redirectTitle, text, contributor, model, timestamp, format, comment)
     })
   }
 }

@@ -1,4 +1,4 @@
-package scala.com.github.chengpohi.fetcher
+package com.github.chengpohi
 
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit}

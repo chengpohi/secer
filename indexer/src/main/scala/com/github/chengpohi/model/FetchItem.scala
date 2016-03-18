@@ -1,4 +1,4 @@
-package com.github.chengpohi.fetcher.model
+package com.github.chengpohi.model
 
 import java.net.URL
 

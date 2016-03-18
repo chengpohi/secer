@@ -1,7 +1,8 @@
-package com.github.chengpohi.fetcher
+package com.github.chengpohi
 
 import akka.actor._
-import com.github.chengpohi.fetcher.model.FetchItem
+import com.github.chengpohi.model.FetchItem
+import com.github.chengpohi.parser.PageParserService
 import com.typesafe.config.ConfigFactory
 
 object PageFetcherService {

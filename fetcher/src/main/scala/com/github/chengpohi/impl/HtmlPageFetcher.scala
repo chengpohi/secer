@@ -1,15 +1,15 @@
-package com.github.chengpohi.fetcher.impl
+package com.github.chengpohi.impl
 
 import java.net.{NoRouteToHostException, SocketException, UnknownHostException}
 import java.util.concurrent.Executors
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import com.github.chengpohi.fetcher.cache.URLCache
-import com.github.chengpohi.fetcher.cache.URLCache.FETCH_ITEM_CACHE
-import com.github.chengpohi.fetcher.config.FetcherConfig
-import com.github.chengpohi.fetcher.httpclient.HttpResponse
-import com.github.chengpohi.fetcher.model._
-import com.github.chengpohi.fetcher.util.FetcherHelper
+import com.github.chengpohi.cache.URLCache
+import com.github.chengpohi.cache.URLCache.FETCH_ITEM_CACHE
+import com.github.chengpohi.config.FetcherConfig
+import com.github.chengpohi.httpclient.HttpResponse
+import com.github.chengpohi.model.FetchItem
+import com.github.chengpohi.util.SecHelper
 import org.apache.http.NoHttpResponseException
 import org.apache.http.client.ClientProtocolException
 import org.apache.http.conn.HttpHostConnectException
@@ -45,7 +45,7 @@ class HtmlPageFetcher(pageParser: ActorRef, fetchItem: FetchItem) extends Actor 
 
   def filterFetchedItem(item: FetchItem): Boolean = {
     this.synchronized {
-      val hashUrl = FetcherHelper.hashString(item.url.toString)
+      val hashUrl = SecHelper.hashString(item.url.toString)
       if (FETCH_ITEM_CACHE.containsKey(hashUrl)) {
         return false
       }

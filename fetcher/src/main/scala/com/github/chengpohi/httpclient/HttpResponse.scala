@@ -1,16 +1,13 @@
-package com.github.chengpohi.fetcher.httpclient
+package com.github.chengpohi.httpclient
 
-import com.secer.elastic.model.FetchItem
+import com.github.chengpohi.model._
 import org.apache.http.HttpEntity
 import org.apache.http.client.methods.{CloseableHttpResponse, HttpGet}
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.util.EntityUtils
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import org.slf4j.LoggerFactory
 
-case class Web(fetchItem: FetchItem, doc: Document) {
-}
 
 object HttpResponse {
   val LOG = LoggerFactory.getLogger(getClass.getName)

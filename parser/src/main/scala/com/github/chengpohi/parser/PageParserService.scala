@@ -1,8 +1,8 @@
 package com.github.chengpohi.parser
 
 import akka.actor.{Actor, Props}
-import org.bugogre.crawler.httpclient.Web
-import org.bugogre.crawler.indexer.PageIndexerService
+import com.github.chengpohi.indexer.PageIndexerService
+import com.github.chengpohi.model.Web
 import org.slf4j.LoggerFactory
 
 

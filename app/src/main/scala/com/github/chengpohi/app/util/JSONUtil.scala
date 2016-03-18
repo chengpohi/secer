@@ -2,6 +2,7 @@ package com.github.chengpohi.app.util
 
 import java.net.URL
 
+import com.github.chengpohi.model.{FetchItem, FieldSelector}
 import org.json4s._
 import org.json4s.native.JsonMethods._
 

@@ -1,6 +1,7 @@
 package com.github.chengpohi.indexer
 
 import akka.actor.Actor
+import com.github.chengpohi.model.Page
 import org.slf4j.LoggerFactory
 
 

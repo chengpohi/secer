@@ -1,12 +1,13 @@
+name := "secer"
+
 lazy val commonSettings = Seq(
-  name := "secer",
   version := "1.0",
-  scalaVersion := "2.11.7",
-  unmanagedBase := baseDirectory.value / "lib",
-  ivyScala := ivyScala.value map {
-    _.copy(overrideScalaVersion = true)
-  }
+  scalaVersion := "2.11.7"
 )
+
+ivyScala := ivyScala.value map {
+  _.copy(overrideScalaVersion = true)
+}
 
 lazy val commonDependencies = Seq(
   "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test",
@@ -27,26 +28,25 @@ lazy val commonDependencies = Seq(
 )
 
 
-lazy val fetcher = project.in(file("fetcher"))
+lazy val indexer = project.in(file("indexer"))
   .settings(commonSettings: _*)
   .settings(libraryDependencies ++= commonDependencies)
 
 lazy val parser = project.in(file("parser"))
   .settings(commonSettings: _*)
   .settings(libraryDependencies ++= commonDependencies)
-  .dependsOn(fetcher)
-  .aggregate(fetcher)
+  .aggregate(indexer)
+  .dependsOn(indexer)
 
-lazy val indexer = project.in(file("indexer"))
+lazy val fetcher = project.in(file("fetcher"))
   .settings(commonSettings: _*)
   .settings(libraryDependencies ++= commonDependencies)
-  .dependsOn(fetcher)
   .aggregate(parser)
+  .dependsOn(parser)
 
 lazy val root = project.in(file("app"))
   .settings(commonSettings: _*)
   .settings(libraryDependencies ++= commonDependencies)
   .aggregate(fetcher)
-  .aggregate(parser)
-  .aggregate(indexer)
+  .dependsOn(fetcher)
 

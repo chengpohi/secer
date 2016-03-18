@@ -4,6 +4,9 @@ import java.net.URL
 import java.util.concurrent.Executors
 
 import akka.actor.ActorRef
+import com.github.chengpohi.model._
+import com.github.chengpohi.util.SecHelper
+import SecHelper._
 import com.github.chengpohi.parser.config.ParserConfig
 import com.github.chengpohi.parser.html.HtmlToMarkdown
 import com.github.chengpohi.parser.url.UrlNormalizer
@@ -45,9 +48,8 @@ class HtmlPageParser(pageIndexer: ActorRef) {
   }
 
 
-  def parse(doc: Document, item: FetchItem): (Page, List[FetchItem]) = {
-    (Page(doc, item, HashUtil.hashString(doc.html), hash(item.url.toString), parseBySelector(doc, item.selectors)), hrefs(doc, item))
-  }
+  def parse(doc: Document, item: FetchItem): (Page, List[FetchItem]) =
+    (Page(doc, item, hashString(doc.html), hash(item.url.toString), parseBySelector(doc, item.selectors)), hrefs(doc, item))
 
   def selectBySelector(doc: Document, selector: String): String = {
     doc.select(selector).first() match {
