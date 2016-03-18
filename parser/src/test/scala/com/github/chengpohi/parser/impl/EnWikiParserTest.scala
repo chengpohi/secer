@@ -2,6 +2,8 @@ package org.bugogre.crawler.parser.impl
 
 import org.scalatest.FlatSpec
 
+import com.github.chengpohi.parser.impl.{EnWikiParser, IteratorHelper}
+
 import scala.io.Source
 
 /**

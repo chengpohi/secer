@@ -26,7 +26,7 @@ class HtmlPageParser(pageIndexer: ActorRef) {
   lazy val m = java.security.MessageDigest.getInstance("MD5")
   lazy val htmlToMarkdown = new HtmlToMarkdown
 
-  implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(ParserConfig.MAX_THREADS))
+  implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(ParserConfig.PARSER_POOL))
 
   def normalize(url: String): URL = UrlNormalizer.normalize(url)
 

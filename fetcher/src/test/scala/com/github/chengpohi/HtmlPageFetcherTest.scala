@@ -2,6 +2,7 @@ package com.github.chengpohi
 
 import akka.actor.ActorSystem
 import akka.testkit.{ImplicitSender, TestKit}
+import com.github.chengpohi.impl.HtmlPageFetcher
 import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
 
 /**

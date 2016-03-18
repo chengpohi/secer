@@ -4,8 +4,8 @@ import java.net.URL
 
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.secer.elastic.model.{FieldSelector, FetchItem}
-import org.bugogre.crawler.httpclient.Web
+import com.github.chengpohi.model.{Web, FieldSelector, FetchItem}
+import com.github.chengpohi.parser.PageParserService
 import org.jsoup.Jsoup
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 

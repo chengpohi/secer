@@ -8,5 +8,5 @@ import com.typesafe.config.ConfigFactory
  */
 object ParserConfig {
   lazy val PARSER_CONFIG = ConfigFactory.load("parser")
-  lazy val MAX_THREADS = PARSER_CONFIG.getConfig("threads").getInt("fetcher")
+  lazy val PARSER_POOL = PARSER_CONFIG.getConfig("threads").getInt("parser")
 }

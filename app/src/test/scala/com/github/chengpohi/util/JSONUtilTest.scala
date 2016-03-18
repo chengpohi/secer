@@ -1,5 +1,6 @@
 package com.github.chengpohi.util
 
+import com.github.chengpohi.app.util.JSONUtil
 import org.json4s.ParserUtil.ParseException
 import org.scalatest.FlatSpec
 

@@ -1,5 +1,6 @@
 package com.github.chengpohi.parser
 
+import com.github.chengpohi.parser.url.UrlNormalizer
 import org.scalatest.FlatSpec
 
 /**
