@@ -1,10 +1,8 @@
 package org.bugogre.crawler.parser
 
-import java.net.URL
-
 import akka.actor.{ActorSystem, Props}
 import akka.testkit.{ImplicitSender, TestKit}
-import com.github.chengpohi.model.{Web, FieldSelector, FetchItem}
+import com.github.chengpohi.model.{FetchItem, FieldSelector, Web}
 import com.github.chengpohi.parser.PageParserService
 import org.jsoup.Jsoup
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}

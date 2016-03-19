@@ -7,7 +7,7 @@ import org.scalatest.FlatSpec
  * Created by xiachen on 3/19/15.
  */
 class UrlNormalizerTest extends FlatSpec {
-  def normalize(path: String): String = UrlNormalizer.normalize(path).toString
+  def normalize(path: String): String = UrlNormalizer.normalize(path)
 
   "normalize" should " remove space" in {
     assert(normalize(" http://foo.com/ ") == "http://foo.com/")

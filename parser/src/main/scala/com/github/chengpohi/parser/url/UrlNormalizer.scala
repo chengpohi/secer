@@ -68,7 +68,11 @@ object UrlNormalizer {
       }
 
     }
-    url.toString
+
+    if (changed)
+      new URL(protocol, host, port, file).toString
+    else
+      new URL(urlString).toString
   }
 
   def substituteUnnecessaryRelativePaths(file: String): String = {
