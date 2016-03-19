@@ -1,7 +1,7 @@
 package com.github.chengpohi.indexer
 
 import akka.actor.Actor
-import com.github.chengpohi.model.Page
+import com.github.chengpohi.model.IndexPage
 import org.slf4j.LoggerFactory
 
 
@@ -13,6 +13,6 @@ class PageIndexerService extends Actor {
   val htmlPageIndexer = new impl.HtmlPageIndexer
 
   def receive: Receive = {
-    case page: Page => htmlPageIndexer.asyncIndex(page)
+    case page: IndexPage => htmlPageIndexer.asyncIndex(page)
   }
 }

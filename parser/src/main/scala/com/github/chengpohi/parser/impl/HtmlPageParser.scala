@@ -36,7 +36,7 @@ class HtmlPageParser(pageIndexer: ActorRef) {
     new java.math.BigInteger(1, m.digest()).toString(16)
   }
 
-  def parse(html: String): (Page, List[FetchItem]) = parse(Jsoup.parse(html), null)
+  def parse(html: String): (IndexPage, List[FetchItem]) = parse(Jsoup.parse(html), null)
 
   def hrefs(doc: Document, item: FetchItem): List[FetchItem] = {
     for {
@@ -48,8 +48,8 @@ class HtmlPageParser(pageIndexer: ActorRef) {
   }
 
 
-  def parse(doc: Document, item: FetchItem): (Page, List[FetchItem]) =
-    (Page(doc, item, hashString(doc.html), hash(item.url), parseBySelector(doc, item.selectors)), hrefs(doc, item))
+  def parse(doc: Document, item: FetchItem): (IndexPage, List[FetchItem]) =
+    (IndexPage(doc, item, hashString(doc.html), hash(item.url), parseBySelector(doc, item.selectors)), hrefs(doc, item))
 
   def selectBySelector(doc: Document, selector: String): String = {
     doc.select(selector).first() match {
@@ -63,7 +63,7 @@ class HtmlPageParser(pageIndexer: ActorRef) {
       htmlToMarkdown.parse(selectBySelector(doc, fieldSelector.selector)))
   }
 
-  def parse(web: Web): (Page, List[FetchItem]) = parse(web.doc, web.fetchItem)
+  def parse(web: Web): (IndexPage, List[FetchItem]) = parse(web.doc, web.fetchItem)
 
 
   def asyncParse(sender: ActorRef, web: Web): Future[String] = {

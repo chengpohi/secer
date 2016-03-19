@@ -26,6 +26,7 @@ lazy val commonDependencies = Seq(
   "org.jsoup" % "jsoup" % "1.8.3",
   "org.json4s" %% "json4s-native" % "3.2.10",
   "org.json4s" %% "json4s-jackson" % "3.2.10",
+  "com.github.chengpohi" %% "elasticshell" % "1.1",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.2",
   "com.fasterxml.jackson.core" % "jackson-core" % "2.4.2",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.4.2"
