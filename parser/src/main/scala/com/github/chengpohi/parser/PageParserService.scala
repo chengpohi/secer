@@ -20,7 +20,7 @@ class PageParserService extends Actor {
   def receive = {
     case str: String =>
     case web: Web =>
-      LOG.info("Parse Url: " + web.fetchItem.url.toString)
+      LOG.info("Parse Url: " + web.fetchItem.url)
       pageParser.asyncParse(sender(), web)
   }
 }

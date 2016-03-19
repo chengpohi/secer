@@ -14,9 +14,9 @@ object UrlNormalizer {
   val currentPathRule = "/\\./".r
   val adjacentSlashRule = "/{2,}".r
 
-  def normalize(urlString: String): URL = {
-    if ("".equals(urlString)) // permit empty
-      return new URL(urlString)
+  def normalize(urlString: String): String = {
+    if ("".equals(urlString))
+      return urlString
 
     val url = new URL(urlString.trim)
 
@@ -28,14 +28,14 @@ object UrlNormalizer {
 
     var changed = false
 
-    if (!urlString.startsWith(protocol)) // protocol was lowercased
+    if (!urlString.startsWith(protocol))
       changed = true
 
     if ("http".equals(protocol) || "https".equals(protocol)
       || "ftp".equals(protocol)) {
 
       if (host != null) {
-        val newHost = host.toLowerCase // lowercase host
+        val newHost = host.toLowerCase
         if (!host.equals(newHost)) {
           host = newHost
           changed = true
@@ -68,11 +68,7 @@ object UrlNormalizer {
       }
 
     }
-
-    if (changed)
-      new URL(protocol, host, port, file)
-    else
-      new URL(urlString)
+    url.toString
   }
 
   def substituteUnnecessaryRelativePaths(file: String): String = {

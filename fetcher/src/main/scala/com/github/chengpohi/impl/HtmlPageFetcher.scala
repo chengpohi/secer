@@ -4,7 +4,6 @@ import java.net.{NoRouteToHostException, SocketException, UnknownHostException}
 import java.util.concurrent.Executors
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import com.github.chengpohi.cache.URLCache
 import com.github.chengpohi.cache.URLCache.FETCH_ITEM_CACHE
 import com.github.chengpohi.config.FetcherConfig
 import com.github.chengpohi.httpclient.HttpResponse
@@ -28,24 +27,24 @@ class HtmlPageFetcher(pageParser: ActorRef, fetchItem: FetchItem) extends Actor 
   def fetch(fetchItem: FetchItem): String = {
     try {
       MDC.put("logFileName", (Thread.currentThread().getId % FetcherConfig.MAX_THREADS + 1).toString)
-      log.info("Cache Size: " + FETCH_ITEM_CACHE.size + ", Fetch Url: " + fetchItem.url.toString)
+      log.info("Cache Size: " + FETCH_ITEM_CACHE.size + ", Fetch Url: " + fetchItem.url)
       val w = HttpResponse ==> fetchItem
       pageParser ! w
       MDC.remove("logFileName")
-      fetchItem.url.toString + " fetch finished."
+      fetchItem.url+ " fetch finished."
     } catch {
-      case e: ClientProtocolException => "client redirect exception:" + fetchItem.url.toString
-      case e: UnknownHostException => "unknown url: " + fetchItem.url.toString
-      case e: HttpHostConnectException => "host can't connect exception:" + fetchItem.url.toString
-      case e: NoRouteToHostException => "no route to host exception:" + fetchItem.url.toString
-      case e: SocketException => "socket exception:" + fetchItem.url.toString
-      case e: NoHttpResponseException => "no http response exception: " + fetchItem.url.toString
+      case e: ClientProtocolException => "client redirect exception:" + fetchItem.url
+      case e: UnknownHostException => "unknown url: " + fetchItem.url
+      case e: HttpHostConnectException => "host can't connect exception:" + fetchItem.url
+      case e: NoRouteToHostException => "no route to host exception:" + fetchItem.url
+      case e: SocketException => "socket exception:" + fetchItem.url
+      case e: NoHttpResponseException => "no http response exception: " + fetchItem.url
     }
   }
 
   def filterFetchedItem(item: FetchItem): Boolean = {
     this.synchronized {
-      val hashUrl = SecHelper.hashString(item.url.toString)
+      val hashUrl = SecHelper.hashString(item.url)
       if (FETCH_ITEM_CACHE.containsKey(hashUrl)) {
         return false
       }
@@ -59,7 +58,7 @@ class HtmlPageFetcher(pageParser: ActorRef, fetchItem: FetchItem) extends Actor 
   }
 
   def filter(item: FetchItem): Boolean = {
-    filterFetchItemByUrlRegex(item.url.toString, item.urlRegex.get) && filterFetchedItem(item)
+    filterFetchItemByUrlRegex(item.url, item.urlRegex.get) && filterFetchedItem(item)
   }
 
 

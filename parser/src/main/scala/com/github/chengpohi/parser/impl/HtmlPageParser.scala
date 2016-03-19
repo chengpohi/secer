@@ -5,11 +5,11 @@ import java.util.concurrent.Executors
 
 import akka.actor.ActorRef
 import com.github.chengpohi.model._
-import com.github.chengpohi.util.SecHelper
-import SecHelper._
 import com.github.chengpohi.parser.config.ParserConfig
 import com.github.chengpohi.parser.html.HtmlToMarkdown
 import com.github.chengpohi.parser.url.UrlNormalizer
+import com.github.chengpohi.util.SecHelper
+import com.github.chengpohi.util.SecHelper._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import org.slf4j.LoggerFactory
@@ -28,7 +28,7 @@ class HtmlPageParser(pageIndexer: ActorRef) {
 
   implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(ParserConfig.PARSER_POOL))
 
-  def normalize(url: String): URL = UrlNormalizer.normalize(url)
+  def normalize(url: String): String = UrlNormalizer.normalize(url)
 
   def hash(s: String): String = {
     val b = s.getBytes("UTF-8")
@@ -49,7 +49,7 @@ class HtmlPageParser(pageIndexer: ActorRef) {
 
 
   def parse(doc: Document, item: FetchItem): (Page, List[FetchItem]) =
-    (Page(doc, item, hashString(doc.html), hash(item.url.toString), parseBySelector(doc, item.selectors)), hrefs(doc, item))
+    (Page(doc, item, hashString(doc.html), hash(item.url), parseBySelector(doc, item.selectors)), hrefs(doc, item))
 
   def selectBySelector(doc: Document, selector: String): String = {
     doc.select(selector).first() match {

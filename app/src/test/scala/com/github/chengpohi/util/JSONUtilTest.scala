@@ -26,11 +26,4 @@ class JSONUtilTest extends FlatSpec {
       val fieldSelectors = JSONUtil.fieldSelectorParser("test invalid")
     }
   }
-
-  "JSONUtil fetchItemParser" should "extract json to FetchItem" in {
-    val fetchItem = JSONUtil.fetchItemParser(fieldFetchItemStr)
-    assert(fetchItem.indexName == "stackoverflow")
-    assert(fetchItem.indexType == "stackoverflow")
-    assert(fetchItem.url.toString == "http://stackoverflow.com/questions/32152489/why-jar-files-do-not-contain-documentation")
-  }
 }

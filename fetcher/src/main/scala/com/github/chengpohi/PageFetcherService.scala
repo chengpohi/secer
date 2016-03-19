@@ -37,7 +37,7 @@ class PageFetcherService extends Actor with ActorLogging {
           log.info("continue fetcher: " + fetcherName)
           actorRef.get ! fetchItem
       }
-      sender() ! s"${fetchItem.url.toString} has been sended to child fetcher to fetch."
+      sender() ! s"${fetchItem.url} has been sended to child fetcher to fetch."
     case _ => log.info("Object Exist.")
   }
 

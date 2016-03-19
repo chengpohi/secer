@@ -5,8 +5,11 @@ import java.util.concurrent.TimeUnit
 import akka.actor.SupervisorStrategy.Restart
 import akka.actor._
 import com.github.chengpohi.app.config.CrawlerConfig
+import com.github.chengpohi.app.http.HttpRunner
+import com.github.chengpohi.app.http.actions.RestActions.registerHandler
 import com.github.chengpohi.model.FetchItem
 import com.typesafe.config.ConfigFactory
+import org.jboss.netty.handler.codec.http.HttpMethod._
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.duration._
@@ -24,8 +27,6 @@ object Crawler {
 
     system.actorOf(Props(new Crawler(remotePath)), "crawler")
   }
-
-
 }
 
 sealed trait Echo
@@ -34,8 +35,9 @@ case object Start extends Echo
 
 case object Done extends Echo
 
-class Crawler(path: String) extends Actor{
-  val LOG = LoggerFactory.getLogger(getClass.getName)
+class Crawler(path: String) extends Actor with HttpRunner{
+  override lazy val LOG = LoggerFactory.getLogger(getClass.getName)
+  override lazy val config = ConfigFactory.load("http")
 
   override val supervisorStrategy =
     OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
@@ -45,8 +47,7 @@ class Crawler(path: String) extends Actor{
       }
     }
 
-  override def preStart(): Unit = {
-  }
+  override def preStart(): Unit = this.start()
 
   sendIdentifyRequest()
 
@@ -85,5 +86,14 @@ class Crawler(path: String) extends Actor{
       LOG.info(str)
     }
     case Done =>
+  }
+
+  def seed(fetchItem: FetchItem): String = {
+    self ! fetchItem
+    s"""{"indexName": ${fetchItem.indexName}}"""
+  }
+
+  override def registerPath() = {
+    registerHandler(POST, "/seed", seed)
   }
 }

@@ -16,7 +16,7 @@ class PageParserServiceTest(_system: ActorSystem) extends TestKit(_system)
 with ImplicitSender with WordSpecLike with Matchers with BeforeAndAfterAll {
   val parser = system.actorOf(Props[PageParserService], "HtmlParser")
   val htmlStr: String = "<html><head><title>title</title></head><body><p>Parsed HTML into a doc.</p></body></html>"
-  val fetchItem = FetchItem(new URL("http://www.zhihu.com"), "ask", "zhihu",
+  val fetchItem = FetchItem("http://www.zhihu.com", "ask", "zhihu",
     List(FieldSelector("_title", "title"), FieldSelector("_content", "body")))
   val web = Web(fetchItem, Jsoup.parse(htmlStr))
 
