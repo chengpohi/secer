@@ -1,9 +1,12 @@
 package com.github.chengpohi.indexer.impl
 
 import java.util.concurrent.Executors
+
 import com.github.chengpohi.api.ElasticCommand
 import com.github.chengpohi.indexer.config.IndexerConfig
 import com.github.chengpohi.model.IndexPage
+import org.json4s.JsonAST.{JField, JString}
+import org.json4s.native.Serialization.write
 import org.slf4j.LoggerFactory
 
 import scala.concurrent._
@@ -15,6 +18,7 @@ import scala.concurrent._
 class HtmlPageIndexer {
   implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(IndexerConfig.INDEXER_THREADS))
   implicit val client = IndexerConfig.client
+  implicit val formats = org.json4s.DefaultFormats
 
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
 
@@ -22,7 +26,8 @@ class HtmlPageIndexer {
     Future {
       blocking {
         LOG.info("Index Url: " + page.fetchItem.url)
-        ElasticCommand.indexMap(page.fetchItem.indexName, page.fetchItem.indexType, page)
+        val id = ElasticCommand.indexMap(page.fetchItem.indexName, page.fetchItem.indexType, page)
+        write(JField("_id", JString(id)))
       }
     }
   }

@@ -24,7 +24,7 @@ class HtmlPageIndexerTest extends FlatSpec with BeforeAndAfter{
     val indexPage = IndexPageBuilder.indexPage
     val result: Future[String] = htmlPageIndexer.asyncIndex(indexPage)
     val id: String = Await.result(result, Duration.Inf)
-    assert(id != null)
+    assert(!id.isEmpty)
   }
 
   after {
