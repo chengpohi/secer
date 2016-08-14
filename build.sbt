@@ -1,8 +1,10 @@
 name := "secer"
 
 lazy val commonSettings = Seq(
-  version := "1.0",
-  scalaVersion := "2.11.7"
+  version := "0.1",
+  scalaVersion := "2.11.8",
+  initialCommands in console := "import scalaz._, Scalaz._",
+  addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 )
 
 ivyScala := ivyScala.value map {
@@ -19,7 +21,7 @@ lazy val akkaDependencies = Seq(
 
 
 lazy val commonDependencies = Seq(
-  "org.scalatest" % "scalatest_2.11" % "2.2.1" % "test",
+  "org.scalatest" %% "scalatest" % "3.0.0" % "test",
   "org.scalamock" %% "scalamock-scalatest-support" % "3.2.1" % "test",
   "org.apache.httpcomponents" % "httpclient" % "4.3",
   "ch.qos.logback" % "logback-classic" % "1.1.2",
@@ -29,7 +31,13 @@ lazy val commonDependencies = Seq(
   "com.github.chengpohi" %% "elasticshell" % "1.1",
   "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.2",
   "com.fasterxml.jackson.core" % "jackson-core" % "2.4.2",
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.4.2"
+  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.4.2",
+  "com.chuusai" %% "shapeless" % "2.3.1",
+  "com.typesafe" % "config" % "1.3.0",
+  "org.scalaz" %% "scalaz-core" % "7.2.1",
+  "org.scalaz" %% "scalaz-effect" % "7.2.1",
+  "com.lihaoyi" %% "fastparse" % "0.3.4",
+  "org.seleniumhq.selenium" % "selenium-java" % "2.35.0"
 )
 
 
@@ -48,6 +56,11 @@ lazy val fetcher = project.in(file("fetcher"))
   .settings(libraryDependencies ++= commonDependencies ++ akkaDependencies)
   .aggregate(parser)
   .dependsOn(parser)
+
+lazy val fb = project.in(file("fb"))
+  .settings(commonSettings: _*)
+  .settings(libraryDependencies ++= commonDependencies ++ akkaDependencies)
+
 
 lazy val root = project.in(file("app"))
   .settings(commonSettings: _*)
