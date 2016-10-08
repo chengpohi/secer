@@ -1,7 +1,7 @@
 package com.github.chengpohi.registry
 
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.chrome.{ChromeDriver, ChromeOptions}
 
 /**
   * fc
@@ -13,5 +13,9 @@ trait Initialize {
 }
 
 object ChromeCrawlerRegistry extends Initialize {
-  val webDriver: WebDriver = new ChromeDriver
+  private val options: ChromeOptions = new ChromeOptions()
+  val webDriver: WebDriver = {
+    options.addArguments("--disable-notifications")
+    new ChromeDriver(options)
+  }
 }

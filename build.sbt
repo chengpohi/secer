@@ -33,9 +33,6 @@ lazy val commonDependencies = Seq(
   "com.fasterxml.jackson.core" % "jackson-core" % "2.4.2",
   "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.4.2",
   "com.chuusai" %% "shapeless" % "2.3.1",
-  "com.typesafe" % "config" % "1.3.0",
-  "org.scalaz" %% "scalaz-core" % "7.2.1",
-  "org.scalaz" %% "scalaz-effect" % "7.2.1",
   "com.lihaoyi" %% "fastparse" % "0.3.4",
   "org.seleniumhq.selenium" % "selenium-java" % "2.35.0"
 )

@@ -8,7 +8,6 @@ import com.github.chengpohi.registry.ChromeCrawlerRegistry
   */
 object FBCrawler extends WebDSL(ChromeCrawlerRegistry){
   def main(args: Array[String]): Unit = {
-    get url "https://www.facebook.com/login.php"
-    login user Config.users.head
+    login url "https://www.facebook.com/login.php" user Config.users.head
   }
 }

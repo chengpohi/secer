@@ -8,17 +8,18 @@ import org.openqa.selenium.{By, WebDriver}
   * Created by chengpohi on 8/14/16.
   */
 class WebDSL(env: {val webDriver: WebDriver}) extends WebClient {
-  case object get {
-    def url(u: String) = web.get(u)
+  case object crawl {
   }
+
   case object login {
+    def url(u: String) = LoginDefinition(u)
+  }
+
+  case class LoginDefinition(url: String) {
     def user(u: User) = {
-      val email = web.findElement(By.id("email"))
-      val password = web.findElement(By.id("pass"))
-      val login = web.findElement(By.id("loginbutton"))
-      email.sendKeys(u.mail)
-      password.sendKeys(u.password)
-      login.click()
+      web.get(url)
+      web.findElement(By.id("email")).sendKeys(u.mail)
+      web.findElement(By.id("pass")).sendKeys(u.password)
     }
   }
   override val web: WebDriver = env.webDriver
