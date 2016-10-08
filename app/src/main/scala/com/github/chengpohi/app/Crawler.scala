@@ -1,10 +1,7 @@
 package com.github.chengpohi.app
 
-import java.util.concurrent.TimeUnit
-
-import akka.actor.SupervisorStrategy.Restart
 import akka.actor._
-import com.github.chengpohi.app.config.CrawlerConfig
+import com.github.chengpohi.PageFetcherService
 import com.github.chengpohi.app.http.HttpRunner
 import com.github.chengpohi.app.http.actions.RestActions.registerHandler
 import com.github.chengpohi.model.FetchItem
@@ -12,80 +9,32 @@ import com.typesafe.config.ConfigFactory
 import org.jboss.netty.handler.codec.http.HttpMethod._
 import org.slf4j.LoggerFactory
 
-import scala.concurrent.duration._
 import scala.language.postfixOps
 
 /**
- * author: chengpohi@gmail.com
- */
+  * author: chengpohi@gmail.com
+  */
 object Crawler {
   def main(args: Array[String]) {
     val system = ActorSystem("Crawler", ConfigFactory.load("crawler"))
-
-    val remoteHostPort = CrawlerConfig.CRAWLER_PORT
-    val remotePath = s"akka.tcp://Crawler@$remoteHostPort/user/page-fetcher"
-
-    system.actorOf(Props(new Crawler(remotePath)), "crawler")
+    system.actorOf(Props[Crawler], "crawler")
   }
 }
 
-sealed trait Echo
-
-case object Start extends Echo
-
-case object Done extends Echo
-
-class Crawler(path: String) extends Actor with HttpRunner{
+class Crawler extends Actor with HttpRunner {
   override lazy val LOG = LoggerFactory.getLogger(getClass.getName)
   override lazy val config = ConfigFactory.load("http")
-
-  override val supervisorStrategy =
-    OneForOneStrategy(maxNrOfRetries = 10, withinTimeRange = 1 minute) {
-      case _: Exception => {
-        LOG.info("INFO")
-        Restart
-      }
-    }
+  lazy val fetcher = context.actorOf(Props[PageFetcherService], "fetcher")
 
   override def preStart(): Unit = this.start()
 
-  sendIdentifyRequest()
-
-  def sendIdentifyRequest(): Unit =
-    context.actorSelection(path) ! Identify(path)
-
-  def receive = identifying
-
-  def identifying: Receive = {
-    case ActorIdentity(`path`, Some(actor)) =>
-      LOG.info("Connected the remote actor")
-      context.watch(actor)
-      context.become(active(actor))
-      context.setReceiveTimeout(Duration.Undefined)
-      self ! Start
-    case ActorIdentity(`path`, None) => {
-      LOG.error(s"remote actor not found $path")
-      TimeUnit.SECONDS.sleep(3)
-      sendIdentifyRequest()
-    }
-    case ReceiveTimeout => sendIdentifyRequest()
+  def receive = {
+    case fetchItem: FetchItem =>
+      fetcher ! fetchItem
+    case Terminated(_) =>
+      context.unbecome()
     case str: String =>
       LOG.info(str)
-  }
-
-  def active(actor: ActorRef): Receive = {
-    case Start =>
-    case fetchItem: FetchItem => {
-      actor ! fetchItem
-    }
-    case Terminated(_) => {
-      context.unbecome()
-      sendIdentifyRequest()
-    }
-    case str: String => {
-      LOG.info(str)
-    }
-    case Done =>
   }
 
   def seed(fetchItem: FetchItem): String = {
