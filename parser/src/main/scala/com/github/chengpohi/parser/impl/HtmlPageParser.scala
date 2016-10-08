@@ -30,10 +30,12 @@ class HtmlPageParser(pageIndexer: ActorRef) {
 
   def normalize(url: String): String = UrlNormalizer.normalize(url)
 
+  val SIG_NUM: Int = 1
+  val HEX: Int = 16
   def hash(s: String): String = {
     val b = s.getBytes("UTF-8")
     m.update(b, 0, b.length)
-    new java.math.BigInteger(1, m.digest()).toString(16)
+    new java.math.BigInteger(SIG_NUM, m.digest()).toString(HEX)
   }
 
   def parse(html: String): (IndexPage, List[FetchItem]) = parse(Jsoup.parse(html), null)
@@ -54,7 +56,7 @@ class HtmlPageParser(pageIndexer: ActorRef) {
   def selectBySelector(doc: Document, selector: String): String = {
     doc.select(selector).first() match {
       case el: Element => el.html()
-      case null => ""
+      case _ => ""
     }
   }
 

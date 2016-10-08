@@ -15,19 +15,21 @@ trait HttpRunner {
   lazy val config = ConfigFactory.load()
 
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
+  val MAX_CONTENT_LENGTH: Int = 65536
+
   val serverBootStrap = new ServerBootstrap(new NioServerSocketChannelFactory(
       Executors.newCachedThreadPool(),
       Executors.newCachedThreadPool()
     ))
 
-  def start() = {
+  def start(): Unit = {
     this.registerPath()
 
     serverBootStrap.setPipelineFactory(new ChannelPipelineFactory() {
       override def getPipeline: ChannelPipeline = {
         val pipeline: ChannelPipeline = Channels.pipeline()
         pipeline.addLast("decoder", new HttpRequestDecoder())
-        pipeline.addLast("aggregator", new HttpChunkAggregator(65536))
+        pipeline.addLast("aggregator", new HttpChunkAggregator(MAX_CONTENT_LENGTH))
         pipeline.addLast("encoder", new HttpResponseEncoder())
         pipeline.addLast("chunkedWriter", new ChunkedWriteHandler())
 

@@ -4,8 +4,7 @@ name := "secer"
 lazy val commonSettings = Seq(
   version := "0.1",
   scalaVersion := "2.11.8",
-  initialCommands in console := "import scalaz._, Scalaz._",
-  addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+  initialCommands in console := "import scalaz._, Scalaz._"
 )
 
 ivyScala := ivyScala.value map {
@@ -69,12 +68,3 @@ lazy val root = project.in(file("app"))
 
 
 
-lazy val compileScalaStyle = taskKey[Unit]("compileScalastyle")
-
-compileScalaStyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value
-
-(scalastyleConfig in Compile) := file("project/scalastyle-config.xml")
-(scalastyleConfig in Test) := file("project/scalastyle-test-config.xml")
-
-(compile in Compile) <<= (compile in Compile) dependsOn compileScalaStyle
-(test in Test) <<= (test in Test) dependsOn compileScalaStyle

@@ -15,7 +15,7 @@ import org.json4s.native.JsonMethods._
  * Created by chengpohi on 3/19/16.
  */
 class RestHttpHandler extends SimpleChannelUpstreamHandler {
-  override def messageReceived(ctx: ChannelHandlerContext, e: MessageEvent) = {
+  override def messageReceived(ctx: ChannelHandlerContext, e: MessageEvent): Unit = {
     val httpRequest = e.getMessage.asInstanceOf[HttpRequest]
     val httpMethod: HttpMethod = httpRequest.getMethod
     val uri: String = httpRequest.getUri
@@ -42,7 +42,7 @@ class RestHttpHandler extends SimpleChannelUpstreamHandler {
   }
 
 
-  override def channelDisconnected(ctx: ChannelHandlerContext, e: ChannelStateEvent) = {
+  override def channelDisconnected(ctx: ChannelHandlerContext, e: ChannelStateEvent): Unit = {
     super.channelDisconnected(ctx, e)
   }
 }

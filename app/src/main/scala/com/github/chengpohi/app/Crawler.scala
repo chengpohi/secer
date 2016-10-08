@@ -28,7 +28,7 @@ class Crawler extends Actor with HttpRunner {
 
   override def preStart(): Unit = this.start()
 
-  def receive = {
+  def receive: Receive = {
     case fetchItem: FetchItem =>
       fetcher ! fetchItem
     case Terminated(_) =>
@@ -42,7 +42,7 @@ class Crawler extends Actor with HttpRunner {
     s"""{"indexName": ${fetchItem.indexName}}"""
   }
 
-  override def registerPath() = {
+  override def registerPath(): Unit = {
     registerHandler(POST, "/seed", seed)
   }
 }

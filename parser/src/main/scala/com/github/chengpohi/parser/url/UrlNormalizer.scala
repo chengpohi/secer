@@ -17,17 +17,12 @@ object UrlNormalizer {
   def normalize(urlString: String): String = {
     if ("".equals(urlString))
       return urlString
-
     val url = new URL(urlString.trim)
-
     val protocol = url.getProtocol
     var host = url.getHost
     var port = url.getPort
-
     var file = url.getFile
-
     var changed = false
-
     if (!urlString.startsWith(protocol))
       changed = true
 

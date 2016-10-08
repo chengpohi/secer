@@ -17,7 +17,7 @@ class PageParserService extends Actor {
 
   val pageParser = new impl.HtmlPageParser(pageIndexer)
 
-  def receive = {
+  def receive: Receive = {
     case str: String =>
     case web: Web =>
       LOG.info("Parse Url: " + web.fetchItem.url)
