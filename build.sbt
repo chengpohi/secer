@@ -1,3 +1,4 @@
+
 name := "secer"
 
 lazy val commonSettings = Seq(
@@ -66,3 +67,14 @@ lazy val root = project.in(file("app"))
   .aggregate(fetcher)
   .dependsOn(fetcher)
 
+
+
+lazy val compileScalaStyle = taskKey[Unit]("compileScalastyle")
+
+compileScalaStyle := org.scalastyle.sbt.ScalastylePlugin.scalastyle.in(Compile).toTask("").value
+
+(scalastyleConfig in Compile) := file("project/scalastyle-config.xml")
+(scalastyleConfig in Test) := file("project/scalastyle-test-config.xml")
+
+(compile in Compile) <<= (compile in Compile) dependsOn compileScalaStyle
+(test in Test) <<= (test in Test) dependsOn compileScalaStyle
