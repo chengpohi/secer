@@ -1,15 +1,12 @@
 package com.github.chengpohi.parser.impl
 
-import java.net.URL
 import java.util.concurrent.Executors
 
 import akka.actor.ActorRef
 import com.github.chengpohi.model._
 import com.github.chengpohi.parser.config.ParserConfig
-import com.github.chengpohi.parser.html.HtmlToMarkdown
 import com.github.chengpohi.parser.url.UrlNormalizer
-import com.github.chengpohi.util.SecHelper
-import com.github.chengpohi.util.SecHelper._
+import com.github.chengpohi.util.Utils._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import org.slf4j.LoggerFactory
@@ -24,7 +21,6 @@ class HtmlPageParser(pageIndexer: ActorRef) {
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
 
   lazy val m = java.security.MessageDigest.getInstance("MD5")
-  lazy val htmlToMarkdown = new HtmlToMarkdown
 
   implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(ParserConfig.PARSER_POOL))
 
@@ -61,8 +57,7 @@ class HtmlPageParser(pageIndexer: ActorRef) {
   }
 
   def parseBySelector(doc: Document, fieldSelectors: List[FieldSelector]): List[IndexField] = {
-    for (fieldSelector <- fieldSelectors) yield IndexField(fieldSelector.field,
-      htmlToMarkdown.parse(selectBySelector(doc, fieldSelector.selector)))
+    for (fieldSelector <- fieldSelectors) yield IndexField(fieldSelector.field, doc.body().text())
   }
 
   def parse(web: Web): (IndexPage, List[FetchItem]) = parse(web.doc, web.fetchItem)

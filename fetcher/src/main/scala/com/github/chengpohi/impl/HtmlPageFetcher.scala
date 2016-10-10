@@ -8,7 +8,7 @@ import com.github.chengpohi.cache.URLCache.FETCH_ITEM_CACHE
 import com.github.chengpohi.config.FetcherConfig
 import com.github.chengpohi.httpclient.HttpResponse
 import com.github.chengpohi.model.FetchItem
-import com.github.chengpohi.util.SecHelper
+import com.github.chengpohi.util.Utils
 import org.apache.http.NoHttpResponseException
 import org.apache.http.client.ClientProtocolException
 import org.apache.http.conn.HttpHostConnectException
@@ -44,7 +44,7 @@ class HtmlPageFetcher(pageParser: ActorRef, fetchItem: FetchItem) extends Actor 
 
   def filterFetchedItem(item: FetchItem): Boolean = {
     this.synchronized {
-      val hashUrl = SecHelper.hashString(item.url)
+      val hashUrl = Utils.hashString(item.url)
       if (FETCH_ITEM_CACHE.containsKey(hashUrl)) {
         return false
       }

@@ -4,8 +4,10 @@ name := "secer"
 lazy val commonSettings = Seq(
   version := "0.1",
   scalaVersion := "2.11.8",
-  initialCommands in console := "import scalaz._, Scalaz._"
+  initialCommands in console := "import scalaz._, Scalaz._",
+  resolvers += Resolver.mavenLocal
 )
+
 
 ivyScala := ivyScala.value map {
   _.copy(overrideScalaVersion = true)
@@ -15,7 +17,6 @@ lazy val akkaDependencies = Seq(
   "com.typesafe" % "config" % "1.2.1",
   "com.typesafe.akka" %% "akka-actor" % "2.4.1",
   "com.typesafe.akka" %% "akka-testkit" % "2.4.1",
-  "com.typesafe.akka" %% "akka-remote" % "2.4.1",
   "com.typesafe.akka" %% "akka-slf4j" % "2.4.1"
 )
 
@@ -28,11 +29,7 @@ lazy val commonDependencies = Seq(
   "org.jsoup" % "jsoup" % "1.8.3",
   "org.json4s" %% "json4s-native" % "3.2.10",
   "org.json4s" %% "json4s-jackson" % "3.2.10",
-  "com.github.chengpohi" %% "elasticshell" % "1.1",
-  "com.fasterxml.jackson.core" % "jackson-databind" % "2.4.2",
-  "com.fasterxml.jackson.core" % "jackson-core" % "2.4.2",
-  "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.4.2",
-  "com.chuusai" %% "shapeless" % "2.3.1",
+  "com.github.chengpohi" %% "elasticshell" % "0.2-SNAPSHOT",
   "com.lihaoyi" %% "fastparse" % "0.3.4",
   "org.scalactic" %% "scalactic" % "3.0.0",
   "org.seleniumhq.selenium" % "selenium-java" % "2.35.0"
