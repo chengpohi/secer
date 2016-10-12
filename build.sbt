@@ -24,7 +24,6 @@ lazy val akkaDependencies = Seq(
 lazy val commonDependencies = Seq(
   "org.scalatest" %% "scalatest" % "3.0.0" % "test",
   "org.scalamock" %% "scalamock-scalatest-support" % "3.2.1" % "test",
-  "org.apache.httpcomponents" % "httpclient" % "4.3",
   "ch.qos.logback" % "logback-classic" % "1.1.2",
   "org.jsoup" % "jsoup" % "1.8.3",
   "org.json4s" %% "json4s-native" % "3.2.10",

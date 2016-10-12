@@ -1,7 +1,7 @@
 package com.github.chengpohi.app
 
 import akka.actor._
-import com.github.chengpohi.{ELKRunEngine, PageFetcherService}
+import com.github.chengpohi.{ELKInterpreter, PageFetcherService}
 import com.github.chengpohi.app.http.HttpRunner
 import com.github.chengpohi.app.http.actions.RestActions.registerHandler
 import com.github.chengpohi.model.{DSL, FetchItem}
@@ -26,7 +26,7 @@ class Crawler extends Actor with HttpRunner {
   override lazy val LOG = LoggerFactory.getLogger(getClass.getName)
   override lazy val config = ConfigFactory.load("http")
   lazy val fetcher = context.actorOf(Props[PageFetcherService], "fetcher")
-  lazy val replInterpreter = new ELKRunEngine(ELKCommandRegistry)
+  lazy val replInterpreter = new ELKInterpreter(ELKCommandRegistry)
 
   override def preStart(): Unit = this.start()
 
