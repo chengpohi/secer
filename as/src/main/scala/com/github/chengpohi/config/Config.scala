@@ -2,6 +2,7 @@ package com.github.chengpohi.config
 
 import java.util.Base64
 
+import com.github.chengpohi.model.AppSeed
 import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.collection.JavaConverters._
@@ -14,7 +15,7 @@ object Config {
   private[this] val loadConfig = ConfigFactory.load("appstore.conf")
   def decode(s: String): String = new String(Base64.getDecoder.decode(s))
 
-  def getSeeds: List[String] = {
+  def getSeeds: List[AppSeed] = {
     val appstore: Config = loadConfig.getConfig("appstore")
     val urlBase: String = appstore.getString("urlBase")
     val countries = appstore.getStringList("countries").asScala.toList
@@ -27,6 +28,6 @@ object Config {
       country <- countries
       feedType <- feedTypes
       genre <- genres
-    } yield urlBase.format(country, feedType, limit, genre, tpe)
+    } yield AppSeed(country, feedType, genre, urlBase.format(country, feedType, limit, genre, tpe))
   }
 }
