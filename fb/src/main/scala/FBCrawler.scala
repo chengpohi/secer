@@ -7,7 +7,14 @@ import com.github.chengpohi.registry.ChromeCrawlerRegistry
   * Created by chengpohi on 8/14/16.
   */
 object FBCrawler extends WebDSL(ChromeCrawlerRegistry){
+  val SLEEP_TIME: Long = 3000
   def main(args: Array[String]): Unit = {
-    login url "https://www.facebook.com/login.php" user Config.users.head
+    login url "https://www.facebook.com/" user Config.users.head
+    go to "https://m.facebook.com"
+    while(true) {
+      Thread.sleep(SLEEP_TIME)
+      println("scroll down")
+      scroll down 800
+    }
   }
 }

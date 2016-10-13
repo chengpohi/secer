@@ -56,6 +56,12 @@ lazy val fb = project.in(file("fb"))
   .settings(libraryDependencies ++= commonDependencies ++ akkaDependencies)
 
 
+lazy val appstore = project.in(file("as"))
+  .settings(commonSettings: _*)
+  .settings(libraryDependencies ++= commonDependencies ++ akkaDependencies)
+
+
+
 lazy val root = project.in(file("app"))
   .settings(commonSettings: _*)
   .settings(libraryDependencies ++= commonDependencies ++ akkaDependencies)
