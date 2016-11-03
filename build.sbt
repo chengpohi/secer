@@ -17,6 +17,7 @@ lazy val akkaDependencies = Seq(
   "com.typesafe" % "config" % "1.2.1",
   "com.typesafe.akka" %% "akka-actor" % "2.4.1",
   "com.typesafe.akka" %% "akka-testkit" % "2.4.1",
+  "com.typesafe.akka" %% "akka-remote" % "2.4.1",
   "com.typesafe.akka" %% "akka-slf4j" % "2.4.1"
 )
 
@@ -63,8 +64,14 @@ lazy val root = project.in(file("app"))
   .aggregate(fetcher)
   .dependsOn(fetcher)
 
-lazy val appstore = project.in(file("as"))
+lazy val client = project.in(file("transport-client"))
   .settings(commonSettings: _*)
   .settings(libraryDependencies ++= commonDependencies ++ akkaDependencies)
   .aggregate(root)
   .dependsOn(root)
+
+lazy val appstore = project.in(file("as"))
+  .settings(commonSettings: _*)
+  .settings(libraryDependencies ++= commonDependencies ++ akkaDependencies)
+  .aggregate(client)
+  .dependsOn(client)
