@@ -1,11 +1,11 @@
 package com.github.chengpohi.app
 
 import akka.actor._
-import com.github.chengpohi.{ELKInterpreter, PageFetcherService}
 import com.github.chengpohi.app.http.HttpRunner
 import com.github.chengpohi.app.http.actions.RestActions.registerHandler
 import com.github.chengpohi.model.{DSL, FetchItem}
 import com.github.chengpohi.registry.ELKCommandRegistry
+import com.github.chengpohi.{ELKInterpreter, PageFetcherService}
 import com.typesafe.config.ConfigFactory
 import org.jboss.netty.handler.codec.http.HttpMethod._
 import org.slf4j.LoggerFactory
