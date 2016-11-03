@@ -7,5 +7,5 @@ import com.github.chengpohi.model.FetchItem
  * Created by chengpohi on 3/19/16.
  */
 object FetchItemBuilder {
-  val fetchItem = FetchItem("http://www.test.com", "test-index-name", "test-index-type", List(""))
+  val fetchItem = FetchItem("http://www.test.com", "test-index-name", "test-index-type", "")
 }

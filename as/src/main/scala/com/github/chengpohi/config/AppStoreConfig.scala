@@ -4,6 +4,7 @@ import com.github.chengpohi.model.Feed
 import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.collection.JavaConverters._
+import scala.io.Source
 
 /**
   * fc
@@ -11,9 +12,10 @@ import scala.collection.JavaConverters._
   */
 object AppStoreConfig {
   private[this] val loadConfig = ConfigFactory.load("appstore.conf")
-  val appstore: Config = loadConfig.getConfig("appstore")
+  private[this] val appstore: Config = loadConfig.getConfig("appstore")
   val INTERVAL: Int = appstore.getInt("interval")
   val INITIAL_DELAY: Int = appstore.getInt("initialDelay")
+  val SELECTORS: String = Source.fromInputStream(this.getClass.getResourceAsStream("/selectors.txt")).mkString
 
   def feeds: List[Feed] = {
     val urlBase: String = appstore.getString("urlBase")

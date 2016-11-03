@@ -3,7 +3,10 @@
   */
 package com.github.chengpohi.scheduler
 
-import com.github.chengpohi.model.Feed
+import com.github.chengpohi.config.AppStoreConfig.SELECTORS
+import com.github.chengpohi.model.{Feed, FetchItem}
+import org.json4s._
+import org.json4s.native.JsonMethods._
 import org.jsoup.Jsoup
 import org.slf4j.LoggerFactory
 
@@ -13,12 +16,16 @@ import org.slf4j.LoggerFactory
   */
 class FeedScheduler(feeds: List[Feed]) extends Runnable {
   lazy val LOGGER = LoggerFactory.getLogger(getClass.getName)
+  implicit val formats = org.json4s.DefaultFormats
 
   override def run(): Unit = {
-    val documents: List[String] = feeds.map(f => {
+    val fetchItems: List[FetchItem] = feeds.flatMap(f => {
       LOGGER.info("get feed type: {}, genre: {}, url: {}", f.feedType, f.genre, f.url)
-      Jsoup.connect(f.url).execute().body()
+      val body: String = Jsoup.connect(f.url).execute().body()
+      for {
+        r <- (parse(body) \ "feed" \\ "link" \\ "href").children.map(i => i.extract[String])
+      } yield FetchItem(r, "appstore", f.genre, SELECTORS, Some("^https:\\/\\/itunes\\.apple\\.com\\/%s\\/app\\/.*".format(f.country)))
     })
-    documents.foreach(println)
+    println(fetchItems.size)
   }
 }
