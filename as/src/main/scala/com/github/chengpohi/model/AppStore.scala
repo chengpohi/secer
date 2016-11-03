@@ -8,4 +8,4 @@ package com.github.chengpohi.model
   * Created by chengpohi on 10/13/16.
   */
 
-case class AppSeed(country: String, feedType: String, genre: String, url: String, weight: Int = 0)
+case class Feed(country: String, feedType: String, genre: String, url: String, weight: Int = 0)

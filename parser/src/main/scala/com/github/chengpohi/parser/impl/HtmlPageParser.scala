@@ -3,6 +3,7 @@ package com.github.chengpohi.parser.impl
 import java.util.concurrent.Executors
 
 import akka.actor.ActorRef
+import com.github.chengpohi.HDSLInterpreter
 import com.github.chengpohi.model._
 import com.github.chengpohi.parser.config.ParserConfig
 import com.github.chengpohi.parser.url.UrlNormalizer
@@ -56,8 +57,9 @@ class HtmlPageParser(pageIndexer: ActorRef) {
     }
   }
 
-  def parseBySelector(doc: Document, fieldSelectors: List[FieldSelector]): List[IndexField] = {
-    for (fieldSelector <- fieldSelectors) yield IndexField(fieldSelector.field, doc.body().text())
+  def parseBySelector(doc: Document, fieldSelectors: String): Map[String, Any] = {
+    val interpreter: HDSLInterpreter = new HDSLInterpreter(doc)
+    interpreter.intercept(fieldSelectors)
   }
 
   def parse(web: Web): (IndexPage, List[FetchItem]) = parse(web.doc, web.fetchItem)

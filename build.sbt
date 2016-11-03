@@ -5,13 +5,13 @@ lazy val commonSettings = Seq(
   version := "0.1",
   scalaVersion := "2.11.8",
   initialCommands in console := "import scalaz._, Scalaz._",
-  resolvers += Resolver.mavenLocal
+  resolvers += Resolver.mavenLocal,
+  ivyScala := ivyScala.value map {
+    _.copy(overrideScalaVersion = true)
+  }
 )
 
 
-ivyScala := ivyScala.value map {
-  _.copy(overrideScalaVersion = true)
-}
 
 lazy val akkaDependencies = Seq(
   "com.typesafe" % "config" % "1.2.1",
@@ -26,6 +26,7 @@ lazy val commonDependencies = Seq(
   "org.scalamock" %% "scalamock-scalatest-support" % "3.2.1" % "test",
   "ch.qos.logback" % "logback-classic" % "1.1.2",
   "org.jsoup" % "jsoup" % "1.8.3",
+  "com.github.chengpohi" % "hdsl_2.11" % "0.1-SNAPSHOT",
   "org.json4s" %% "json4s-native" % "3.2.10",
   "org.json4s" %% "json4s-jackson" % "3.2.10",
   "com.github.chengpohi" %% "elasticshell" % "0.2-SNAPSHOT",

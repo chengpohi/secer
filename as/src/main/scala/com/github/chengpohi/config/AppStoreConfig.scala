@@ -1,8 +1,6 @@
 package com.github.chengpohi.config
 
-import java.util.Base64
-
-import com.github.chengpohi.model.AppSeed
+import com.github.chengpohi.model.Feed
 import com.typesafe.config.{Config, ConfigFactory}
 
 import scala.collection.JavaConverters._
@@ -11,12 +9,13 @@ import scala.collection.JavaConverters._
   * fc
   * Created by chengpohi on 8/14/16.
   */
-object Config {
+object AppStoreConfig {
   private[this] val loadConfig = ConfigFactory.load("appstore.conf")
-  def decode(s: String): String = new String(Base64.getDecoder.decode(s))
+  val appstore: Config = loadConfig.getConfig("appstore")
+  val INTERVAL: Int = appstore.getInt("interval")
+  val INITIAL_DELAY: Int = appstore.getInt("initialDelay")
 
-  def getSeeds: List[AppSeed] = {
-    val appstore: Config = loadConfig.getConfig("appstore")
+  def feeds: List[Feed] = {
     val urlBase: String = appstore.getString("urlBase")
     val countries = appstore.getStringList("countries").asScala.toList
     val feedTypes = appstore.getStringList("feedTypes").asScala.toList
@@ -28,6 +27,6 @@ object Config {
       country <- countries
       feedType <- feedTypes
       genre <- genres
-    } yield AppSeed(country, feedType, genre, urlBase.format(country, feedType, limit, genre, tpe))
+    } yield Feed(country, feedType, genre, urlBase.format(country, feedType, limit, genre, tpe))
   }
 }

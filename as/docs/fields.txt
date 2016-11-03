@@ -1,0 +1,34 @@
+select to text where attr eq "itemprop" -> "description" as "desc";
+select attr "src" where tag eq "img" and attr eq "itemprop" -> "screenshot" under attr eq "metrics-loc" -> "iPhone" as "imgs";
+select attr "src" where tag eq "img" and attr eq "itemprop" -> "screenshot" under attr eq "metrics-loc" -> "iPad" as "imgs";
+select to text where attr eq "itemprop" -> "price" as "price";
+select to text where clazz eq "genre" and tag eq "a" under id eq "left-stack" as "genre";
+select to text where attr eq "itemprop" -> "datePublished" as "publishDate";
+select to text where attr eq "itemprop" -> "softwareVersion" as "version";
+select to text where attr eq "itemprop" -> "author" as "author";
+select to text where clazz eq "language" as "language";
+select to text where attr eq "itemprop" -> "operatingSystem" as "os";
+select to text where attr eq "itemprop" -> "ratingValue" as "ratingValue";
+select to text where clazz eq "rating-count" under clazz eq "rating" as "ratings";
+nest(
+  select to text where clazz eq "customerReviewTitle" as "title",
+  select attr "aria-label" where clazz eq "rating" under clazz eq "customer-review" as "rating",
+  select to text where clazz eq "content" under clazz eq "customer-review" as "content",
+  select to text where clazz eq "user-info" under clazz eq "customer-review" as "userInfo"
+) as "reviews";
+nest(
+    select to text where clazz eq "in-app-title" under clazz eq "in-app-purchases" as "name",
+    select to text where clazz eq "in-app-price" under clazz eq "in-app-purchases" as "price"
+) as "purchases";
+nest(
+  select attr "src" where tag eq "img" and clazz eq "artwork" under clazz eq "swoosh" as "img",
+  select attr "href" where tag eq "a" and clazz eq "name" under clazz eq "swoosh" as "link",
+  select to text where clazz eq "name" under clazz eq "swoosh" as "name",
+  select to text where clazz eq "genre" under clazz eq "swoosh" as "genre"
+) as "apps";
+nest(
+  select attr "src" where tag eq "img" and clazz eq "artwork" under clazz eq "swoosh" as "img",
+  select attr "href" where tag eq "a" and clazz eq "name" under clazz eq "swoosh" as "link",
+  select to text where clazz eq "name" under clazz eq "swoosh" as "name",
+  select to text where clazz eq "genre" under clazz eq "swoosh" as "genre"
+) as "apps";
