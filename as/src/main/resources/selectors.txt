@@ -1,7 +1,7 @@
 select to text where attr eq "itemprop" -> "description" as "desc";
 select attr "src" where tag eq "img" and attr eq "itemprop" -> "screenshot" under attr eq "metrics-loc" -> "iPhone" as "imgs";
 select attr "src" where tag eq "img" and attr eq "itemprop" -> "screenshot" under attr eq "metrics-loc" -> "iPad" as "imgs";
-select attr "content" where tag eq "meta" and attr eq "itemprop" -> "image";
+select attr "content" where tag eq "meta" and attr eq "itemprop" -> "image" as "logo";
 select to text where attr eq "itemprop" -> "price" as "price";
 select to text where clazz eq "genre" and tag eq "a" under id eq "left-stack" as "genre";
 select to text where attr eq "itemprop" -> "datePublished" as "publishDate";
