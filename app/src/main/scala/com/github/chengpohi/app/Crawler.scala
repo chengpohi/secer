@@ -1,17 +1,16 @@
 package com.github.chengpohi.app
 
 import akka.actor._
-import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
+import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import com.github.chengpohi.app.http.HttpWebServer
-import org.json4s._
-import org.json4s.native.JsonMethods._
-import com.github.chengpohi.model.{DSL, FetchItem}
+import com.github.chengpohi.app.http.HttpWebServer.response
+import com.github.chengpohi.model.FetchItem
 import com.github.chengpohi.registry.ELKCommandRegistry
 import com.github.chengpohi.{ELKInterpreter, PageFetcherService}
 import com.typesafe.config.ConfigFactory
-import akka.http.scaladsl.server.Directives._
-import com.github.chengpohi.app.http.HttpWebServer.response
+import org.json4s._
+import org.json4s.native.JsonMethods._
 import org.slf4j.LoggerFactory
 
 import scala.language.postfixOps
@@ -27,11 +26,11 @@ object Crawler {
   }
 }
 
-class Crawler(httpWebServer: HttpWebServer) extends Actor {
+class Crawler(webServer: HttpWebServer) extends Actor {
   implicit val formats = org.json4s.DefaultFormats
   lazy val fetcher = context.actorOf(Props[PageFetcherService], "fetcher")
   lazy val replInterpreter = new ELKInterpreter(ELKCommandRegistry)
-  val LOGGER = LoggerFactory.getLogger(getClass.getName)
+  val logger = LoggerFactory.getLogger(getClass.getName)
 
   val route: Route = path("/") {
     get {
@@ -54,7 +53,7 @@ class Crawler(httpWebServer: HttpWebServer) extends Actor {
     }
   }
 
-  override def preStart(): Unit = httpWebServer.start(route)
+  override def preStart(): Unit = webServer.start(route)
 
   def receive: Receive = {
     case fetchItem: FetchItem =>
@@ -62,6 +61,6 @@ class Crawler(httpWebServer: HttpWebServer) extends Actor {
     case Terminated(_) =>
       context.unbecome()
     case str: String =>
-      LOGGER.info(str)
+      logger.info(str)
   }
 }

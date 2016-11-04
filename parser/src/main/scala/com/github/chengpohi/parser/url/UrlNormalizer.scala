@@ -1,11 +1,12 @@
 package com.github.chengpohi.parser.url
 
-import org.slf4j.LoggerFactory
 import java.net.URL
 
+import org.slf4j.LoggerFactory
+
 /**
- * Created by xiachen on 1/23/15.
- */
+  * Created by xiachen on 1/23/15.
+  */
 object UrlNormalizer {
   val LOG = LoggerFactory.getLogger(getClass.getName)
   val hasNormalizablePattern = ".*\\.?\\.?.*".r
