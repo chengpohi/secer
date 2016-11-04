@@ -1,5 +1,5 @@
 http.enabled: false
-cluster.name: elasticshell
+cluster.name: crawler
 path.repo: ./local/elkrepo
 action.destructive_requires_name: false
 path.home: ./local/elkdata
