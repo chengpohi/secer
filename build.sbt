@@ -18,21 +18,20 @@ lazy val akkaDependencies = Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.4.1",
   "com.typesafe.akka" %% "akka-testkit" % "2.4.1",
   "com.typesafe.akka" %% "akka-remote" % "2.4.1",
-  "com.typesafe.akka" %% "akka-slf4j" % "2.4.1"
+  "com.typesafe.akka" %% "akka-slf4j" % "2.4.1",
+  "com.typesafe.akka" %% "akka-http-core" % "2.4.7",
+  "com.typesafe.akka" %% "akka-http-experimental" % "2.4.7"
 )
 
 
 lazy val commonDependencies = Seq(
   "org.scalatest" %% "scalatest" % "3.0.0" % "test",
-  "org.scalamock" %% "scalamock-scalatest-support" % "3.2.1" % "test",
   "ch.qos.logback" % "logback-classic" % "1.1.2",
   "org.jsoup" % "jsoup" % "1.8.3",
-  "com.github.chengpohi" % "hdsl_2.11" % "0.1-SNAPSHOT",
   "org.json4s" %% "json4s-native" % "3.2.10",
   "org.json4s" %% "json4s-jackson" % "3.2.10",
-  "com.github.chengpohi" %% "elasticshell" % "0.2-SNAPSHOT",
-  "com.lihaoyi" %% "fastparse" % "0.3.4",
-  "org.scalactic" %% "scalactic" % "3.0.0",
+  "com.github.chengpohi" % "hdsl_2.11" % "0.1-SNAPSHOT",
+  "com.github.chengpohi" %% "elasticshell" % "0.2.1-SNAPSHOT",
   "org.seleniumhq.selenium" % "selenium-java" % "2.35.0"
 )
 

@@ -20,11 +20,11 @@ class PageFetcherService extends Actor with ActorLogging {
   override def preStart(): Unit = {
   }
 
-  override def postStop() = {
+  override def postStop(): Unit = {
     log.info("Stopping parent Actor")
   }
 
-  def receive = {
+  def receive: Receive = {
     case fetchItem: FetchItem =>
       val fetcherName: String = s"""${fetchItem.indexName}-${fetchItem.indexType}"""
       fetchers.get(fetcherName) match {

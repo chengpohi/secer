@@ -1,13 +1,17 @@
 package com.github.chengpohi.app
 
 import akka.actor._
-import com.github.chengpohi.app.http.HttpRunner
-import com.github.chengpohi.app.http.actions.RestActions.registerHandler
+import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
+import akka.http.scaladsl.server.Route
+import com.github.chengpohi.app.http.HttpWebServer
+import org.json4s._
+import org.json4s.native.JsonMethods._
 import com.github.chengpohi.model.{DSL, FetchItem}
 import com.github.chengpohi.registry.ELKCommandRegistry
 import com.github.chengpohi.{ELKInterpreter, PageFetcherService}
 import com.typesafe.config.ConfigFactory
-import org.jboss.netty.handler.codec.http.HttpMethod._
+import akka.http.scaladsl.server.Directives._
+import com.github.chengpohi.app.http.HttpWebServer.response
 import org.slf4j.LoggerFactory
 
 import scala.language.postfixOps
@@ -17,18 +21,40 @@ import scala.language.postfixOps
   */
 object Crawler {
   def main(args: Array[String]) {
-    val system = ActorSystem("Crawler", ConfigFactory.load("crawler"))
-    system.actorOf(Props[Crawler], "crawler")
+    implicit val system = ActorSystem("Crawler", ConfigFactory.load("crawler"))
+    val http = new HttpWebServer()
+    system.actorOf(Props(new Crawler(http)), "crawler")
   }
 }
 
-class Crawler extends Actor with HttpRunner {
-  override lazy val LOG = LoggerFactory.getLogger(getClass.getName)
-  override lazy val config = ConfigFactory.load("http")
+class Crawler(httpWebServer: HttpWebServer) extends Actor {
+  implicit val formats = org.json4s.DefaultFormats
   lazy val fetcher = context.actorOf(Props[PageFetcherService], "fetcher")
   lazy val replInterpreter = new ELKInterpreter(ELKCommandRegistry)
+  val LOGGER = LoggerFactory.getLogger(getClass.getName)
 
-  override def preStart(): Unit = this.start()
+  val route: Route = path("/") {
+    get {
+      response("<h1>Welcome by Secer</h1>")
+    }
+  } ~ path("seed") {
+    post {
+      entity(as[String]) { fetchItem =>
+        val item: FetchItem = parse(fetchItem).extract[FetchItem]
+        self ! item
+        response("<h1>Get Your Seed</h1>")
+      }
+    }
+  } ~ path("repl") {
+    post {
+      entity(as[String]) { dsl =>
+        val result: String = replInterpreter.run(dsl)
+        response(result)
+      }
+    }
+  }
+
+  override def preStart(): Unit = httpWebServer.start(route)
 
   def receive: Receive = {
     case fetchItem: FetchItem =>
@@ -36,18 +62,6 @@ class Crawler extends Actor with HttpRunner {
     case Terminated(_) =>
       context.unbecome()
     case str: String =>
-      LOG.info(str)
-  }
-
-  def seed(fetchItem: FetchItem): String = {
-    self ! fetchItem
-    s"""{"indexName": ${fetchItem.indexName}}"""
-  }
-
-  def repl(dsl: DSL): String = replInterpreter.run(dsl.dsl)
-
-  override def registerPath(): Unit = {
-    registerHandler(POST, "/seed", seed)
-    registerHandler(POST, "/repl", repl)
+      LOGGER.info(str)
   }
 }
