@@ -8,7 +8,6 @@ import com.github.chengpohi.model._
 import com.github.chengpohi.parser.config.ParserConfig
 import com.github.chengpohi.parser.url.UrlNormalizer
 import com.github.chengpohi.util.Utils._
-import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import org.slf4j.LoggerFactory
 
@@ -16,8 +15,8 @@ import scala.collection.JavaConverters._
 import scala.concurrent._
 
 /**
- * Created by xiachen on 3/1/15.
- */
+  * Created by xiachen on 3/1/15.
+  */
 class HtmlPageParser(pageIndexer: ActorRef) {
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
 
@@ -29,13 +28,12 @@ class HtmlPageParser(pageIndexer: ActorRef) {
 
   val SIG_NUM: Int = 1
   val HEX: Int = 16
+
   def hash(s: String): String = {
     val b = s.getBytes("UTF-8")
     m.update(b, 0, b.length)
     new java.math.BigInteger(SIG_NUM, m.digest()).toString(HEX)
   }
-
-  def parse(html: String): (IndexItem, List[FetchItem]) = parse(Jsoup.parse(html), null)
 
   def hrefs(doc: Document, item: FetchItem): List[FetchItem] = {
     for {
@@ -62,10 +60,10 @@ class HtmlPageParser(pageIndexer: ActorRef) {
     interpreter.intercept(fieldSelectors)
   }
 
-  def parse(web: Web): (IndexItem, List[FetchItem]) = parse(web.doc, web.fetchItem)
+  def parse(web: (FetchItem, Document)): (IndexItem, List[FetchItem]) = parse(web._2, web._1)
 
 
-  def asyncParse(sender: ActorRef, web: Web): Future[String] = {
+  def asyncParse(sender: ActorRef, web: (FetchItem, Document)): Future[String] = {
     Future {
       blocking {
         val res = parse(web)

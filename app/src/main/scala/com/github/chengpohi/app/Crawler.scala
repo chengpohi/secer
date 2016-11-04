@@ -31,24 +31,25 @@ class Crawler(webServer: HttpWebServer) extends Actor {
   lazy val fetcher = context.actorOf(Props[PageFetcherService], "fetcher")
   lazy val replInterpreter = new ELKInterpreter(ELKCommandRegistry)
   val logger = LoggerFactory.getLogger(getClass.getName)
-
-  val route: Route = path("/") {
-    get {
-      response("<h1>Welcome by Secer</h1>")
-    }
-  } ~ path("seed") {
-    post {
-      entity(as[String]) { fetchItem =>
-        val item: FetchItem = parse(fetchItem).extract[FetchItem]
-        self ! item
-        response("<h1>Get Your Seed</h1>")
+  val route: Route = {
+    path("/") {
+      get {
+        response("<h1>Welcome by Secer</h1>")
       }
-    }
-  } ~ path("repl") {
-    post {
-      entity(as[String]) { dsl =>
-        val result: String = replInterpreter.run(dsl)
-        response(result)
+    } ~ path("seed") {
+      post {
+        entity(as[String]) { fetchItem =>
+          val item: FetchItem = parse(fetchItem).extract[FetchItem]
+          self ! item
+          response("<h1>Get Your Seed</h1>")
+        }
+      }
+    } ~ path("repl") {
+      post {
+        entity(as[String]) { dsl =>
+          val result: String = replInterpreter.run(dsl)
+          response(result)
+        }
       }
     }
   }

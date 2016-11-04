@@ -8,17 +8,14 @@ import org.apache.http.client.methods.{CloseableHttpResponse, HttpGet}
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.util.EntityUtils
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import org.slf4j.LoggerFactory
 
 
-object HttpResponse {
-  val LOG = LoggerFactory.getLogger(getClass.getName)
+object HttpGetter {
+  val logger = LoggerFactory.getLogger(getClass.getName)
 
-  def getEntity(url: String): HttpEntity = {
-    null
-  }
-
-  def getEntityToStr(item: FetchItem): Web = {
+  def getEntityToWeb(item: FetchItem): (FetchItem, Document) = {
     val url = item.url
 
     val request: HttpGet = new HttpGet(url)
@@ -26,8 +23,7 @@ object HttpResponse {
 
     val doc = Jsoup.parse(EntityUtils.toString(response.getEntity))
     doc.setBaseUri(extractBaseUri(url))
-
-    Web(item, doc)
+    (item, doc)
   }
 
   def extractBaseUri(url: String): String = {
@@ -35,7 +31,5 @@ object HttpResponse {
     s"${uri.getProtocol}://${uri.getHost}"
   }
 
-  def ==>(item: FetchItem): Web = {
-    getEntityToStr(item)
-  }
+  def connect(item: FetchItem): (FetchItem, Document) = getEntityToWeb(item)
 }

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory
 class PageIndexerService extends Actor {
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
   val dsl = new ElasticDSL(ELKCommandRegistry.client)
+
   import dsl._
   import DSLHelper._
 
@@ -19,7 +20,7 @@ class PageIndexerService extends Actor {
     case page: IndexItem => {
       LOG.info("index page: {}", page.fetchItem.url)
       DSL {
-        index into page.fetchItem.indexName / page.fetchItem.indexType doc page.doc
+        index into page.fetchItem.indexName / page.fetchItem.indexType doc page.map
       }
     }
   }

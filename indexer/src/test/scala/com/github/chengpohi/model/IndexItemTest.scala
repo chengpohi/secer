@@ -10,7 +10,7 @@ import org.scalatest.FlatSpec
 class IndexItemTest extends FlatSpec{
   "IndexPage " should " be parsed to DocumentMap" in {
     val indexPage: IndexItem = IndexPageBuilder.indexPage
-    val map = indexPage.doc
+    val map = indexPage.map
     assert(map.contains("url"))
     assert(map.contains("md5"))
     assert(map.contains("urlMd5"))

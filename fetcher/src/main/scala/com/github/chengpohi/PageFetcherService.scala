@@ -17,32 +17,22 @@ class PageFetcherService extends Actor with ActorLogging {
 
   var fetchers = Map[String, ActorRef]()
 
-  override def preStart(): Unit = {
-  }
-
-  override def postStop(): Unit = {
-    log.info("Stopping parent Actor")
-  }
-
   def receive: Receive = {
     case fetchItem: FetchItem =>
-      val fetcherName: String = s"""${fetchItem.indexName}-${fetchItem.indexType}"""
-      fetchers.get(fetcherName) match {
-        case None =>
-          val fetcher = createNewFetcher(fetchItem, pageParser)
-          fetchers += fetcherName -> fetcher
-          log.info("create a new fetcher with: " + fetcherName)
-          fetcher ! fetchItem
-        case actorRef: Option[ActorRef] =>
-          log.info("continue fetcher: " + fetcherName)
-          actorRef.get ! fetchItem
-      }
+      val fetcherName: String = buildFetcherName(fetchItem)
+      val fetcher = fetchers.getOrElse(fetcherName, buildNewFetcher(fetcherName, fetchItem, pageParser))
+      fetcher ! fetchItem
       sender() ! s"${fetchItem.url} has been sended to child fetcher to fetch."
-    case _ => log.info("Object Exist.")
+    case _ => log.info("Unknown Fetch Item")
   }
 
-  def createNewFetcher(fetchItem: FetchItem, parser: ActorRef): ActorRef = {
-    val htmlPageFetcher = context.actorOf(Props(classOf[impl.HtmlPageFetcher], parser, fetchItem))
-    htmlPageFetcher
+  def buildFetcherName(fetchItem: FetchItem): String = {
+    s"""${fetchItem.indexName}-${fetchItem.indexType}"""
+  }
+
+  def buildNewFetcher(fetcherName: String, fetchItem: FetchItem, parser: ActorRef): ActorRef = {
+    val fetcher = context.actorOf(Props(classOf[impl.HtmlPageFetcher], parser, fetchItem))
+    fetchers += fetcherName -> fetcher
+    fetcher
   }
 }
