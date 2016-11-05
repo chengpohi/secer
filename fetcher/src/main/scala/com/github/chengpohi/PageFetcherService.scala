@@ -1,5 +1,7 @@
 package com.github.chengpohi
 
+import java.util.concurrent.ConcurrentHashMap
+
 import akka.actor._
 import com.github.chengpohi.model.FetchItem
 import com.github.chengpohi.parser.PageParserService
@@ -15,12 +17,12 @@ object PageFetcherService {
 class PageFetcherService extends Actor with ActorLogging {
   val pageParser = context.actorOf(Props[PageParserService], "html-parser")
 
-  var fetchers = Map[String, ActorRef]()
+  var fetchers = new ConcurrentHashMap[String, ActorRef]()
 
   def receive: Receive = {
     case fetchItem: FetchItem =>
       val fetcherName: String = buildFetcherName(fetchItem)
-      val fetcher = fetchers.getOrElse(fetcherName, buildNewFetcher(fetcherName, fetchItem, pageParser))
+      val fetcher = fetchers.getOrDefault(fetcherName, buildNewFetcher(fetcherName, fetchItem, pageParser))
       fetcher ! fetchItem
       sender() ! s"${fetchItem.url} has been sended to child fetcher to fetch."
     case _ => log.info("Unknown Fetch Item")
@@ -32,7 +34,7 @@ class PageFetcherService extends Actor with ActorLogging {
 
   def buildNewFetcher(fetcherName: String, fetchItem: FetchItem, parser: ActorRef): ActorRef = {
     val fetcher = context.actorOf(Props(classOf[impl.HtmlPageFetcher], parser, fetchItem))
-    fetchers += fetcherName -> fetcher
+    fetchers.put(fetcherName, fetcher)
     fetcher
   }
 }

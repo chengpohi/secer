@@ -25,7 +25,9 @@ class FeedScheduler(feeds: List[Feed], crawler: ActorRef) extends Runnable {
       val body: String = Jsoup.connect(f.url).timeout(1000 * 20).execute().body()
       for {
         r <- (parse(body) \ "feed" \\ "link" \\ "href").children.map(i => i.extract[String])
-      } yield FetchItem(r, "appstore", f.genre, SELECTORS, Some("^https:\\/\\/itunes\\.apple\\.com\\/%s\\/app\\/.*".format(f.country)))
+      } yield FetchItem(r, "appstore", f.genre, SELECTORS,
+        Some("^https:\\/\\/itunes\\.apple\\.com\\/%s\\/app\\/.*".format(f.country)),
+        delay = Some(2000))
     })
     fetchItems.foreach(item => {
       crawler ! item

@@ -26,7 +26,9 @@ lazy val akkaDependencies = Seq(
 
 lazy val commonDependencies = Seq(
   "org.scalatest" %% "scalatest" % "3.0.0" % "test",
-  "ch.qos.logback" % "logback-classic" % "1.1.2",
+  "org.apache.logging.log4j" % "log4j-1.2-api" % "2.7",
+  "org.apache.logging.log4j" % "log4j-api" % "2.7",
+  "org.apache.logging.log4j" % "log4j-core" % "2.7",
   "org.jsoup" % "jsoup" % "1.8.3",
   "org.json4s" %% "json4s-native" % "3.2.10",
   "org.json4s" %% "json4s-jackson" % "3.2.10",

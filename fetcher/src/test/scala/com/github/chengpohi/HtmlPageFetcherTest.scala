@@ -6,15 +6,15 @@ import com.github.chengpohi.impl.HtmlPageFetcher
 import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
 
 /**
- * seccrawler
- * Created by chengpohi on 8/26/15.
- */
-class HtmlPageFetcherTest  (_system: ActorSystem)
+  * seccrawler
+  * Created by chengpohi on 8/26/15.
+  */
+class HtmlPageFetcherTest(_system: ActorSystem)
   extends TestKit(_system)
-  with FlatSpecLike
-  with Matchers
-  with BeforeAndAfterAll
-  with ImplicitSender {
+    with FlatSpecLike
+    with Matchers
+    with BeforeAndAfterAll
+    with ImplicitSender {
   val htmlPageFetcher = new HtmlPageFetcher(null, null)
 
   val urlFilter = List(
@@ -24,9 +24,5 @@ class HtmlPageFetcherTest  (_system: ActorSystem)
     ("http://stackoverflow.com/questions/\\d+/.*", "http://stackoverflow.com/questions/4636610/how-to-pattern-match-using-regular-expression-in-scala", true)
   )
 
+}
 
-  "Html Page Fetcher " should "filter href by regex" in {
-    urlFilter.foreach(t => {
-      assert(htmlPageFetcher.filterFetchItemByUrlRegex(t._2, t._1) == t._3)
-    })
-  }}

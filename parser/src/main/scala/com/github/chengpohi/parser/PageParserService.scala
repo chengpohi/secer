@@ -14,11 +14,14 @@ import org.slf4j.LoggerFactory
 class PageParserService extends Actor {
   lazy val LOG = LoggerFactory.getLogger(getClass.getName)
   val pageIndexer = context.actorOf(Props[PageIndexerService], "page-indexer")
-  val pageParser = new impl.HtmlPageParser(pageIndexer)
+  val pageParser = new impl.HtmlPageParser
 
   def receive: Receive = {
     case (item: FetchItem, doc: Document) =>
       LOG.info("Parse Url: " + item.url)
-      pageParser.asyncParse(sender(), (item, doc))
+      val res = pageParser.parse(doc, item)
+      pageIndexer ! res._1
+      LOG.info(s"New Seeds Size: ${res._2.length}")
+      sender ! res._2
   }
 }
