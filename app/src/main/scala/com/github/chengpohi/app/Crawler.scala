@@ -3,6 +3,7 @@ package com.github.chengpohi.app
 import akka.actor._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
+import akka.routing.{FromConfig, RoundRobinPool}
 import com.github.chengpohi.app.http.HttpWebServer
 import com.github.chengpohi.app.http.HttpWebServer.response
 import com.github.chengpohi.model.FetchItem
@@ -28,8 +29,8 @@ object Crawler {
 
 class Crawler(webServer: HttpWebServer) extends Actor {
   implicit val formats = org.json4s.DefaultFormats
-  lazy val fetcher = context.actorOf(Props[PageFetcherService], "fetcher")
   lazy val replInterpreter = new ELKInterpreter(ELKCommandRegistry)
+  val fetcher = context.actorOf(FromConfig.props(Props[PageFetcherService]), "fetcher")
   val logger = LoggerFactory.getLogger(getClass.getName)
   val route: Route = {
     path("/") {

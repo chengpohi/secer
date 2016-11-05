@@ -39,7 +39,7 @@ class HtmlPageParser {
 
 
   def parse(doc: Document, item: FetchItem): (IndexItem, List[FetchItem]) =
-    (IndexItem(doc, item, hashString(doc.html), hash(item.url), parseBySelector(doc, item.selectors)), hrefs(doc, item))
+    (IndexItem(doc, item, hashString(doc.html), parseBySelector(doc, item.selectors)), hrefs(doc, item))
 
   def selectBySelector(doc: Document, selector: String): String = {
     doc.select(selector).first() match {

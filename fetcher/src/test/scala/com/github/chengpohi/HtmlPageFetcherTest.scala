@@ -15,7 +15,7 @@ class HtmlPageFetcherTest(_system: ActorSystem)
     with Matchers
     with BeforeAndAfterAll
     with ImplicitSender {
-  val htmlPageFetcher = new HtmlPageFetcher(null, null)
+  val htmlPageFetcher = new HtmlPageFetcher
 
   val urlFilter = List(
     (".*", "http://www.google.com", true),
