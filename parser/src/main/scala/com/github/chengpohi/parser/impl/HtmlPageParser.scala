@@ -5,7 +5,6 @@ import com.github.chengpohi.model._
 import com.github.chengpohi.parser.url.UrlNormalizer
 import com.github.chengpohi.util.Utils._
 import org.jsoup.nodes.{Document, Element}
-import org.slf4j.LoggerFactory
 
 import scala.collection.JavaConverters._
 
@@ -13,8 +12,6 @@ import scala.collection.JavaConverters._
   * Created by xiachen on 3/1/15.
   */
 class HtmlPageParser {
-  lazy val LOG = LoggerFactory.getLogger(getClass.getName)
-
   lazy val m = java.security.MessageDigest.getInstance("MD5")
 
   def normalize(url: String): String = UrlNormalizer.normalize(url)
@@ -29,17 +26,23 @@ class HtmlPageParser {
   }
 
   def hrefs(doc: Document, item: FetchItem): List[FetchItem] = {
-    for {
-      i: FetchItem <- doc.select("a").asScala.toList
-        .map(e => e.absUrl("href"))
-        .filter(e => e.length != 0)
-        .map(e => FetchItem(normalize(e), item.indexName, item.indexType, item.selectors, item.urlRegex))
-    } yield i
+    item.bfs match {
+      case Some(true) =>
+        doc.select("a").asScala.toList
+          .map(e => e.absUrl("href"))
+          .filter(e => e.length != 0)
+          .map(e => FetchItem(normalize(e),
+            item.indexName, item.indexType, item.selectors, item.urlRegex)
+          )
+      case Some(false) => List()
+    }
   }
 
 
-  def parse(doc: Document, item: FetchItem): (IndexItem, List[FetchItem]) =
-    (IndexItem(doc, item, hashString(doc.html), parseBySelector(doc, item.selectors)), hrefs(doc, item))
+  def parse(doc: Document, item: FetchItem): (IndexItem, List[FetchItem]) = {
+    val fields: Map[String, Any] = parseBySelector(doc, item.selectors)
+    (IndexItem(doc, item, hashString(doc.html), fields), hrefs(doc, item))
+  }
 
   def selectBySelector(doc: Document, selector: String): String = {
     doc.select(selector).first() match {

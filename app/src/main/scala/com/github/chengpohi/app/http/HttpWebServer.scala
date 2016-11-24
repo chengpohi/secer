@@ -7,16 +7,16 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{Route, StandardRoute}
 import akka.stream.ActorMaterializer
 import com.github.chengpohi.app.config.CrawlerConfig
-import org.slf4j.LoggerFactory
+import org.apache.logging.log4j.{LogManager, Logger}
 
 class HttpWebServer(implicit system: ActorSystem) {
-  lazy val LOGGER = LoggerFactory.getLogger(getClass.getName)
+  private val logger: Logger = LogManager.getLogger(HttpWebServer.getClass)
   implicit val materializer = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
   def start(route: Route): Unit = {
     Http().bindAndHandle(route, CrawlerConfig.CRAWLER_HTTP_IP, CrawlerConfig.CRAWLER_HTTP_PORT)
-    LOGGER.info(s"Server online at http://${CrawlerConfig.CRAWLER_HTTP_IP}:${CrawlerConfig.CRAWLER_HTTP_PORT}/")
+    logger.info(s"Server online at http://${CrawlerConfig.CRAWLER_HTTP_IP}:${CrawlerConfig.CRAWLER_HTTP_PORT}/")
   }
 }
 

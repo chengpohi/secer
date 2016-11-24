@@ -1,22 +1,19 @@
 package com.github.chengpohi.indexer
 
-import akka.actor.Actor
+import akka.actor.{Actor, ActorLogging}
 import com.github.chengpohi.api.ElasticDSL
 import com.github.chengpohi.model.IndexItem
 import com.github.chengpohi.registry.ELKCommandRegistry
-import org.slf4j.LoggerFactory
 
 import scala.util.{Failure, Success}
 
 /**
   * Created by xiachen on 1/17/15.
   */
-class PageIndexerService extends Actor {
-  lazy val log = LoggerFactory.getLogger(getClass.getName)
+class PageIndexerService extends Actor with ActorLogging{
   val dsl = new ElasticDSL(ELKCommandRegistry.client)
 
   import dsl._
-  import DSLHelper._
   import context.dispatcher
 
 
@@ -28,7 +25,7 @@ class PageIndexerService extends Actor {
       }
       result onComplete {
         case Success(r) => log.info(s"index success ${page.fetchItem.id}")
-        case Failure(f) => log.warn(s"index fail ${page.fetchItem.id}, cause: ${f.getMessage}")
+        case Failure(f) => log.info(s"index fail ${page.fetchItem.id}, cause: ${f.getMessage}")
       }
     }
   }

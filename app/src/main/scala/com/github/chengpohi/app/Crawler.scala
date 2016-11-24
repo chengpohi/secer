@@ -3,7 +3,7 @@ package com.github.chengpohi.app
 import akka.actor._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.routing.{FromConfig, RoundRobinPool}
+import akka.routing.FromConfig
 import com.github.chengpohi.app.http.HttpWebServer
 import com.github.chengpohi.app.http.HttpWebServer.response
 import com.github.chengpohi.model.FetchItem
@@ -12,7 +12,6 @@ import com.github.chengpohi.{ELKInterpreter, PageFetcherService}
 import com.typesafe.config.ConfigFactory
 import org.json4s._
 import org.json4s.native.JsonMethods._
-import org.slf4j.LoggerFactory
 
 import scala.language.postfixOps
 
@@ -27,11 +26,10 @@ object Crawler {
   }
 }
 
-class Crawler(webServer: HttpWebServer) extends Actor {
+class Crawler(webServer: HttpWebServer) extends Actor with ActorLogging {
   implicit val formats = org.json4s.DefaultFormats
   lazy val replInterpreter = new ELKInterpreter(ELKCommandRegistry)
   val fetcher = context.actorOf(FromConfig.props(Props[PageFetcherService]), "fetcher")
-  val logger = LoggerFactory.getLogger(getClass.getName)
   val route: Route = {
     path("/") {
       get {
@@ -63,6 +61,6 @@ class Crawler(webServer: HttpWebServer) extends Actor {
     case Terminated(_) =>
       context.unbecome()
     case str: String =>
-      logger.info(str)
+      log.info(str)
   }
 }

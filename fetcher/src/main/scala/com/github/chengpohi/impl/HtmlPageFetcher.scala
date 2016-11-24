@@ -3,7 +3,6 @@ package com.github.chengpohi.impl
 import com.github.chengpohi.model.FetchItem
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.slf4j.LoggerFactory
 
 
 /**
@@ -11,8 +10,6 @@ import org.slf4j.LoggerFactory
   * Created by xiachen on 3/1/15.
   */
 class HtmlPageFetcher {
-  val log = LoggerFactory.getLogger(getClass.getName)
-
   def fetch(fetchItem: FetchItem): Option[(FetchItem, Document)] = {
     val result: (FetchItem, Document, Int) = connect(fetchItem)
     result._3 match {
