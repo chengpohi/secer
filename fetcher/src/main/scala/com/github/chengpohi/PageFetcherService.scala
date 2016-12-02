@@ -1,8 +1,5 @@
 package com.github.chengpohi
 
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
-
 import akka.actor._
 import com.github.chengpohi.impl.HtmlPageFetcher
 import com.github.chengpohi.model.FetchItem
@@ -20,20 +17,9 @@ object PageFetcherService {
 class PageFetcherService extends Actor with ActorLogging {
   val pageParser = context.actorOf(Props[PageParserService], "parser")
   val fetcher = new HtmlPageFetcher()
-  var caches = new ConcurrentHashMap[BigInt, FetchItem]()
-
-  def filter(fetchItem: FetchItem): Boolean = {
-    caches.containsKey(fetchItem.id) match {
-      case true => false
-      case false => {
-        caches.put(fetchItem.id, fetchItem)
-        true
-      }
-    }
-  }
 
   def receive: Receive = {
-    case fetchItem: FetchItem if filter(fetchItem) =>
+    case fetchItem: FetchItem if fetcher.filter(fetchItem) =>
       val result: Option[(FetchItem, Document)] = fetcher.fetch(fetchItem)
       log.info("fetch url: " + fetchItem.url)
       log.info("fetch item: " + fetchItem.id)

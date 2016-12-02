@@ -29,12 +29,18 @@ class HtmlPageParser {
     item.bfs match {
       case Some(true) =>
         doc.select("a").asScala.toList
-          .map(e => e.absUrl("href"))
-          .filter(e => e.length != 0)
-          .map(e => FetchItem(normalize(e),
-            item.indexName, item.indexType, item.selectors, item.urlRegex)
+          .map(_.absUrl("href"))
+          .filter(_.nonEmpty)
+          .filter(_.matches(item.urlRegex.get))
+          .map(e => FetchItem(
+            normalize(e),
+            item.indexName,
+            item.indexType,
+            item.selectors,
+            item.urlRegex)
           )
       case Some(false) => List()
+      case None => List()
     }
   }
 

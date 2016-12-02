@@ -29,7 +29,7 @@ class FeedScheduler(feeds: List[Feed], crawler: ActorRef) extends Runnable {
         "appstore",
         f.genre,
         SELECTORS,
-        Some("^https:\\/\\/itunes\\.apple\\.com\\/%s\\/app\\/.*".format(f.country)),
+        Some("^https://itunes.apple.com/%s/app/.*".format(f.country)),
         delay = Some(2000),
         bfs = Some(false)
       )
