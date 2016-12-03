@@ -10,7 +10,7 @@ import scala.util.{Failure, Success}
 /**
   * Created by xiachen on 1/17/15.
   */
-class PageIndexerService extends Actor with ActorLogging{
+class PageIndexerService extends Actor with ActorLogging {
   val dsl = new ElasticDSL(ELKCommandRegistry.client)
 
   import dsl._
@@ -21,7 +21,7 @@ class PageIndexerService extends Actor with ActorLogging{
     case page: IndexItem => {
       log.info("index page: {}", page.fetchItem.id)
       val result = DSL {
-        index into page.fetchItem.indexName / page.fetchItem.indexType doc page.map
+        index into page.fetchItem.indexName / page.fetchItem.indexType doc page.map id page.fetchItem.id.toString
       }
       result onComplete {
         case Success(r) => log.info(s"index success ${page.fetchItem.id}")

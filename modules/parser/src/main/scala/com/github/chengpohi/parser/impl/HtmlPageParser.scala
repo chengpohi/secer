@@ -46,8 +46,9 @@ class HtmlPageParser {
 
 
   def parse(doc: Document, item: FetchItem): (IndexItem, List[FetchItem]) = {
-    val fields: Map[String, Any] = parseBySelector(doc, item.selectors)
-    (IndexItem(doc, item, hashString(doc.html), fields), hrefs(doc, item))
+    val seeds: List[FetchItem] = hrefs(doc, item)
+    val fields: Map[String, Any] = parseBySelector(doc, item.selectors) + ("hrefs" -> seeds.map(_.url))
+    (IndexItem(doc, item, hashString(doc.html), fields), seeds)
   }
 
   def selectBySelector(doc: Document, selector: String): String = {
