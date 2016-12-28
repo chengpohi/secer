@@ -2,7 +2,7 @@ package com.github.chengpohi
 
 import com.github.chengpohi.api.ElasticDSL
 import com.github.chengpohi.helper.ResponseGenerator
-import com.github.chengpohi.parser.{ELKCommand, ELKParser, ParserUtils}
+import com.github.chengpohi.parser.{ELKParser, InterceptFunction, ParserUtils}
 import org.elasticsearch.common.settings.Settings
 import org.elasticsearch.node.Node
 
@@ -22,10 +22,11 @@ object ELKCommandTestRegistry {
     .build()
   val node = new Node(settings).start()
   val client = node.client()
-  private[this] val elasticCommand = new ElasticDSL(client)
+  val elasticdsl = new ElasticDSL(client)
   val responseGenerator = new ResponseGenerator
-  private[this] val elkCommand = new ELKCommand(elasticCommand, responseGenerator)
+  private[this] val elkCommand = new InterceptFunction(elasticdsl)
   private[this] val parserUtils = new ParserUtils
-  val elkParser = new ELKParser(elkCommand, parserUtils)
+  val elkParser = new ELKParser(elkCommand)
+
 }
 
