@@ -1,7 +1,6 @@
 package com.github.chengpohi.so
 
 import java.io.File
-import java.util.Date
 
 import scala.util.Try
 import scala.xml.Elem
@@ -10,29 +9,40 @@ import scala.xml.Elem
   * Created by xiachen on 28/12/2016.
   */
 
-case class Post(id: Int,
-                postType: Int,
-                acceptAnswerId: Int,
+case class Post(id: Option[Int],
+                postType: Option[Int],
+                acceptAnswerId: Option[Int],
                 createDate: String,
-                score: Int,
-                viewCount: Int,
+                score: Option[Int],
+                viewCount: Option[Int],
                 body: String,
                 title: String,
                 tags: List[String],
-                ownerId: Int,
-                lastEditorId: Int,
+                ownerId: Option[Int],
+                lastEditorId: Option[Int],
                 lastEditorUserName: String,
-                answerCount: Int,
-                commentCount: Int,
-                favoriteCount: Int,
+                answerCount: Option[Int],
+                commentCount: Option[Int],
+                favoriteCount: Option[Int],
                 communityOwnedDate: String
-               )
+               ) {
+  val HOSTNAME = "https://stackoverflow.com"
+
+  def url: String = {
+    val urlTitile = title.replaceAll("['|?]+", "").replaceAll("\\s+", "-").toLowerCase
+    HOSTNAME + "/questions/" + id.getOrElse("") + "/" + urlTitile
+  }
+}
 
 class SOExtractor {
   val ROW_PREFIX = "<row"
 
   implicit def asInt(str: String): Int = {
     Integer.parseInt(str)
+  }
+
+  implicit def optInt(str: String): Option[Int] = {
+    Try(Integer.parseInt(str)).toOption
   }
 
   def extract(file: File): Stream[Post] = {
