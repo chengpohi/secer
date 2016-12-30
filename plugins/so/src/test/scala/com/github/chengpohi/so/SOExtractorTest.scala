@@ -15,12 +15,14 @@ class SOExtractorTest extends FlatSpec with Matchers {
     posts.size should be(1)
     //println(posts.size)
     val head = posts.head
-    head.id should be(Some(4))
+    head.Id should be(4)
     head.tags.size should be(5)
+    head.doc.size should be(17)
     println("url = " + head.url)
-    println("id = " + head.id)
+    println("id = " + head.Id)
     println("title = " + head.title)
     println("body = " + head.body)
     println("tags = " + head.tags)
+    println("fields = " + head.doc)
   }
 }

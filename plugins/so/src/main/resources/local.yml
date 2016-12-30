@@ -1,0 +1,7 @@
+http.enabled: false
+path.repo: ./so/
+action.destructive_requires_name: false
+path.home: ./so/
+transport.type: netty4
+thread_pool.index.size: 9
+thread_pool.index.queue_size: 100000

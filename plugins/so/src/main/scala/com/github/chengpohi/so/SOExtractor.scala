@@ -2,14 +2,16 @@ package com.github.chengpohi.so
 
 import java.io.File
 
+import com.github.chengpohi.model.IndexTrait
+import com.google.common.io.BaseEncoding
+
 import scala.util.Try
 import scala.xml.Elem
 
 /**
   * Created by xiachen on 28/12/2016.
   */
-
-case class Post(id: Option[Int],
+case class Post(Id: Int,
                 postType: Option[Int],
                 acceptAnswerId: Option[Int],
                 createDate: String,
@@ -25,12 +27,25 @@ case class Post(id: Option[Int],
                 commentCount: Option[Int],
                 favoriteCount: Option[Int],
                 communityOwnedDate: String
-               ) {
-  val HOSTNAME = "https://stackoverflow.com"
+               ) extends IndexTrait {
+  private val HOSTNAME = "https://stackoverflow.com"
+
+  override def doc: Map[String, Any] = {
+    this.getClass.getDeclaredFields.toList.filter(!_.getName.equalsIgnoreCase("HOSTNAME")).map(i => i.getName -> i.get(this)).toMap
+  }
+
+  override def indexName: String = "so"
+
+  override def indexType: String = tags.isEmpty match {
+    case true => "universal"
+    case false => BaseEncoding.base64().encode(tags.head.getBytes("UTF-8"))
+  }
+
+  override def id: String = Id.toString
 
   def url: String = {
-    val urlTitile = title.replaceAll("['|?]+", "").replaceAll("\\s+", "-").toLowerCase
-    HOSTNAME + "/questions/" + id.getOrElse("") + "/" + urlTitile
+    val urlTitle = title.replaceAll("['|?]", "").replaceAll("\\s+", "-").toLowerCase
+    HOSTNAME + "/questions/" + Id + "/" + urlTitle
   }
 }
 
@@ -66,6 +81,7 @@ class SOExtractor {
       val CommentCount = getAttributeByName(e, "CommentCount")
       val FavoriteCount = getAttributeByName(e, "FavoriteCount")
       val CommunityOwnedDate = getAttributeByName(e, "CommunityOwnedDate")
+      val tags = Try(Tags.replaceAll(">", " ").replaceAll("<", "").trim.split(" ").toList).getOrElse(List())
       Post(Id,
         PostTypeId,
         AcceptedAnswerId,
@@ -74,7 +90,7 @@ class SOExtractor {
         ViewCount,
         Body,
         Title,
-        Try(Tags.replaceAll(">", " ").replaceAll("<", "").trim.split(" ").toList).getOrElse(List()),
+        tags,
         OwnerUserId,
         LastEditorUserId,
         LastEditorDisplayName,
@@ -87,7 +103,11 @@ class SOExtractor {
   }
 
   def getAttributeByName(e: Elem, name: String): String = {
-    Try(e.attribute(name).get.text).getOrElse("")
+    val res = Try(e.attribute(name).get.text).getOrElse("")
+    res.isEmpty match {
+      case true => null
+      case false => res
+    }
   }
 }
 
