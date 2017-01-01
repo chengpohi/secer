@@ -27,7 +27,7 @@ object SOExtractorApp {
   def main(args: Array[String]): Unit = {
     val file = new File("/Users/xiachen/IdeaProjects/data/Posts.xml")
     //val file = new File("/Users/xiachen/IdeaProjects/secer/plugins/so/src/test/resources/so.xml")
-    val semaphore = new Semaphore(1000)
+    val semaphore = new Semaphore(5000)
     val posts = SOExtractor().extract(file)
     val actorSystem = ActorSystem("Crawler", ConfigFactory.load("crawler"))
     val soExtractor = actorSystem.actorOf(Props(new SOExtractorApp(semaphore)))

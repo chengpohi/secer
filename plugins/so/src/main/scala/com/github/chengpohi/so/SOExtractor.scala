@@ -36,10 +36,7 @@ case class Post(Id: Int,
 
   override def indexName: String = "so"
 
-  override def indexType: String = tags.isEmpty match {
-    case true => "universal"
-    case false => BaseEncoding.base64().encode(tags.head.getBytes("UTF-8"))
-  }
+  override def indexType: String = "post"
 
   override def id: String = Id.toString
 
@@ -57,11 +54,14 @@ class SOExtractor {
   }
 
   implicit def optInt(str: String): Option[Int] = {
-    Try(Integer.parseInt(str)).toOption
+    str.isEmpty match {
+      case true => None
+      case false => Some(Integer.parseInt(str))
+    }
   }
 
-  def extract(file: File): Stream[Post] = {
-    scala.io.Source.fromFile(file).getLines().toStream.filter(_.trim.startsWith(ROW_PREFIX)).map(str => {
+  def extract(file: File): Iterator[Post] = {
+    scala.io.Source.fromFile(file).getLines().filter(_.trim.startsWith(ROW_PREFIX)).map(str => {
       val e = scala.xml.XML.loadString(str)
       val Id = getAttributeByName(e, "Id")
       val PostTypeId = getAttributeByName(e, "PostTypeId")
@@ -81,7 +81,7 @@ class SOExtractor {
       val CommentCount = getAttributeByName(e, "CommentCount")
       val FavoriteCount = getAttributeByName(e, "FavoriteCount")
       val CommunityOwnedDate = getAttributeByName(e, "CommunityOwnedDate")
-      val tags = Try(Tags.replaceAll(">", " ").replaceAll("<", "").trim.split(" ").toList).getOrElse(List())
+      val tags = Tags.replaceAll(">", " ").replaceAll("<", "").trim.split(" ").toList
       Post(Id,
         PostTypeId,
         AcceptedAnswerId,
@@ -102,13 +102,7 @@ class SOExtractor {
     })
   }
 
-  def getAttributeByName(e: Elem, name: String): String = {
-    val res = Try(e.attribute(name).get.text).getOrElse("")
-    res.isEmpty match {
-      case true => null
-      case false => res
-    }
-  }
+  def getAttributeByName(e: Elem, name: String): String = e \@ name
 }
 
 object SOExtractor {
