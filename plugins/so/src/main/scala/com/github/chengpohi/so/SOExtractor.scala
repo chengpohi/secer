@@ -3,9 +3,7 @@ package com.github.chengpohi.so
 import java.io.File
 
 import com.github.chengpohi.model.IndexTrait
-import com.google.common.io.BaseEncoding
 
-import scala.util.Try
 import scala.xml.Elem
 
 /**
@@ -49,16 +47,15 @@ case class Post(Id: Int,
 class SOExtractor {
   val ROW_PREFIX = "<row"
 
-  implicit def asInt(str: String): Int = {
-    Integer.parseInt(str)
+  implicit def asInt(str: Option[String]): Int = {
+    str.filter(!_.isEmpty).map(Integer.parseInt).get
   }
 
-  implicit def optInt(str: String): Option[Int] = {
-    str.isEmpty match {
-      case true => None
-      case false => Some(Integer.parseInt(str))
-    }
+  implicit def optInt(str: Option[String]): Option[Int] = {
+    str.filter(!_.isEmpty).map(Integer.parseInt)
   }
+
+  implicit def optString(str: Option[String]): String = str.orNull
 
   def extract(file: File): Iterator[Post] = {
     scala.io.Source.fromFile(file).getLines().filter(_.trim.startsWith(ROW_PREFIX)).map(str => {
@@ -81,7 +78,7 @@ class SOExtractor {
       val CommentCount = getAttributeByName(e, "CommentCount")
       val FavoriteCount = getAttributeByName(e, "FavoriteCount")
       val CommunityOwnedDate = getAttributeByName(e, "CommunityOwnedDate")
-      val tags = Tags.replaceAll(">", " ").replaceAll("<", "").trim.split(" ").toList
+      val tags = Tags.map(_.replaceAll(">", " ").replaceAll("<", "").trim.split(" ").toList).getOrElse(List())
       Post(Id,
         PostTypeId,
         AcceptedAnswerId,
@@ -102,12 +99,9 @@ class SOExtractor {
     })
   }
 
-  def getAttributeByName(e: Elem, name: String): String = {
+  def getAttributeByName(e: Elem, name: String): Option[String] = {
     val res = e \@ name
-    res.isEmpty match {
-      case true => null
-      case false => res
-    }
+    Some(res)
   }
 }
 
