@@ -55,7 +55,7 @@ class SOExtractor {
     str.filter(!_.isEmpty).map(Integer.parseInt)
   }
 
-  implicit def optString(str: Option[String]): String = str.orNull
+  implicit def optString(str: Option[String]): String = str.getOrElse(null)
 
   def extract(file: File): Iterator[Post] = {
     scala.io.Source.fromFile(file).getLines().filter(_.trim.startsWith(ROW_PREFIX)).map(str => {
@@ -101,7 +101,7 @@ class SOExtractor {
 
   def getAttributeByName(e: Elem, name: String): Option[String] = {
     val res = e \@ name
-    Some(res)
+    Option(res)
   }
 }
 

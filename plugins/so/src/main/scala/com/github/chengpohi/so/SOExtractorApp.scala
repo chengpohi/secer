@@ -32,7 +32,6 @@ object SOExtractorApp {
     val actorSystem = ActorSystem("Crawler", ConfigFactory.load("crawler"))
     val soExtractor = actorSystem.actorOf(Props(new SOExtractorApp(semaphore)))
     posts.foreach(post => {
-      semaphore.acquire()
       soExtractor ! post
     })
   }
