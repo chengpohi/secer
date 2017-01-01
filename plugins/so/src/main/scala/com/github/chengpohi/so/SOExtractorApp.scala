@@ -31,7 +31,7 @@ object SOExtractorApp {
     val posts = SOExtractor().extract(file)
     val actorSystem = ActorSystem("Crawler", ConfigFactory.load("crawler"))
     val soExtractor = actorSystem.actorOf(Props(new SOExtractorApp(semaphore)))
-    posts.foreach(post => {
+    posts.filter(_.tags.contains("java")).foreach(post => {
       soExtractor ! post
     })
   }

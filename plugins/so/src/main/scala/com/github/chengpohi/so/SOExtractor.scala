@@ -34,7 +34,7 @@ case class Post(Id: Int,
 
   override def indexName: String = "so"
 
-  override def indexType: String = "post"
+  override def indexType: String = "java"
 
   override def id: String = Id.toString
 
