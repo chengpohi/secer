@@ -102,7 +102,13 @@ class SOExtractor {
     })
   }
 
-  def getAttributeByName(e: Elem, name: String): String = e \@ name
+  def getAttributeByName(e: Elem, name: String): String = {
+    val res = e \@ name
+    res.isEmpty match {
+      case true => null
+      case false => res
+    }
+  }
 }
 
 object SOExtractor {
