@@ -11,6 +11,7 @@ import scala.xml.Elem
   */
 case class Post(Id: Int,
                 postType: Option[Int],
+                parentId: Option[Int],
                 acceptAnswerId: Option[Int],
                 createDate: String,
                 score: Option[Int],
@@ -26,6 +27,7 @@ case class Post(Id: Int,
                 favoriteCount: Option[Int],
                 communityOwnedDate: String
                ) extends IndexTrait {
+  private var _indexType = "universal"
   private val HOSTNAME = "https://stackoverflow.com"
 
   override def doc: Map[String, Any] = {
@@ -34,9 +36,12 @@ case class Post(Id: Int,
 
   override def indexName: String = "so"
 
-  override def indexType: String = "java"
+  override def indexType: String = _indexType
 
   override def id: String = Id.toString
+
+  def setIndexType(_in: String): Unit =
+    _indexType = _in
 
   def url: String = {
     val urlTitle = title.replaceAll("['|?]", "").replaceAll("\\s+", "-").toLowerCase
@@ -57,11 +62,12 @@ class SOExtractor {
 
   implicit def optString(str: Option[String]): String = str.getOrElse(null)
 
-  def extract(file: File): Iterator[Post] = {
-    scala.io.Source.fromFile(file).getLines().filter(_.trim.startsWith(ROW_PREFIX)).filter(_.contains("java")).map(str => {
+  def extract(file: File)(f: String => Boolean): Iterator[Post] = {
+    scala.io.Source.fromFile(file).getLines().filter(_.trim.startsWith(ROW_PREFIX)).filter(f).map(str => {
       val e = scala.xml.XML.loadString(str)
       val Id = getAttributeByName(e, "Id")
       val PostTypeId = getAttributeByName(e, "PostTypeId")
+      val ParentId = getAttributeByName(e, "ParentId")
       val AcceptedAnswerId = getAttributeByName(e, "AcceptedAnswerId")
       val CreationDate = getAttributeByName(e, "CreationDate")
       val Score = getAttributeByName(e, "Score")
@@ -81,6 +87,7 @@ class SOExtractor {
       val tags = Tags.map(_.replaceAll(">", " ").replaceAll("<", "").trim.split(" ").toList).getOrElse(List())
       Post(Id,
         PostTypeId,
+        ParentId,
         AcceptedAnswerId,
         CreationDate,
         Score,

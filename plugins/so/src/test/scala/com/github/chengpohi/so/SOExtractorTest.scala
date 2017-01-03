@@ -12,9 +12,8 @@ class SOExtractorTest extends FlatSpec with Matchers {
     val file = new File(getClass.getResource("/so.xml").toURI)
     //val file = new File("/Users/xiachen/IdeaProjects/data/Posts.xml")
     val posts = SOExtractor().extract(file)
-    posts.size should be(1)
     //println(posts.size)
-    val head = posts.head
+    val head = posts.next()
     head.Id should be(4)
     head.tags.size should be(5)
     head.doc.size should be(17)
