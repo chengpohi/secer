@@ -31,7 +31,11 @@ case class Post(Id: Int,
   private val HOSTNAME = "https://stackoverflow.com"
 
   override def doc: Map[String, Any] = {
-    this.getClass.getDeclaredFields.toList.filter(!_.getName.equalsIgnoreCase("HOSTNAME")).map(i => i.getName -> i.get(this)).toMap
+    this.getClass.getDeclaredFields
+      .toList
+      .filter(!_.getName.equalsIgnoreCase("_indexType"))
+      .filter(!_.getName.equalsIgnoreCase("HOSTNAME"))
+      .map(i => i.getName -> i.get(this)).toMap
   }
 
   override def indexName: String = "so"
@@ -84,7 +88,7 @@ class SOExtractor {
       val CommentCount = getAttributeByName(e, "CommentCount")
       val FavoriteCount = getAttributeByName(e, "FavoriteCount")
       val CommunityOwnedDate = getAttributeByName(e, "CommunityOwnedDate")
-      val tags = Tags.map(_.replaceAll(">", " ").replaceAll("<", "").trim.split(" ").toList).getOrElse(List())
+      val tags = Tags.map(_.replaceAll(">", " ").replaceAll("<", "").trim.split(" ").toList.filter(!_.isEmpty)).getOrElse(List())
       Post(Id,
         PostTypeId,
         ParentId,

@@ -1,12 +1,19 @@
 package com.github.chengpohi.so
 
 import java.io.File
+import java.util
+import java.util.UUID
 
 import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
 import com.github.chengpohi.indexer.{Finished, PageIndexerService}
+import com.github.chengpohi.util.Utils
 import com.typesafe.config.ConfigFactory
 
 import scala.collection.mutable.ArrayBuffer
+import Utils._
+
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 
 /**
   * Created by xiachen on 30/12/2016.
@@ -27,37 +34,57 @@ object SOExtractorApp {
   def main(args: Array[String]): Unit = {
     val file = new File("/Users/xiachen/IdeaProjects/data/Posts.xml")
     //val file = new File("/Users/xiachen/IdeaProjects/secer/plugins/so/src/test/resources/so.xml")
-    val filterTag = "java"
-
-    var ids = new ArrayBuffer[Int]()
-
-    val f = (s: String) => s.contains(filterTag) && !s.contains("ParentId=")
 
     val actorSystem = ActorSystem("Crawler", ConfigFactory.load("crawler"))
     val soExtractor = actorSystem.actorOf(Props(new SOExtractorApp()))
+
+    val filterTag = "java"
+    var ids = new ArrayBuffer[Int]()
+    val f = (s: String) => s.contains(filterTag) || s.contains("ParentId=")
     val posts = SOExtractor().extract(file)(f)
-    posts.filter(_.tags.contains(filterTag))
-      .foreach(post => {
-        post.setIndexType(filterTag)
-        ids.append(post.Id)
-        soExtractor ! post
-      })
+
+    posts.filter(post => {
+      if (post.tags.isEmpty) {
+        filterAnswers(ids, post)
+      } else {
+        post.tags.contains(filterTag)
+      }
+    }).foreach(post => {
+      updateIndexType(ids, filterTag, post)
+      soExtractor ! post
+    })
+
+    println("-" * 10)
     println("Index Questions Finished!")
     println("-" * 10)
-    println("Index Answers!")
+    Thread.sleep(5000)
+    Await.result(actorSystem.terminate(), Duration.Inf)
+  }
 
-    val f2 = (s: String) => s.contains("ParentId=") && ids.exists(id => s.contains(id.toString))
-    val answers = SOExtractor().extract(file)(f2)
-    answers.filter(_.parentId.isDefined)
-      .filter(a => ids.contains(a.parentId.get))
-      .foreach(answer => {
-        answer.setIndexType("answer")
-        soExtractor ! answer
-      })
+  private def updateIndexType(ids: ArrayBuffer[Int], filterTag: String, post: Post) = {
+    post.parentId match {
+      case Some(_) =>
+        post.setIndexType("answer")
+      case _ =>
+        ids.append(post.Id)
+        post.setIndexType(filterTag)
+    }
+  }
 
-    println("Index Answers Finished!")
-
-    actorSystem.terminate()
+  private def filterAnswers(ids: ArrayBuffer[Int], post: Post): Boolean = {
+    val id = post.parentId.get
+    try {
+      ids.binarySearch(id)
+    } catch {
+      case e: StackOverflowError => {
+        println(ids)
+        println(id)
+      }
+    }
+    ids.binarySearch(id) match {
+      case -1 => false
+      case _ => true
+    }
   }
 }
 
