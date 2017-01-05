@@ -72,18 +72,13 @@ object SOExtractorApp {
   }
 
   private def filterAnswers(ids: ArrayBuffer[Int], post: Post): Boolean = {
-    val id = post.parentId.get
-    try {
-      ids.binarySearch(id)
-    } catch {
-      case e: StackOverflowError => {
-        println(ids)
-        println(id)
-      }
-    }
-    ids.binarySearch(id) match {
-      case -1 => false
-      case _ => true
+    post.parentId match {
+      case Some(id) =>
+        ids.binarySearch(id) match {
+          case -1 => false
+          case _ => true
+        }
+      case None => false
     }
   }
 }
