@@ -31,55 +31,63 @@ class SOExtractorApp extends Actor with ActorLogging {
 }
 
 object SOExtractorApp {
-  def main(args: Array[String]): Unit = {
-    val file = new File("/Users/xiachen/IdeaProjects/data/Posts.xml")
-    //val file = new File("/Users/xiachen/IdeaProjects/secer/plugins/so/src/test/resources/so.xml")
+  val actorSystem = ActorSystem("Crawler", ConfigFactory.load("crawler"))
+  val soExtractor = actorSystem.actorOf(Props(new SOExtractorApp()))
 
-    val actorSystem = ActorSystem("Crawler", ConfigFactory.load("crawler"))
-    val soExtractor = actorSystem.actorOf(Props(new SOExtractorApp()))
-
-    val filterTag = "java"
-    var ids = new ArrayBuffer[Int]()
-    val f = (s: String) => s.contains(filterTag) || s.contains("ParentId=")
+  def indexQuestion(file: File)(f: String => Boolean, filterTag: String): List[Int] = {
     val posts = SOExtractor().extract(file)(f)
 
-    posts.filter(post => {
-      if (post.tags.isEmpty) {
-        filterAnswers(ids, post)
-      } else {
-        post.tags.contains(filterTag)
-      }
-    }).foreach(post => {
-      updateIndexType(ids, filterTag, post)
+    posts.filter(_.tags.contains(filterTag)).map(post => {
+      post.setIndexType(filterTag)
       soExtractor ! post
-    })
+      post.Id
+    }).toList
+  }
+
+  def indexAnswers(file: File, ids: List[Int]): List[Int] = {
+    val posts = SOExtractor().extract(file)((s: String) => true)
+
+    posts.filter(post => ids.binarySearch(post.Id) > -1).map(post => {
+      post.setIndexType("answer")
+      soExtractor ! post
+      post.Id
+    }).toList
+  }
+
+  def main(args: Array[String]): Unit = {
+    val file = new File("/Users/xiachen/IdeaProjects/data/")
+    //val file = new File("/Users/xiachen/IdeaProjects/secer/plugins/so/src/test/resources/so.xml")
+
+    val filterTag = "java"
+    val fl = (s: String) => s.contains(filterTag)
+
+    val ids: List[Int] = file.listFiles()
+      .filter(_.getName.contains("question-"))
+      .par
+      .flatMap(f => {
+        indexQuestion(f)(fl, filterTag)
+      }).toList.sorted
 
     println("-" * 10)
     println("Index Questions Finished!")
     println("-" * 10)
-    Thread.sleep(5000)
+
+    val answers: List[Int] = file.listFiles()
+      .filter(_.getName.contains("answer-"))
+      .par
+      .flatMap(f => {
+        indexAnswers(f, ids)
+      }).toList
+    println("-" * 10)
+    println("Index Questions Finished!")
+    println("-" * 10)
+
+    println("Total questions: " + ids.size)
+    println("Total answers: " + answers.size)
+
+
+    Thread.sleep(30000)
     Await.result(actorSystem.terminate(), Duration.Inf)
-  }
-
-  private def updateIndexType(ids: ArrayBuffer[Int], filterTag: String, post: Post) = {
-    post.parentId match {
-      case Some(_) =>
-        post.setIndexType("answer")
-      case _ =>
-        ids.append(post.Id)
-        post.setIndexType(filterTag)
-    }
-  }
-
-  private def filterAnswers(ids: ArrayBuffer[Int], post: Post): Boolean = {
-    post.parentId match {
-      case Some(id) =>
-        ids.binarySearch(id) match {
-          case -1 => false
-          case _ => true
-        }
-      case None => false
-    }
   }
 }
 

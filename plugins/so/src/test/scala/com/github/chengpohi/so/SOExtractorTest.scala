@@ -13,7 +13,7 @@ class SOExtractorTest extends FlatSpec with Matchers {
     val f = (s: String) => s.contains("opacity") && !s.contains("ParentId=")
     val file = new File(getClass.getResource("/so.xml").toURI)
     //val file = new File("/Users/xiachen/IdeaProjects/data/Posts.xml")
-    val posts = SOExtractor().extract(file)(f)
+    val posts = SOExtractor().extract(file)
     //println(posts.size)
     val head = posts.next()
     head.Id should be(4)

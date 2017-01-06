@@ -27,7 +27,7 @@ object SOFileSplitter {
         fileWriter =
           new FileWriter(new File(s"/Users/xiachen/IdeaProjects/data/questions-${line._2 / MAX_LINE}.xml"))
       }
-      fileWriter.write(line._1)
+      fileWriter.write(line._1 + System.lineSeparator())
       i = i + 1
     })
     i

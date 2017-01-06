@@ -67,7 +67,7 @@ class SOExtractor {
   implicit def optString(str: Option[String]): String = str.getOrElse(null)
 
   def extract(file: File)(f: String => Boolean): Iterator[Post] = {
-    scala.io.Source.fromFile(file).getLines().filter(_.trim.startsWith(ROW_PREFIX)).filter(f).map(str => {
+    scala.io.Source.fromFile(file).getLines().filter(f).map(str => {
       val e = scala.xml.XML.loadString(str)
       val Id = getAttributeByName(e, "Id")
       val PostTypeId = getAttributeByName(e, "PostTypeId")

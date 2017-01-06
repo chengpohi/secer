@@ -14,7 +14,7 @@ object Utils {
       _ + _
     }
 
-  implicit class ArrayBufferUtil(ar: ArrayBuffer[Int]) {
+  implicit class ListUtil(ar: List[Int]) {
     def binarySearch(key: Int): Int = {
       def bi(start: Int, end: Int): Int = {
         if (end - start >= 0) {
