@@ -1,19 +1,15 @@
 package com.github.chengpohi.so
 
 import java.io.File
-import java.util
-import java.util.UUID
+import java.util.concurrent.Executors
 
 import akka.actor.{Actor, ActorLogging, ActorSystem, Props}
 import com.github.chengpohi.indexer.{Finished, PageIndexerService}
-import com.github.chengpohi.util.Utils
+import com.github.chengpohi.util.Utils._
 import com.typesafe.config.ConfigFactory
 
-import scala.collection.mutable.ArrayBuffer
-import Utils._
-
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 /**
   * Created by xiachen on 30/12/2016.
@@ -33,61 +29,68 @@ class SOExtractorApp extends Actor with ActorLogging {
 object SOExtractorApp {
   val actorSystem = ActorSystem("Crawler", ConfigFactory.load("crawler"))
   val soExtractor = actorSystem.actorOf(Props(new SOExtractorApp()))
+  val filterTag = "java"
+  implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(3))
 
-  def indexQuestion(file: File)(f: String => Boolean, filterTag: String): List[Int] = {
-    val posts = SOExtractor().extract(file)(f)
+  def indexQuestion(file: File, filterTag: String): Future[List[Boolean]] = {
+    val fl = (s: String) => s.contains(filterTag)
 
-    posts.filter(_.tags.contains(filterTag)).map(post => {
-      post.setIndexType(filterTag)
-      soExtractor ! post
-      post.Id
-    }).toList
+    var ar = Array.fill(5000 * 10000)(false)
+    Future.sequence(file.listFiles()
+      .toList
+      .filter(_.getName.contains("questions-"))
+      .map(f => {
+        Future {
+          val posts = SOExtractor().extract(f, fl)
+          posts.filter(_.tags.contains(filterTag)).foreach(post => {
+            post.setIndexType(filterTag)
+            soExtractor ! post
+            ar(post.Id) = true
+          })
+        }
+      })).map(_ => ar.toList)
   }
 
-  def indexAnswers(file: File, ids: List[Int]): List[Int] = {
-    val posts = SOExtractor().extract(file)((s: String) => true)
-
-    posts.filter(post => ids.binarySearch(post.Id) > -1).map(post => {
-      post.setIndexType("answer")
-      soExtractor ! post
-      post.Id
-    }).toList
+  def indexAnswers(file: File, ids: List[Boolean]): Future[(List[Boolean], List[Int])] = {
+    Future.sequence(
+      file.listFiles()
+        .toList
+        .filter(_.getName.contains("answers-"))
+        .map(f => {
+          Future {
+            val posts = SOExtractor().extract(f)
+            posts.filter(post => ids(post.Id)).map(post => {
+              post.setIndexType("answer")
+              soExtractor ! post
+              post.Id
+            }).toList
+          }
+        })).map(i => (ids, i.flatten))
   }
 
   def main(args: Array[String]): Unit = {
     val file = new File("/Users/xiachen/IdeaProjects/data/")
     //val file = new File("/Users/xiachen/IdeaProjects/secer/plugins/so/src/test/resources/so.xml")
 
-    val filterTag = "java"
-    val fl = (s: String) => s.contains(filterTag)
-
-    val ids: List[Int] = file.listFiles()
-      .filter(_.getName.contains("question-"))
-      .par
-      .flatMap(f => {
-        indexQuestion(f)(fl, filterTag)
-      }).toList.sorted
-
-    println("-" * 10)
-    println("Index Questions Finished!")
-    println("-" * 10)
-
-    val answers: List[Int] = file.listFiles()
-      .filter(_.getName.contains("answer-"))
-      .par
-      .flatMap(f => {
-        indexAnswers(f, ids)
-      }).toList
-    println("-" * 10)
-    println("Index Questions Finished!")
-    println("-" * 10)
-
-    println("Total questions: " + ids.size)
-    println("Total answers: " + answers.size)
-
-
-    Thread.sleep(30000)
-    Await.result(actorSystem.terminate(), Duration.Inf)
+    val res = indexQuestion(file, filterTag).flatMap(ids => {
+      println("-" * 10)
+      println("Index Questions Finished!")
+      println("-" * 10)
+      indexAnswers(file, ids)
+    })
+    res.onComplete {
+      case Success(r) => {
+        println("-" * 10)
+        println("Index Questions Finished!")
+        println("-" * 10)
+        println("Total questions: " + r._1.count(_ == true))
+        println("Total answers: " + r._2.size)
+      }
+      case Failure(f) => {
+        f.printStackTrace()
+        println("index fail:" + f.getMessage)
+      }
+    }
   }
 }
 

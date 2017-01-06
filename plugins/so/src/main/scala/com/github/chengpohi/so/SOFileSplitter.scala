@@ -40,14 +40,14 @@ object SOFileSplitter {
     val MAX_LINE = 1000000
     var i = 0
     scala.io.Source.fromFile(file).getLines()
-      .filter(_.contains("ParentId=")).zipWithIndex.foreach(line => {
+      .filter(_.contains("PostTypeId=2")).zipWithIndex.foreach(line => {
       println("write: " + line._2)
       if (line._2 % MAX_LINE == 0) {
         fileWriter =
           new FileWriter(new File(s"/Users/xiachen/IdeaProjects/data/answers-${line._2 / MAX_LINE}.xml"))
       }
       i = i + 1
-      fileWriter.write(line._1)
+      fileWriter.write(line._1 + System.lineSeparator())
     })
     i
   }
