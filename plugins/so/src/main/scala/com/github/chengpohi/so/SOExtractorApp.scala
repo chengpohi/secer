@@ -30,7 +30,7 @@ object SOExtractorApp {
   val filterTag = "java"
 
   def main(args: Array[String]): Unit = {
-    val file = new File("/Users/xiachen/IdeaProjects/data/so.xml")
+    val file = new File("/Users/xiachen/IdeaProjects/data/Posts.xml")
     //val file = new File("/Users/xiachen/IdeaProjects/secer/plugins/so/src/test/resources/so.xml")
     var ids = Array.fill(5000 * 10000)(false)
     val filterTag = "java"
