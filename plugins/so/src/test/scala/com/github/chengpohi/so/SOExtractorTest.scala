@@ -9,11 +9,9 @@ import org.scalatest.{FlatSpec, Matchers}
   */
 class SOExtractorTest extends FlatSpec with Matchers {
   it should "parse row to post model" in {
-
-    val f = (s: String) => s.contains("java") && !s.contains("ParentId=")
     val file = new File(getClass.getResource("/so.xml").toURI)
     //val file = new File("/Users/xiachen/IdeaProjects/data/Posts.xml")
-    val posts = SOExtractor().extract(file, f)
+    val posts = SOExtractor().extract(file)
     //println(posts.size)
     val head = posts.next()
     head.Id should be(4)
@@ -25,11 +23,28 @@ class SOExtractorTest extends FlatSpec with Matchers {
     println("body = " + head.body)
     println("tags = " + head.tags)
     println("fields = " + head.doc)
+  }
+  it should "performance test" in {
+    val file = new File("/Users/xiachen/IdeaProjects/data/Posts.xml")
+    //val file = new File("/Users/xiachen/IdeaProjects/data/Posts.xml")
+    //val file = new File(getClass.getResource("/questions-0.xml").toURI)
+    val posts = SOExtractor().extract(file)
+    val startTime = System.currentTimeMillis()
+    val length = 10000
 
-    val ids = Array(2)
-    val f2 = (s: String) => s.contains("ParentId=") && ids.exists(id => s.contains(id.toString))
-    val answers = SOExtractor().extract(file,f2)
-    val answer = answers.next()
-    println(answer.id)
+    val results = posts
+      .take(length)
+      .filter(p => p.tags.contains("java") && p.postType.contains(1))
+      .map(p => {
+        p.Id
+      }).toList
+
+    val endTime = System.currentTimeMillis()
+    val averageTime = (length.toDouble * 1000) / (endTime - startTime)
+
+    println("Results Size: " + results.size)
+    println("Total Parsed: " + length)
+    println("Total Time: " + (endTime - startTime) / 1000 + "s")
+    println("Average Per Time: " + averageTime + "/s")
   }
 }

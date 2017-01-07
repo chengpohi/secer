@@ -35,7 +35,9 @@ case class Post(Id: Int,
       .toList
       .filter(!_.getName.equalsIgnoreCase("_indexType"))
       .filter(!_.getName.equalsIgnoreCase("HOSTNAME"))
-      .map(i => i.getName -> i.get(this)).toMap
+      .map(i => i.getName -> i.get(this))
+      .filter(_._2 != null)
+      .toMap
   }
 
   override def indexName: String = "so"
@@ -66,48 +68,50 @@ class SOExtractor {
 
   implicit def optString(str: Option[String]): String = str.getOrElse(null)
 
-  def extract(file: File, f: String => Boolean = (_: String) => true): Iterator[Post] = {
-    scala.io.Source.fromFile(file).getLines().filter(f).map(str => {
-      val e = scala.xml.XML.loadString(str)
-      val Id = getAttributeByName(e, "Id")
-      val PostTypeId = getAttributeByName(e, "PostTypeId")
-      val ParentId = getAttributeByName(e, "ParentId")
-      val AcceptedAnswerId = getAttributeByName(e, "AcceptedAnswerId")
-      val CreationDate = getAttributeByName(e, "CreationDate")
-      val Score = getAttributeByName(e, "Score")
-      val ViewCount = getAttributeByName(e, "ViewCount")
-      val Body = getAttributeByName(e, "Body")
-      val OwnerUserId = getAttributeByName(e, "OwnerUserId")
-      val LastEditorUserId = getAttributeByName(e, "LastEditorUserId")
-      val LastEditorDisplayName = getAttributeByName(e, "LastEditorDisplayName")
-      val LastEditDate = getAttributeByName(e, "LastEditDate")
-      val LastActivityDate = getAttributeByName(e, "LastActivityDate")
-      val Title = getAttributeByName(e, "Title")
-      val Tags = getAttributeByName(e, "Tags")
-      val AnswerCount = getAttributeByName(e, "AnswerCount")
-      val CommentCount = getAttributeByName(e, "CommentCount")
-      val FavoriteCount = getAttributeByName(e, "FavoriteCount")
-      val CommunityOwnedDate = getAttributeByName(e, "CommunityOwnedDate")
-      val tags = Tags.map(_.replaceAll(">", " ").replaceAll("<", "").trim.split(" ").toList.filter(!_.isEmpty)).getOrElse(List())
-      Post(Id,
-        PostTypeId,
-        ParentId,
-        AcceptedAnswerId,
-        CreationDate,
-        Score,
-        ViewCount,
-        Body,
-        Title,
-        tags,
-        OwnerUserId,
-        LastEditorUserId,
-        LastEditorDisplayName,
-        AnswerCount,
-        CommentCount,
-        FavoriteCount,
-        CommunityOwnedDate
-      )
-    })
+  def extract(file: File): Iterator[Post] = {
+    scala.io.Source.fromFile(file).getLines()
+      .filter(_.trim.startsWith("<row"))
+      .map(str => {
+        val e = scala.xml.XML.loadString(str)
+        val Id = getAttributeByName(e, "Id")
+        val PostTypeId = getAttributeByName(e, "PostTypeId")
+        val ParentId = getAttributeByName(e, "ParentId")
+        val AcceptedAnswerId = getAttributeByName(e, "AcceptedAnswerId")
+        val CreationDate = getAttributeByName(e, "CreationDate")
+        val Score = getAttributeByName(e, "Score")
+        val ViewCount = getAttributeByName(e, "ViewCount")
+        val Body = getAttributeByName(e, "Body")
+        val OwnerUserId = getAttributeByName(e, "OwnerUserId")
+        val LastEditorUserId = getAttributeByName(e, "LastEditorUserId")
+        val LastEditorDisplayName = getAttributeByName(e, "LastEditorDisplayName")
+        val LastEditDate = getAttributeByName(e, "LastEditDate")
+        val LastActivityDate = getAttributeByName(e, "LastActivityDate")
+        val Title = getAttributeByName(e, "Title")
+        val Tags = getAttributeByName(e, "Tags")
+        val AnswerCount = getAttributeByName(e, "AnswerCount")
+        val CommentCount = getAttributeByName(e, "CommentCount")
+        val FavoriteCount = getAttributeByName(e, "FavoriteCount")
+        val CommunityOwnedDate = getAttributeByName(e, "CommunityOwnedDate")
+        val tags = Tags.map(_.replaceAll(">", " ").replaceAll("<", "").trim.split(" ").toList.filter(!_.isEmpty)).getOrElse(List())
+        Post(Id,
+          PostTypeId,
+          ParentId,
+          AcceptedAnswerId,
+          CreationDate,
+          Score,
+          ViewCount,
+          Body,
+          Title,
+          tags,
+          OwnerUserId,
+          LastEditorUserId,
+          LastEditorDisplayName,
+          AnswerCount,
+          CommentCount,
+          FavoriteCount,
+          CommunityOwnedDate
+        )
+      })
   }
 
   def getAttributeByName(e: Elem, name: String): Option[String] = {

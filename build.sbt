@@ -1,5 +1,8 @@
 name := "secer"
 
+enablePlugins(JmhPlugin)
+
+
 import Settings._
 
 lazy val indexer = project.in(file("modules/indexer"))
